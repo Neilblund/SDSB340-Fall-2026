@@ -1,0 +1,410 @@
+---
+title: "Syllabus 340"
+theme: cosmo
+format:
+  html:
+    css: slides/syllabus_style.css
+    toc: true
+    toc-depth: 3
+    html-math-method: katex
+    embed-resources: true
+bibliography: slides/references.bib
+---
+
+## Welcome
+
+Welcome to Intro to Survey Methodology! In this class you will learn about fundamental concepts in survey research, including question and questionnaire design, analysis, and interpretation.
+
+By the end of this course, you will be able to:
+
+1.  Understand how to design a survey to produce valid measurements.
+2.  Identify, and hopefully minimize, bias and random error in survey results.
+3.  Be able to access, analyze, and interpret survey research.
+
+## Instructor and course information
+
+Meeting Time: in-person TuTh 9:30am - 10:45am (TWS 0221)
+
+**Name**: Neil Lund
+
+**Email**: nlund\@umd.edu (please do not contact me through ELMS)
+
+**Office**: 1140C Tydings Hall
+
+**Office Hours**: Tuesday/Thursday 11:15 PM to 12:15 PM, Thursday only: 2:15 PM to 4:30 PM or by appointment
+
+### Teaching Assistant
+
+**Name**: Isabela Bertolini Coelho
+
+**Email**: icoelho1\@umd.edu
+
+**Office Hours**: Monday 11:00 AM - Noon or by appointment (Zoom)
+
+## Course Materials
+
+- Textbook: Groves, Robert M., Floyd J. Fowler, Mick P. Couper, James M. Lepkowski, Eleanor Singer, and Roger Tourangeau. 2009. Survey Methodology. 2nd ed. John Wiley & Sons. (Since this book is almost old enough to vote, you should be able to find a used copy relatively cheap. Just make sure you find the 2nd edition.)
+
+-   Students are expected to bring a functioning laptop to class each day. We'll typically use R for analysis, but you can choose to either install your own copy or use the BSOS cloud. We won't necessarily do something in R every class, but you should generally come prepared for the possibility.
+-   Other readings will be made available through ELMs.
+
+## Components of the final grade
+
+### Homeworks/Quizzes (30%):
+
+The will be short assignments that will allow you to apply the concepts we've been working on in class. These may involve coding, answering questions, or a written reflection on an assigned reading or class topic. Assignment due dates and additional instructions will be provided through ELMs.
+
+### Exams (25%):
+
+We'll have two non-cumulative, in-person exams. The first will take place around week 7, and the second will take place at the end of the semester.
+
+The exams will be open-notes and cover concepts from the lecture and required readings. I'll circulate a study guide a week before the test, and I'll host a review session where you can ask questions or clarify concepts. **You will not need to do any coding on the exams.**
+
+### Final Projects (30%):
+
+You and a small group of your colleagues will design, administer, analyze, and give a short presentation on a survey you've created and fielded during the semester. Additional details/rubrics will be provided in class.
+
+#### Project Components
+
+The final project grade will include multiple components, weighted as follows:
+
+-   **Initial Proposal/Survey Draft (10 points):** Your team will propose a research question/measurement problem that can be addressed using a short survey.
+
+-   **Survey (10 points):** Your team will design and field a survey in Qualtrics and circulate it among a convenience sample of people in your social network.
+
+-   **Initial Analysis (10 points):** Your team will submit an analysis of your initial findings while data collection is ongoing.
+
+-   **Peer Assessment (10 points):** You'll provide a holistic assessment of your contributions and your teams contributions to the final project.
+
+-   **Presentation (25 points):** Your team will give a brief (10-15 minute) presentation of your findings in the last week of class.
+
+-   **Written report/Replication code (25 points):** Your team will submit a written report that provides additional technical details on your analysis, along with code that allows someone to replicate and/or extend your findings.
+
+-   **Data (10 points):** Your team will submit a cleaned and anonymized version of the data used for your final project, in a format that allows your results to be easily replicated.
+
+- You may be asked to submit other individual assignments related to the final project, but these will be counted as part of you homework or participation/engagment grade.
+
+### Participation and engagement (15%)
+
+Students will earn credit for engagement with the materials. **Note that attendance alone is necessary, but not sufficient to earn full credit for engagement.** You need to be in-class, on time, and fully prepared for each class. In addition to being present, you may be asked to submit in-class work to demonstrate your engagement. These will generally be free points if you are in class and prepared, but -- for obvious reasons -- they won't be something you can complete if you don't show up.
+
+### Late Work Policy
+
+-   I will accept late **homework** submissions for a .42 percentage point penalty for each hour after the due date. This means that you'll lose about 10 percent every 24 hours an assignment is submitted late. (I realize this seems convoluted, but it means that the penalty for submitting an assignment couple of minutes after the due date is negligible.) This penalty can be waived if you have a documented excuse such as a doctor’s note, letter from a therapist, court order barring you from doing homework etc.
+
+    - For regular homework assignments, students may provide a one-time self-signed excuse note to receive a 24 hour extension on a non-major grading event. See template [here](https://health.umd.edu/sites/default/files/2026-04/Class%20Excuse%20Medical%20Attestation_March%202026.pdf). This policy does not apply to exams or the final project.
+
+-   The exams, presentations, and written final project report are considered major scheduled grading events. These can not be submitted late without a valid documented excuse.
+
+    -   If you do need to miss a major scheduled grading event, please contact me as soon as possible to schedule a makeup.
+
+-   Any in-class assignments are due at the end of class, but the grade can be dropped if you have a documented excuse.
+
+## AI use
+
+In this class, you may use AI tools (ChatGPT, Gemini, Claude etc.) for **brainstorming and research only**. Under no circumstances should you submit work (coding or analysis) that you didn't write yourself or that you can't explain to another person or effectively replicate on your own. If you are unsure whether a specific use-case is acceptable, please reach out to me for a clarification.
+
+### Grade Scheme
+
+The following grading standards will be used in this class:
+
+::: {style="width: 50%;margin-left: auto; margin-right: auto;"}
+| \% Grade | Letter Grade |
+|:--------:|:------------:|
+|  97-100  |      A+      |
+| \< 97-94 |      A       |
+| \< 94-90 |      A-      |
+| \< 90-87 |      B+      |
+| \< 87-84 |      B       |
+| \< 84-80 |      B-      |
+| \< 80-77 |      C+      |
+| \< 77-74 |      C       |
+| \< 74-70 |      C-      |
+| \< 70-67 |      D+      |
+| \< 67-64 |      D       |
+| \< 64-61 |      D-      |
+|  \< 61   |      F       |
+
+: {.striped .hover tbl-colwidths="\[2, 2\]"}
+
+
+:::
+
+# Tentative Schedule
+
+As the heading states: this is a *tentative* schedule. We will almost certainly deviate from this at certain points. Always be sure to check ELMS for the most up-to-date information on due dates.
+
+You'll see three different types of reading in this section:
+
+::: reading-instructional
+Readings in blue boxes like this one are from textbooks or other instructional materials and will review or elaborate on topics in the lecture. These are required readings and their contents may show up on assignments, quizzes, or exams.
+:::
+
+::: reading-discussion
+Readings in (amber?) boxes like this one will come from academic journals, blogs, newspapers etc. and will usually serve as an applied example of the topic for that week. We will typically set aside some time in class to discuss these readings. These are required, but their contents will only show up in quizzes or exams if they're something we've also talked about in class.
+:::
+
+::: reading-suggested
+Readings in boxes like this one are suggested/supplemental. You don't have to read these to do well in the class, but they may be useful or enhance your understanding of the course materials, or they might give a more detailed account of an example we use in class. **These readings are not required.**
+:::
+
+## Week 1
+
+### Surveys, errors and survey errors
+
+We'll give a basic overview of the course, and talk about the concept of an "error" and all the ways that a survey could produce an incorrect result.
+
+::: reading-instructional
+-   Groves et al. -- Chapter 2
+:::
+
+::: reading-discussion
+-   None
+:::
+
+::: reading-suggested
+-   Groves, Robert M. 2011. “Three Eras of Survey Research.” Public Opinion Quarterly 75 (5): 861–71.
+:::
+
+## Week 2
+
+### Reliability, validity, and measurement error
+
+We'll discuss the concepts of reliability and validity in the context of a survey, and we'll identify some of the ways that a measurement by fail to capture the concept we're interested in, and we'll grapple with some challenging questions about what we *really* measure when we ask someone to tell us what they think about an issue.
+
+::: reading-instructional
+-   Sahgal, Neha. 2019. [What Happens When a Survey Estimate Doesn’t Match a Known Benchmark](Https://www.pewresearch.org/decoded/2019/04/30/what-happens-when-a-survey-estimate-doesnt-match-a-known-benchmark/) — Pewresearch.org.
+:::
+
+::: reading-discussion
+-   Zaller, John, and Stanley Feldman. “A Simple Theory of the Survey Response: Answering Questions Versus Revealing Preferences.” *American Journal of Political Science*, 1992, 579–616.
+:::
+
+::: reading-suggested
+-   Howell, William, Anthony Fowler, and Wioletta Dziuida. 2021. [Are Americans “Politically Sophisticated”?](https://effectivegov.uchicago.edu/podcast/are-americans-politically-sophisticated) Podcast Audio. October.
+:::
+
+## Week 3
+
+### Asking Questions/Developing scales
+
+We'll talk about the process of writing good quality survey questions, how/why we might use multiple questions to measure the same thing and how we can assemble evidence that one instrument "measures" better than another.
+
+::: reading-instructional
+-   Pasek, Josh, and Jon A Krosnick. 2010. *Optimizing Survey Questionnaire Design in Political Science: Insights from Psychology*.
+:::
+
+::: reading-discussion
+-   Clifford, Scott, Lucia Lopez, and Lucas Lothamer. 2026. “Reassessing Support for Political Aggression and Violence in the United States.” *Public Opinion Quarterly* 90 (1): 28–64.
+:::
+
+::: reading-suggested
+-   Suggested: Westwood, Sean J, Justin Grimmer, Matthew Tyler, and Clayton Nall. 2022.“Current Research Overstates American Support for Political Violence.”*Proceedings of the National Academy of Sciences* 119 (12): e2116870119.
+:::
+
+## Week 4
+
+### Populations, sampling frames, and response quality
+
+We'll explore the surprisingly complex process of figuring out just who belongs in a survey, how to contact them, how we can correct problems, and what we do when we want to reach a difficult population.
+
+::: reading-instructional
+-   Groves et al. -- Chapter 3
+:::
+
+::: reading-discussion
+-   Adhikari, Prakashs and Lisa A Bryant. 2018. “Sampling Hard-to-Locate Populations.” The Oxford Handbook of Polling and Survey Methods, 155–80.
+:::
+
+::: reading-suggested
+-   Westwood, S. J. 2025. The potential existential threat of large language models to online survey research. *Proceedings of the National Academy of Sciences*,*122*(47), e2518075122.
+
+-   Huang, Osbern, Min-hua Huang, and Hsin-Che Wu. 2026. “Keeping Probability Sampling Viable with GIS/GPS in Difficult Political Settings: Lessons from the Asian Barometer Survey in Myanmar and China.” Survey Practice 20.
+
+-   AAPOR Task Force on 2024 Pre-Election Polling. 2025. An Evaluation of the 2024 General Election Polls. American Association for Public Opinion Research (AAPOR).
+:::
+
+## Week 5
+
+### Review/extension of probability concepts
+
+We'll review (or introduce) some important statistical concepts in the context of interpreting survey results such as: the central limit theorem, sampling variance, statistical significance, and confidence intervals.
+
+::: reading-instructional
+-   Mercer, Andrew. 2016. [5 Key Things to Know about the Margin of Error in Election Polls — Pewresearch.org.](https://www.pewresearch.org/short-reads/2016/09/08/understanding-the-margin-of-error-in-election-polls/)
+:::
+
+::: reading-discussion
+-   Broockman, David, and Joshua Kalla. 2016. “Durably Reducing Transphobia: A Field Experiment on Door-to-Door Canvassing.” *Science* 352 (6282): 220–24.
+:::
+
+::: reading-suggested
+-   Suggested: 3Blue1Brown. 2023. [*But What Is the Central Limit Theorem?*](https://www.youtube.com/watch?v=zeJD6dqJ5lo) -- *Admittedly, not a "reading", but this is a very nice overview if you're looking to improve your intuitive understanding of the CLT!*
+:::
+
+## Week 6
+
+### Complex survey designs and weighted survey data
+
+We'll explore how and why researchers might decide *not* to use simple random samples, and how this decision impacts how we make inferences from our survey results.
+
+::: reading-instructional
+-   Groves et al. -- Chapter 4
+:::
+
+::: reading-discussion
+-   Lusinchi, D. 2012. “President” Landon and the 1936 Literary Digest Poll: were automobile and telephone owners to blame? *Social Science History*, *36*(1), 23-54.
+:::
+
+::: reading-suggested
+-   "Basu's elephant" thought experiment (pdf on ELMS)
+:::
+
+## Week 7
+
+### Exam Review/Exam 1
+
+## Week 8
+
+### Response rates and missing data
+
+We'll discuss how to measure non-response on a survey, when missing data matters, and how we can use existing data to make educated guesses about what a non-respondent *might* have said.
+
+::: reading-instructional
+-   Groves et al. -- Chapter 6
+:::
+
+::: reading-discussion
+-   Cohn, D’Vera. [*Imputation: Adding People to the Census — Pewresearch.org*](https://www.pewresearch.org/social-trends/2011/05/04/imputation-adding-people-to-the-census).
+:::
+
+::: reading-suggested
+-   Rubin, Donald B. 1976. “Inference and Missing Data.” Biometrika 63 (3): 581–92.
+:::
+
+## Week 9
+
+### Calibration and post stratification
+
+We'll examine some strategies researchers use to weight data they've already collected to make it more closely resemble a target population, and we'll talk about some of the ways this can go wrong.
+
+::: reading-instructional
+-   Groves et al. -- Chapter 10
+:::
+
+::: reading-discussion
+-   Schaffner, Brian and Soler, Caroline. 2024. [“Pollsters Are Weighting Surveys Differently in 2024. Does It Matter?”](https://goodauthority.org/news/pollsters-are-weighting-surveys-differently-in-2024/) *Good Authority*, October 2.
+
+-   Schaffner, Brian and Soler, Caroline. 2024b. [“Pollsters Weighted More in 2024 – and It Helped.”](https://goodauthority.org/news/pollsters-weighted-more-in-2024-elections/) *Good Authority*, November 26.
+:::
+
+::: reading-suggested
+-   Cohn, Nate. 2016. [“How One 19-Year-Old Illinois Man Is Distorting National Polling Averages.”](https://www.nytimes.com/2016/10/13/upshot/how-one-19-year-old-illinois-man-is-distorting-national-polling-averages.html) *The New York Times*, October 12.
+:::
+
+## Week 10
+
+### Correlation and Regression
+
+We'll discuss correlation and regression analysis, and talk about how they can be used to help us validate a survey instrument or test hypotheses about the relationships between two or more variables.
+
+::: reading-instructional
+-   Caughlin, David E. n.d. R for HR: An Introduction to Human Resource Analytics Using R. Accessed August 6, 2026. https://rforhr.com/. [Chapter 29: Estimating Internal Consistency Using Cronbach's Alpha.](https://rforhr.com/cronbachsalpha.html)
+
+- Annotated Regression output (ELMS)
+:::
+
+::: reading-discussion
+-   None
+:::
+
+::: reading-suggested
+-   None
+:::
+
+## Week 11
+
+### Maximum Likelihood Methods
+
+We'll briefly discuss maximum likelihood methods, why they're important, and explore how we can use this framework to make inferences about latent constructs that we can't observe directly.
+
+::: reading-instructional
+-   Annotated Model Output (ELMS)
+:::
+
+::: reading-discussion
+-   Burge, Ryan. 2026. [The Political Takeover: Why Ideology, Not Faith, Drives the Culture War.](https://www.graphsaboutreligion.com/p/the-political-takeover-why-ideology) Graphs about Religion.
+:::
+
+::: reading-suggested
+-   Very Normal. 2025. [The Most Important Theory in Statistics \| Maximum Likelihood.](https://www.youtube.com/watch?v=YevSE6bRhTo)
+:::
+
+## Week 12
+
+### Factor Analysis
+
+We'll take a more in-depth look at using confirmatory and exploratory factor analysis to learn more about a latent construct.
+
+::: reading-instructional
+-   Annotated Factor Analysis Output (ELMS)
+:::
+
+::: reading-discussion
+-   Inglehart, R., & Baker, W. E. (2000). Modernization, cultural change, and the persistence of traditional values. American sociological review, 65(1), 19-51.
+:::
+
+::: reading-suggested
+-   Campos, Nicolas, and Christopher Federico. 2026. “A New Measure of Affective Polarization.” American Political Science Review 120 (1): 160–78.
+:::
+
+## Week 13
+
+Exam Review/Exam II
+
+## Week 14
+
+In-class presentations!
+
+# Other Policies and Information
+
+## Class Communication
+
+**Please do not contact me through ELMS.** ELMS messages will probably reach me eventually, but it will be slower and less reliable than an email.
+
+## Grade Challenges
+
+Any challenges to a grade must be submitted in writing no sooner than one week after the assignment has been graded. All challenges must be submitted to the section teaching assistant first.
+
+## Code of Conduct
+
+It is assumed that all students are familiar with and adhere to [the code of academic integrity](http://www.studenthonorcouncil.umd.edu/index.html).
+
+For University policies including regarding attendance, absences, missed assignments, grade complaints, etc. see [this page](http://www.ugst.umd.edu/courserelatedpolicies.html).
+
+## Other course policies and information
+
+### Names/Pronouns and Self-Identifications
+
+The University of Maryland recognizes the importance of a diverse student body, and we are committed to fostering inclusive and equitable classroom environments. I invite you, if you wish, to tell us how you want to be referred to in this class, both in terms of your name and your pronouns (he/him, she/her, they/them, etc.). Keep in mind that the pronouns someone uses are not necessarily indicative of their gender identity. Visit trans.umd.edu (<http://trans.umd.edu/)> to learn more. Additionally, it is your choice whether to disclose how you identify in terms of your gender, race, class, sexuality, religion, and dis/ability, among all aspects of your identity (e.g., should it come up in classroom conversation about our experiences and perspectives) and should be self-identified, not presumed or imposed. I will do my best to address and refer to all students accordingly, and I ask you to do the same for all of your fellow Terps
+
+### Accessibility and Disability Services 
+
+The University of Maryland is committed to creating and maintaining a welcoming and inclusive educational, working, and living environment for people of all abilities. The University of Maryland is also committed to the principle that no qualified individual with a disability shall, on the basis of disability, be excluded from participation in or be denied the benefits of the services, programs, or activities of the University, or be subjected to discrimination. The Accessibility & Disability Service (ADS) (<https://www.counseling.umd.edu/ads/)> provides reasonable accommodations to qualified individuals to provide equal access to services, programs and activities. ADS cannot assist retroactively, so it is generally best to request accommodations several weeks before the semester begins or as soon as a disability becomes known. Any student who needs accommodations should contact me as soon as possible so that I have sufficient time to make arrangements. For assistance in obtaining an accommodation, contact Accessibility and Disability Service at 301- 314-7682, or email them at adsfrontdesk\@umd.edu (mailto:adsfrontdesk\@umd.edu) . Information about sharing your accommodations with instructors, note taking assistance (<https://www.counseling.umd.edu/ads/currentads/)> and more is available from theCounseling Center (<http://counseling.umd.edu/ads/)>
+
+### Student Resources and Services 
+
+Taking personal responsibility for your own learning means acknowledging when your performance does not match your goals and doing something about it. I hope you will come talk to me so that I can help you find the right approach to success in this course, and I encourage you to visit UMD’s Student Academic Support Services website (<http://tutoring.umd.edu/)> to learn more about the wide range of campus resources available to you. In particular, everyone can use some help sharpening their communication skills (and improving their grade) by visiting UMD’s Writing Center (<http://www.english.umd.edu/academics/writingcenter/schedule)> and schedule an appointment with the campus Writing Center. You should also know there are a wide range of resources to support you with whatever you might need (UMD’s Student Resources and Services website (<https://sph.umd.edu/content/student-> resources-and-services) may help). If you feel it would be helpful to have someone to talk to, visit UMD’s Counseling Center (<https://www.counseling.umd.edu/)> or one of the many other mental health resources on campus (<https://tltc.umd.edu/instructors/teaching-topics/supporting-whole-> student) .
+
+### Notice of Mandatory Reporting
+
+Notice of mandatory reporting of sexual assault, sexual harassment, interpersonal violence, and stalking: As a faculty member, I am designated as a “Responsible University Employee,” and I must report all disclosures of sexual assault, sexual harassment, interpersonal violence, and stalking to UMD’s Title IX Coordinator per University Policy on Sexual Harassment and Other Sexual Misconduct. If you wish to speak with someone confidentially, please contact one of UMD’s confidential resources, such as CARE to Stop Violence (<https://health.umd.edu/CARE)> (located on the Ground Floor of the Health Center) at 301-741-3442 or the Counseling Center (<https://counseling.umd.edu/)> (located at the Shoemaker Building) at 301-314-7651. You may also seek assistance or supportive measures from UMD’s Title IX Coordinator, Angela Nastase, by calling 301-405-1142, or emailing titleIXcoordinator\@umd.edu. To view further information on the above, please visit the Office of Civil Rights and Sexual Misconduct’s (<https://ocrsm.umd.edu/)> website at ocrsm.umd.edu (<http://ocrsm.umd.edu/)>
+
+### Basic Needs Security
+
+If you have difficulty affording groceries or accessing sufficient food to eat every day, or lack a safe and stable place to live, please visit UMD’s Division of Student Affairs website (<https://studentaffairs.umd.edu/basic-needs-security)> for information about resources the campus offers you and let me know if I can help in any way.
+
+### Veteran Resources
+
+UMD provides some additional supports to our student veterans. You can access those resources at the office of Veteran Student life (<https://stamp.umd.edu/engagement/veteran_student_life)> and the Counseling Center (<https://www.counseling.umd.edu/aboutus/)> . Veterans and active duty military personnel with special circumstances (e.g., upcoming deployments, drill requirements, disabilities) are welcome and encouraged to communicate these, in advance if possible, to the instructor.
+
