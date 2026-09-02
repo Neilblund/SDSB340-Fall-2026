@@ -422,8 +422,6 @@ What might go wrong if I used "smiling" to measure "life satisfaction"?
 ::::: columns
 ::: {.column width="50%"}
 -   "White coat syndrome" is when someone experiences high blood pressure at the doctor's office but normal blood pressure at home.
-
--   The problem here is the setting in which we're taking the measurement.
 :::
 
 ::: {.column width="50%"}
@@ -579,11 +577,11 @@ Levels of conceptualization in voter's explanations of their preference:
 
 ::::: columns
 ::: {.column width="50%"}
--   Many people exhibit **constraint** or a systematic worldview. Their attitudes across related issue-areas are only weakly correlated.
+-   Few people exhibit **constraint** or a systematic worldview. Their attitudes across related issue-areas are only weakly correlated.
 :::
 
 ::: {.column width="50%"}
-![](../images/converse_constraint.png) [@converse2006nature]
+![](../images/converse_constraint.png){width="50%"} [@converse2006nature]
 :::
 :::::
 
@@ -595,7 +593,7 @@ Levels of conceptualization in voter's explanations of their preference:
 :::
 
 ::: {.column width="50%"}
-![](../images/converse_response_instability.png) [@converse2006nature]
+![](../images/converse_response_instability.png){width="60%"} [@converse2006nature]
 :::
 :::::
 
@@ -663,7 +661,7 @@ For Converse, many survey responses represent **non-attitudes**:
 
 ## A more optimistic interpretation: Measurement Error
 
--   An alternative explanation for response instability is measurement error: if questions are vague, then response instability can be explained by people randomly misinterpreting the question even if they have a stable attitude.
+-   An alternative explanation for these results is measurement error. What if our questions are just confusing?
 
 -   Chris Achen notes that there was response instability even on non-political questions like "how often do you attend church?" [@achen1975mass]
 
@@ -675,9 +673,7 @@ For Converse, many survey responses represent **non-attitudes**:
 
 ::::: columns
 ::: {.column width="50%"}
--   Consistent with expectations, the responses are much more stable when measured using more than one question. [@ansolabehere2008strength]
-
--   There is still instability! But there might be less of it than what Converse initially uncovered.
+-   Response instability decreases (but doesn't disappear) when we ask more questions. [@ansolabehere2008strength]
 :::
 
 ::: {.column width="50%"}
@@ -687,16 +683,8 @@ For Converse, many survey responses represent **non-attitudes**:
 
 ## Survey responses and Zaller
 
-::::: columns
-::: {.column width="50%"}
--   Do problems like response instability reflect a problem with **validity** of our public opinion measure or are they the result of **measurement error**?
+- Where does Zaller land on this debate?
 
--   Where does Zaller land on the non-attitudes vs. measurement error debate?
-:::
-
-::: {.column width="50%"}
-![](../images/zaller_instability.png){width="80%"}
-:::
-:::::
+- If he's right, what can be done to improve the results of public opinion surveys?
 
 # References
