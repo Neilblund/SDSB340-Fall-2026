@@ -1,0 +1,51 @@
+---
+title: "Final Project Guidelines"
+format: html
+bibliography: ../Slides/references.bib
+---
+
+
+
+For your final project, you'll create a scale to measure a construct you're interested in, and use a convenience sample to assess the validity of your instrument. 
+
+What you select is up to you, but your project must meet these requirements:
+
+* Your construct must be measured using multiple [likert-type](https://www.surveymonkey.com/learn/survey-best-practices/likert-scale/) items that can be aggregated to form one or more additive indices.
+* You must include at least two other measures in your survey that capture related constructs. One of your measures should be something you expect to correlate positively with your scale. The other measure should be something you expect to correlate negatively.
+* Your scale should be original, but your other measures should be taken from peer reviewed literature and/or established surveys.
+
+You can also include additional demographic characteristics such as age, gender etc. 
+
+## Purpose
+
+The goal of this assignment is to give you some experience with fielding, analyzing, and validating a questionnaire to measure a social science concept. 
+
+
+## Project examples
+
+
+### Example 1
+
+> If I were interested in measuring support for political violence, I might come up with a series of questions about acceptable and unacceptable forms of violent political behavior. Then I might review the literature for constructs that should positively correlate with support political violence, such as the Perceived Systemic Victimhood scale [@armaly2022me]. Then, I would look for a measure that I would expect to have a negative correlation with political violence support, such as education level or social trust. If I find that my measure of political violence has the expected correlations, then I can point to these results to bolster the validity of my instrument.
+
+
+
+### Example 2
+
+> If I were creating a measure of effective study habits, I might ask questions about whether they spend a lot of time studying or how prepared they typically feel before taking exams. Then I might include additional measures of conscientiousness from the Big Five personality inventory [@john1991big] and use the Cognitive Test Anxiety scale [@cassady2002cognitive] to measure test-related anxiety. If I have a good measure of study habits, I expect it will be positively associated with conscientiousness and negatively associated with test anxiety.
+
+
+
+## Scale creation and sample
+
+You'll use [Qualtrics](https://umdsurvey.umd.edu/) to create your survey. This is freely available to UMD students. You'll circulate your survey to your own social network.
+
+When creating your survey, be sure to [follow best practices](https://www.pewresearch.org/writing-survey-questions/) for writing survey questions, and craft your questions in a way that minimizes the risk of biasing your results. Consider the trade-off between the length of a survey and response rates when selecting items to include. A survey that takes 10 minutes to complete is far more likely to receive a decent number of responses than a survey that requires an hour.
+
+
+
+## References
+
+
+
+
