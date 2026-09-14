@@ -1,24 +1,33 @@
 ---
 title: "Final Project Guidelines"
-format: html
+format: 
+  html: 
+   toc: true
+   self-contained: true
+   df-print: paged
+   code-link: true
+   theme: united
+lightbox: true
+
 bibliography: ../Slides/references.bib
+---
 ---
 
 
 
 For your final project, you'll create a scale to measure a construct you're interested in, and use a convenience sample to assess the validity of your instrument. 
 
-What you select is up to you, but your project must meet these requirements:
+**What you select is up to you, but your project must meet these requirements:**
 
-* Your construct must be measured using multiple [likert-type](https://www.surveymonkey.com/learn/survey-best-practices/likert-scale/) items that can be aggregated to form one or more additive indices.
+* Your chosen construct must be measured using multiple [likert-type](https://www.surveymonkey.com/learn/survey-best-practices/likert-scale/) items that can be aggregated to form one or more additive scales.
 * You must include at least two other measures in your survey that capture related constructs. One of your measures should be something you expect to correlate positively with your scale. The other measure should be something you expect to correlate negatively.
-* Your scale should be original, but your other measures should be taken from peer reviewed literature and/or established surveys.
+* One of your scale measures should be original, but your other measures should be taken from peer reviewed literature and/or established surveys.
 
 You can also include additional demographic characteristics such as age, gender etc. 
 
 ## Purpose
 
-The goal of this assignment is to give you some experience with fielding, analyzing, and validating a questionnaire to measure a social science concept. 
+The goal of this assignment is to give you some experience with fielding, analyzing, validating, and testing hypotheses about a social science concept.
 
 
 ## Project examples
@@ -36,11 +45,17 @@ The goal of this assignment is to give you some experience with fielding, analyz
 
 
 
+
+
+
 ## Scale creation and sample
 
 You'll use [Qualtrics](https://umdsurvey.umd.edu/) to create your survey. This is freely available to UMD students. You'll circulate your survey to your own social network.
 
 When creating your survey, be sure to [follow best practices](https://www.pewresearch.org/writing-survey-questions/) for writing survey questions, and craft your questions in a way that minimizes the risk of biasing your results. Consider the trade-off between the length of a survey and response rates when selecting items to include. A survey that takes 10 minutes to complete is far more likely to receive a decent number of responses than a survey that requires an hour.
+
+
+
 
 
 
