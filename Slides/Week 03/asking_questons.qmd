@@ -1,5 +1,5 @@
 ---
-title: "Questions and instruments"
+title: "Asking Better Questions"
 format:
     revealjs:
         theme: [blueyellow]
@@ -30,6 +30,19 @@ editor:
 
 # Question writing
 
+- How do we minimize measurement error in surveys?
+
+- What are some common problems with survey questions?
+
+## Cognitive Strategies
+
+
+-   [Optimizing]{.yellow} is a decision making strategy where people systematically select the "best" option from a list of choices.
+
+-   [Satisficing]{.yellow} is a decision making strategy where people
+    choose things that are "good enough" rather than optimal.
+    
+
 ## How respondents answer questions
 
 ::::: columns
@@ -46,7 +59,7 @@ Optimizing:
 :::
 
 ::: {.column width="50%"}
-Satisficing (mental shortcuts):
+Satisficing:
 
 -   Agree with everything
 
@@ -58,9 +71,28 @@ Satisficing (mental shortcuts):
 :::
 :::::
 
+
+
+
 ## How respondents answer questions
 
-Avoiding satisficing:
+::::: {.columns}
+::: {.column width="50%"}
+- People are "cognitive misers", they don't want to expend more mental energy than necessary.
+
+- Surveys ask a lot of people for very little reward.
+:::
+::: {.column width="50%"}
+![](../images/photo-1620662831351-9f68f76d0b9a.avif)
+:::
+:::::
+
+
+
+
+## How respondents answer questions
+
+Some strategies to minimize satisficing:
 
 -   Group questions by topic.
 
@@ -71,20 +103,6 @@ Avoiding satisficing:
 -   Put sensitive questions towards the end.
 
 -   Avoid asking questions that are not relevant to the respondent.
-
-## Some common response formats
-
--   Agree/Disagree
-
--   Multiple choice with no intrinsic ordering
-
--   Ranking/numeric scale
-
--   Yes/No
-
--   "Check all that apply"
-
--   Open-ended
 
 # Problematic Questions
 
@@ -527,7 +545,7 @@ Some major critiques:
 
 ### Discussion reading: measuring support for political violence
 
-![](images/kalmoe_mason.jpg){fig-align="center" width="40%"}
+![](../images/kalmoe_mason.jpg){fig-align="center" width="40%"}
 
 ### Discussion reading: measuring support for political violence
 
