@@ -558,7 +558,7 @@ Some major critiques:
 :::
 
 ::: {.column width="50%"}
-![](../images/violence2-1.png)
+![](../images/violence2-1.png){fig-align="center" width="60%"}
 :::
 :::::
 
