@@ -1,5 +1,5 @@
 ---
-title: "Finding scales"
+title: "Final Project Information"
 format:
     revealjs:
         theme: [clean, serif]
