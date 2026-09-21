@@ -170,3 +170,9 @@ Use "display" and "skip logic" to make questions conditional. For instance: if y
 Select a question block and you will pull up some options for randomizing the ordering of questions within a block. You might consider using this if you're concerned that question order will influence how people response.
 
 ![](images/clipboard-2525073829.png)
+
+## Try out the stroop test
+
+Here's an example of some stuff you can do using Qualtrics with some custom Javascript:
+
+<https://umdsurvey.umd.edu/jfe/form/SV_7V52C9WqAG2TuoC>
