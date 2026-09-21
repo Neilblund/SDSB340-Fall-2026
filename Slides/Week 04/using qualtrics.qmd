@@ -95,13 +95,15 @@ Then hit the "Embedded Data" option.
 
 Give the embedded data field the name "UID"
 
-## ![](images/clipboard-3286648197.png)
+![](images/clipboard-3286648197.png)
 
 ## Add embedded data tracking
 
 Click the "Move" button and then drag the embedded data element to the top of the survey:
 
-## ![](images/clipboard-3254742058.png)Add embedded data tracking
+![](images/clipboard-3254742058.png)
+
+## Add embedded data tracking
 
 When/if you add new flow elements, be sure they come in *after* the embedded data block! This should always be at the top.
 
