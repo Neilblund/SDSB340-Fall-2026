@@ -1,0 +1,170 @@
+---
+title: "Using Qualtrics"
+format:
+    revealjs:
+        theme: [clean, serif]
+        transition: fade
+        width: 1280
+        height: 720
+        df-print: tibble
+        scrollable: true
+        slide-number: true
+        self-contained: true
+        embed-resources: true
+        mermaid:
+            theme: forest
+        code-annotations: select
+        code-link: true
+        incremental: true
+        filters:
+          - code-fullscreen
+bibliography: ../references.bib
+lightbox: true
+slide-level: 4
+execute:
+  echo: false
+---
+
+## Qualtrics
+
+You can access Qualtrics by going to this URL and entering your UMD login information: <https://umdsurvey.umd.edu/homepage/ui>
+
+# Step 1: Create a shared project
+
+## Create a shared project
+
+-   Hit the "Create a new project" button on the bottom left-hand side of your screen.
+
+![](images/clipboard-88793053.png)
+
+## Create a shared project
+
+Select the option to create a survey from scratch and then hit "get started"
+
+![](images/clipboard-4191987527.png)
+
+## Create a shared project
+
+-   Name your survey: SDSB340 Survey Fall 2026 Group \[YOUR GROUP NUMBER\]
+
+-   Then head back to the homepage: <https://umdsurvey.umd.edu/homepage/ui>
+
+## Create a shared project
+
+Find your project on the list of "Recently Visited" projects on the left hand side. Click the three dots and select "Collaborate" from the context menu.
+
+::::: columns
+::: {.column width="50%"}
+![](images/clipboard-1209946283.png)
+:::
+
+::: {.column width="50%"}
+![](images/clipboard-1797158306.png)
+:::
+:::::
+
+## Create a shared project
+
+-   Add UMD email addresses of your other group members.
+
+-   Add icoelho1\@umd.edu and nlund\@umd.edu as well.
+
+![](images/clipboard-133368105.png)
+
+# Step 2: Add embedded data tracking
+
+## Add embedded data tracking
+
+Navigate back to your survey and hit the "Survey Flow" tab.
+
+![](images/clipboard-3921877499.png)
+
+## Add embedded data tracking
+
+Select "Add a New Element Here"
+
+![](images/clipboard-909874040.png)
+
+## Add embedded data tracking
+
+Then hit the "Embedded Data" option.
+
+![](images/clipboard-3940354243.png)
+
+## Add embedded data tracking
+
+Give the embedded data field the name "UID"
+
+## ![](images/clipboard-3286648197.png)
+
+## Add embedded data tracking
+
+Click the "Move" button and then drag the embedded data element to the top of the survey:
+
+## ![](images/clipboard-3254742058.png)Add embedded data tracking
+
+When/if you add new flow elements, be sure they come in *after* the embedded data block! This should always be at the top.
+
+Hit the "Apply" button in the bottom right to save your changes.
+
+![](images/clipboard-3660438679.png)
+
+# Step 3: Create your survey
+
+## Create your survey
+
+Go back to the "Builder" tab and start creating your survey.
+
+![](images/clipboard-1136370327.png)
+
+## Create your survey: tips
+
+Feel free to use the "Import from library" button to get some pre-made demographic questions.
+
+![](images/clipboard-1337538115.png)
+
+## Create your survey: tips
+
+::::: columns
+::: {.column width="50%"}
+For multiple choice questions, you can select "Use suggested choices" button on the left hand side to get some common response formats like "agree/disagree".
+:::
+
+::: {.column width="50%"}
+![](images/clipboard-2609663492.png)
+:::
+:::::
+
+## Create your survey: tips
+
+You can use the "recode values" option under "question behavior" to control the numeric values associated with different response categories. (this can simplify some of the recoding you have to do when you get responses back)
+
+::::: columns
+::: {.column width="50%"}
+![](images/clipboard-379016808.png)
+:::
+
+::: {.column width="50%"}
+![](images/clipboard-2778510857.png)
+:::
+:::::
+
+## Create your survey: tips
+
+-   Consider adding requested or forced response requirements.
+
+-   If you force a response, it's usually a good idea to include a response option for "prefer not to answer"
+
+![](images/clipboard-1743390769.png)
+
+## Create your survey: tips
+
+Use "display" and "skip logic" to make questions conditional. For instance: if you ask "what is your major?" then you might include skip logic to skip this question if a respondent tells you they're not a student.
+
+![](images/clipboard-4020418785.png)
+
+## Create your survey: tips
+
+Select a question block and you will pull up some options for randomizing the ordering of questions within a block. You might consider using this if you're concerned that question order will influence how people response.
+
+![](images/clipboard-2525073829.png)

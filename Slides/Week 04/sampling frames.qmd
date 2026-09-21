@@ -1,0 +1,256 @@
+---
+title: "Sample frames"
+format:
+    revealjs:
+        theme: [blueyellow]
+        transition: fade
+        width: 1280
+        height: 720
+        df-print: tibble
+        scrollable: true
+        slide-number: true
+        self-contained: true
+        embed-resources: true
+        mermaid:
+            theme: forest
+        code-annotations: select
+        code-link: true
+        incremental: true
+        filters:
+          - code-fullscreen
+bibliography: ../references.bib
+lightbox: true
+slide-level: 4
+execute:
+  echo: false
+---
+
+## This week
+
+- Initial survey proposal due by midnight.
+
+- Survey draft due date has been moved to October 1.
+
+- Homework 2 due date has also been moved to October 1.
+
+
+## Total Survey Error
+
+![](../images/lifecycle.png){fig-align="center" width="30%"}
+
+From [@groves2009survey]
+
+::: notes
+-   In previous classes we've mostly dealt with the kinds of errors that come from the left branch of the diagram: errors that come from the measurement process. In the next classes, we'll focus more on the RHS: errors that result from the process of attempting to represent a target population using (typically) less than the total number of people.
+:::
+
+## Target population
+
+::::: columns
+::: {.column width="50%"}
+-   The [target population]{.yellow} is some finite set of observations we want to know something about.
+:::
+
+::: {.column width="50%"}
+![](../images/lifecycle_rhs.png){fig-align="center" width="30%"}
+:::
+:::::
+
+## Target Populations: Examples
+
+The American National Election Study (ANES) targets U.S. citizens age 18 or older living in the 48 contiguous states of the U.S. or Washington, D.C. during just before and just after a U.S. presidential election.
+
+## Target Populations: Examples
+
+National Health and Nutrition Examination Survey (NHANES) targets the non-institutionalized civilian resident population of the U.S. in a given year.
+
+## Target Populations: Examples
+
+The Youth Risk Behavior Survey (YRBS) targets public and private school students in grades 9-12 in the United States in a given year.
+
+## Surveying the whole population
+
+::::: columns
+::: {.column width="50%"}
+-   The U.S. Census try to measure the entire population of interest.
+
+-   Obviously this is not practical for most surveys that seek to measure something about the U.S. population.
+:::
+
+::: {.column width="50%"}
+![](../images/census-logo-sharing-card.jpg)
+:::
+:::::
+
+::: notes
+While its rare to do this when sampling *people*, its not uncommon for other kinds of research to work with entire populations: people who study members of congress, for instance, are typically working with data on all the current members.
+
+(This leads to some conceptual awkwardness, because a lot of important concepts in statistical inference assume we're working with a sample)
+:::
+
+## Not surveying the whole population
+
+-   More often, surveys will attempt to measure some sample of the target population.
+
+-   The hope is that the sampled units are representative of the target population, but to the extent they're not, this introduces new sources of error.
+
+::: notes
+Working with samples means we need to understand individual estimates as realizations of a repeatable process.
+:::
+
+### Sampling Frames
+
+::::: columns
+::: {.column width="60%"}
+-   A [sampling frame]{.yellow} is the list of **all** elements (respondents) in the target population.
+-   A list of elements isn't always available: we might have a list of phone numbers, but not "all adults in the U.S." Or we might have a list of households or city blocks but no authoritative list of individuals in each home.
+:::
+
+::: {.column width="40%"}
+![](../images/Auckland_Yellow_pages.jpg)
+:::
+:::::
+
+### Sampling Frames: Examples
+
+Address based sampling:
+
+-   Use census data to select blocks or clusters of blocks based on demographic profiles.
+
+-   Field staff visit each block to create a list of valid addresses.
+
+-   A sample of households are screened for eligibility and then surveyed in-person.
+
+### Sampling Frames: Examples
+
+Address-based sampling (using vendor lists):
+
+-   Use census data to target blocks or clusters of blocks based on demographic profiles.
+
+-   Researchers purchase address data from a commercial vendor.(These are usually based on USPS delivery information with some supplementary demographic data)
+
+-   Households are screened for eligibility, sent a recruitment and screening mailer, and then a randomly selected adult is surveyed online or in person.
+
+### Sampling Frames: Examples
+
+List-assisted Random Digit Dialing
+
+$$
+\overbrace{+ 1}^{\text{Country}} \; \underbrace{(301)}_\text{area code} \; \overbrace{314}^{\text{exchange}} \; \underbrace{8240}_{\text{line number}}\; 
+$$
+
+-   Get a list of working area codes (first three digits) and exchanges (next three digits) and then sample "100 banks" where the first 9 numbers have at least some valid listed phone numbers.
+
+-   Dial these numbers at random until a desired number of eligible respondents are contacted.
+
+### Sampling Frames and coverage error
+
+[Coverage error]{.yellow} results from differences between the sampling frame and the target population.
+
+### Sampling Frames and coverage error
+
+[Undercoverage]{.yellow} means that eligible respondents are left out of the sampling frame.
+
+-   We might want to measure all adult U.S. citizens, but a random digit dialing method would fail to contact people without phones.
+
+-   We might sample households, but our list of addresses could leave out retirement homes, prisons, and new housing.
+
+### Sampling Frames and coverage error
+
+[Overcoverage]{.yellow} means that ineligible respondents are in the sampling frame.
+
+-   Random digit dialing methods might contact lots of business phones or unused numbers.
+
+-   A list of addresses could include business addresses or vacant lots.
+
+### Sampling Frames and coverage error
+
+-   [Duplication]{.yellow} means a single unit is represented more than once in the frame (a single person with two phones or two addresses)
+
+-   [Clustering]{.yellow} is when multiple units map to the same frame element. (ex: shared land line phones, or "drop points" where more than one household shares a mailbox.)
+
+### Sampling Frames and coverage error
+
+In practice, many surveys will use more than one frame to mitigate coverage error.
+
+-    For instance: an RDD survey may sample cell phones and land lines using separate methods.
+
+-   Commercial vendors may supplement their address file with additional data on new construction.
+
+-   Mixed mode surveys may combine RDD, address-based, and web-based sampling frames.
+
+### Coverage error
+
+The size of a coverage error can differ from one item on a survey to the next. Why?
+
+## Some alternative methods
+
+### Quota Samples
+
+::::: columns
+::: {.column width="50%"}
+-   Quota samples involve actively recruiting people until a specific representative target is met. (ex: recruit college students until you have a % that matches the target population)
+
+-   This method can produce surveys that are representative on target demographic characteristics, but they may systematically differ with respect to other characteristics.
+:::
+
+::: {.column width="50%"}
+![Yougov uses quota-based sampling extensively to produce very fast issue-polling.](../images/Macklemore.format-webp.webp)
+:::
+:::::
+
+### Snowball Samples
+
+::::: columns
+::: {.column width="50%"}
+-   Snowball samples are a common way to survey hard-to-reach populations or groups.
+
+-   A small number of respondents are identified, and then asked (or sometimes paid) to recommend others who are also part of the sampling frame.
+:::
+
+::: {.column width="50%"}
+![](../images/sampling-infographic-08.jpg)
+:::
+:::::
+
+::: fragment
+For small, densely connected communities, a snowball sample may allow researchers to get something approaching the full population.
+:::
+
+::: notes
+Robert Benford and David Snow used snowball sampling to collect data on homeless advocacy organizations in a selection of cities. It's entirely plausible that a method like this could retrieve every homeless advocacy org in an area.
+:::
+
+### Convenience Samples
+
+-   The survey for this class is best described as a convenience sample. We're not really making any effort to retrieve a representative sample of the population.
+
+::: notes
+The survey for this class is best described as a convenience sample. They're commonly used for pilots.
+:::
+
+### Non-probability Sampling
+
+-   What these alternative methods share is that they lack a sampling frame all together. They can be non-representative, and methods for correcting bias or quantifying uncertainty aren't technically valid under these conditions.
+
+-   The trade-off here is mostly cost: a non-probability sample is almost always much cheaper than a probability sample of the same size.
+
+### Non-probability Sampling
+
+::::: columns
+::: {.column width="50%"}
+-   @gelman2016high used polls of Xbox online players along with a sophisticated statistical model to adjust their responses to resemble the U.S. population.
+-   Their low cost method was able to outperform traditional polls in the 2012 election.
+:::
+
+::: {.column width="50%"}
+![](../images/gelman_xbox.png)
+:::
+:::::
+
+### Next class
+
+We'll walk through setting up a poll in Qualtrics.
+
+
+# References
