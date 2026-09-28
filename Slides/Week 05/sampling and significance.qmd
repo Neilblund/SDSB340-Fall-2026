@@ -1,0 +1,652 @@
+---
+title: "Sampling and significance"
+format:
+  kakashi-revealjs:
+    theme: [default, ../custom.scss]
+    chalkboard: false
+    embed-resources: true
+bibliography: ../references.bib
+slide-level: 4
+execute:
+  echo: false
+filters: [reveal-header]
+lightbox: true
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+
+
+heiss_theme <-
+  theme_minimal(base_family = "Roboto Condensed", base_size = 14) +
+  theme(
+    panel.grid.minor = element_blank(),
+    # Bold, bigger title
+    plot.title = element_text(face = "bold", size = rel(1.7)),
+    # Plain, slightly bigger subtitle that is grey
+    plot.subtitle = element_text(
+      face = "plain",
+      size = rel(1.3),
+      color = "grey70"
+    ),
+    # Italic, smaller, grey caption that is left-aligned
+    plot.caption = element_text(
+      face = "italic",
+      size = rel(0.7),
+      color = "grey70",
+      hjust = 0
+    ),
+    # Bold legend titles
+    legend.title = element_text(face = "bold"),
+    # Bold, slightly larger facet titles that are left-aligned for the sake of repetition
+    strip.text = element_text(
+      face = "bold",
+      size = rel(1.1),
+      hjust = 0
+    ),
+    # Bold axis titles
+    axis.title = element_text(face = "bold"),
+    # Add some space above the x-axis title and make it left-aligned
+    axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
+    # Add some space to the right of the y-axis title and make it top-aligned
+    axis.title.y = element_text(margin = margin(r = 10), hjust = 1)
+  )
+
+theme_set(heiss_theme)
+```
+
+## Sampling Error
+
+[Sampling error]{.highlight} is the gap between the sampling frame and the sample.
+
+## Sampling Error {background-color="#23373B"}
+
+:::::: columns
+:::: {.column width="50%"}
+Surveys like the Assateague Horse Census don't really have "sampling error" because they attempt to count the whole population
+
+::: fragment
+...but sampling is a practical necessity in most cases, and so sampling error is ubiquitous.
+:::
+::::
+
+::: {.column width="50%"}
+![](../images/N2BHS-JQ-11-20-18.jpg){fig-align="center" width="30%"}
+
+![](../images/2026-census-graph.webp){fig-align="center" width="60%"}
+:::
+::::::
+
+## Sampling Distributions
+
+The [Sampling Distribution]{.highlight} is the distribution of sample statistics across all possible realizations of a sample.
+
+## Sampling Distributions
+
+::::: columns
+::: {.column width="50%"}
+We want to use samples to estimate population parameters. The sampling distribution helps us understand the range and probability of sampling errors that we might encounter.
+:::
+
+::: {.column width="50%"}
+![](../images/sampling_distribution.svg)
+:::
+:::::
+
+### Sampling Distribution: example
+
+Imagine we've got test scores for 8 students. We want to use a sample of size 2 to estimate the average score for all 8 students.
+
+$$
+72, 74, 76, 77, 81, 84, 85, 91 \\
+(\text{Average} = 80 )
+$$
+
+::: fragment
+The sampling distribution for a sample of size 2 from this "population" would just be every possible combination of 2 values: $[72, 74], [72, 76], [72, 77]...$
+:::
+
+### Sampling Distribution: example
+
+::::: columns
+::: {.column width="50%"}
+-   There are 28 possible sample realizations.
+-   The "error" for each realization is just the difference between the true population mean (80) and the sample average.
+:::
+
+::: {.column width="50%"}
+```{r, echo=FALSE}
+#| fig-cap: "Some sample realizations"
+#| fig-height: 8
+#| fig-width: 8
+library(tidyverse)
+library(flextable)
+data<-c(72, 74, 76, 77, 81, 84, 85, 91)
+# histogram of all possible samples of size 2:
+
+combn(data, 2)|>
+  t()|>
+  data.frame()|>
+  mutate(
+    Sample = sprintf("[%s, %s]", X1, X2),
+    Mean = (X1 + X2)/ 2,
+    Error = Mean - 80
+         )|>
+  select(-X1, -X2)|>
+  slice_head(n=10)|>
+  flextable()
+
+```
+:::
+:::::
+
+## Sampling Distribution: example
+
+::::: columns
+::: {.column width="50%"}
+I can use the full sampling distribution to answer questions about the probability of getting a particular sample mean.
+:::
+
+::: {.column width="50%"}
+```{r, echo=TRUE}
+data<-c(72, 74, 76, 77, 81, 84, 85, 91)
+# get all combinations of size = 2
+r<-combn(data, 2)
+# histogram of all possible means:
+hist(colMeans(r))
+
+
+```
+:::
+:::::
+
+## Sampling Distribution: example
+
+::::: columns
+::: {.column width="50%"}
+Or I can subtract the population mean from each average to get the distribution of sampling errors:
+:::
+
+::: {.column width="50%"}
+```{r, echo=TRUE}
+data<-c(72, 74, 76, 77, 81, 84, 85, 91)
+# get all combinations of size = 2
+r<-combn(data, 2)
+# histogram of all possible errors:
+hist(colMeans(r)-80)
+
+
+```
+:::
+:::::
+
+## Sampling Distribution
+
+In practice, we just have a single sample realization, and we don't know the true value of the population parameter.
+
+However, we can use our sample to make some inferences about the properties of the sampling distribution (such as its mean and variance).
+
+### Distributions
+
+Keep in mind: this means we have three different distributions to worry about!
+
+:::::: columns
+:::: {.column width="50%"}
+::: {style="font-size: 75%;"}
+-   The distribution of values in a single sample.
+-   The distribution of values in the population.
+-   The distribution of values in the sampling distribution.
+:::
+::::
+
+::: {.column width="50%"}
+![](../images/sampling_distribution.svg){fig-align="center" width="60%"}
+:::
+::::::
+
+### Sampling distribution notation
+
+::: {style="font-size: 50%;"}
+|   | Distribution within sample realizations | Distribution within frame population | Sampling distribution of the mean |
+|------------------|------------------|------------------|------------------|
+| Status | Known for one sample | Unknown | Unknown |
+| Number of elements | $i = 1, 2, ... n$ | $i = 1, 2, ..., N$ | $s = 1, 2, ..., S$ |
+| Values for an element | $y_i$ | $Y_i$ | $\bar{y}_i$ |
+| Mean | $\bar{y}$ | $\bar{Y}$ | $\mathbb{E}(\bar{y}_s)$ |
+| Variance | $s^2$ | $S^2$ | $V(\bar{y})$ |
+| Standard deviation of distribution | $s$ | $S$ | $Se(\bar{y})$ |
+
+: From Figure 4.3 in your text book
+:::
+
+### Central Limit Theorem and sampling distributions
+
+We don't know our sampling distribution, but the [Central Limit Theorem]{.highlight} tells us a lot about its basic properties.
+
+### Central Limit Theorem and sampling distributions
+
+Under the CLT, we know that the sampling distribution of sample means:
+
+::: {style="font-size: 80%;"}
+1.  Will be approximately normal distributed.
+2.  Will be centered around the population mean.
+3.  Will have a standard deviation (standard error) of $\sqrt{\frac{s^2}{n}}$
+:::
+
+### Central Limit Theorem and sampling distributions
+
+```{=html}
+<center>
+<iframe src="../images/clt_visualization.html" width="900" height="600"></iframe>
+</center>
+```
+
+### Central Limit Theorem and sampling distributions
+
+This is important because the mean and variance are all we really need to know to calculate the density of a normal distribution:
+
+PDF: $$f(y) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{(y-\mu)^2}{2\sigma^2} \right)$$
+
+Where
+
+::: {style="font-size: .8em;"}
+$y$: some variable
+
+$\mu$: the mean of $y$
+
+$\sigma^2$: the variance of $y$
+
+$\sigma$: the standard deviation of $y$
+:::
+
+### Central Limit Theorem and sampling distributions
+
+![](../images/norm_colored.png){fig-align="center"}
+
+## Confidence Intervals
+
+[Confidence intervals]{.highlight} (and the related concept of a [Margin of Error]{.highlight}) are one way to use this knowledge to quantify our uncertainty about an estimate from a sample.
+
+## Confidence Intervals
+
+Confidence Intervals will be expressed in terms of percentages (95% CI, 90% CI etc.)
+
+. . .
+
+And a 95% confidence interval is the range that we are 95% certain contains the population parameter.
+
+## Confidence Intervals
+
+Let's say the NHANES gives us an average estimated adult height of about 169 centimeters (5 ft. 5 in.), a sample variance of about 102 and a sample size of 7424.
+
+```{r}
+#| echo: false
+#| output-location: column
+library(tidyverse)
+nhanes<-read_csv("https://raw.githubusercontent.com/Neilblund/SDSB340-Spring-2026/refs/heads/master/Data/nhanes.csv")
+
+codebook<-read_csv("https://raw.githubusercontent.com/Neilblund/SDSB340-Spring-2026/refs/heads/master/Data/nhanes_codebook.csv")
+
+heights<-nhanes|>
+  filter(Age >=18)|>
+  filter(!is.na(Height))|>
+  summarise(`sample mean` = mean(Height)|>round(),
+            `sample variance` = var(Height)|>round(),
+            `n` = n()
+            )
+
+
+
+
+```
+
+## Confidence Intervals
+
+::: {style="font-size: 70%;"}
+We *don't* know the population mean, but we do know that the sampling distribution is centered around it, so the error distribution should be centered on 0 and have a standard deviation of $\sqrt{\frac{s^2}{n}} = \sqrt{\frac{102}{7424}} \approx 0.12$
+:::
+
+```{r}
+#| fig-height: 3
+mean.1 <-0
+sd.1 <- 0.12
+zstart <- 2
+zend <- 3
+zcritical <- 1.65
+
+my_col <- "#00998a"
+x <- seq(from = mean.1 - 3*sd.1, to = mean.1 + 3*sd.1, by = .01)
+MyDF <- data.frame(x = x, y = dnorm(x, mean = mean.1, sd = sd.1))
+
+shade_curve <- function(MyDF, zstart, zend, fill = "red", alpha = .5){
+  geom_area(data = subset(MyDF, x >= mean.1 + zstart*sd.1
+                          & x < mean.1 + zend*sd.1),
+            aes(y=y), fill = fill, color = NA, alpha = alpha)
+}
+
+ggplot(MyDF, aes(x=x, y=y)) + geom_line() +
+  #shade_curve(MyDF = MyDF, zstart = -1.96, zend = 1.96, fill = my_col, alpha = .3) +
+  ylab("Density") +
+  xlab("Errors") 
+  
+
+
+```
+
+## Confidence Intervals
+
+::: {style="font-size: 70%;"}
+We also that 95% of the density of a normal distribution will fall within about 1.96 standard deviations of the mean, so this region \[-0.235,0.235\] gives us the range that contains 95% of the sampling errors. (Half this range is our *margin of error*)
+:::
+
+```{r}
+#| fig-height: 3
+
+mean.1 <-0
+sd.1 <- 0.12
+zstart <- 2
+zend <- 3
+zcritical <- 1.65
+
+my_col <- "#00998a"
+x <- seq(from = mean.1 - 3*sd.1, to = mean.1 + 3*sd.1, by = .001)
+MyDF <- data.frame(x = x, y = dnorm(x, mean = mean.1, sd = sd.1))
+
+shade_curve <- function(MyDF, zstart, zend, fill = "red", alpha = .5){
+  geom_area(data = subset(MyDF, x >= mean.1 + zstart*sd.1
+                          & x < mean.1 + zend*sd.1),
+            aes(y=y), fill = fill, color = NA, alpha = alpha)
+}
+
+ggplot(MyDF, aes(x=x, y=y)) + geom_line() +
+  shade_curve(MyDF = MyDF, zstart = -1.96, zend = 1.96, fill = my_col, alpha = .3) +
+  ylab("Density") +
+  xlab("Errors") +
+  annotate("text", x = 0.0, y = 1.5, label = "95%") + 
+  geom_segment(aes(x=0.12 * 1.96, y = 0, yend=1), lty=2) +
+  geom_segment(aes(x=-0.12 * 1.96, y = 0, yend=1), lty=2) +
+  annotate("text", x=-0.12 * 1.96, y = 1.2,  label = "-0.235") +
+  annotate("text", x=0.12 * 1.96, y = 1.2,  label = "0.235")
+  
+
+
+```
+
+## Confidence Intervals
+
+Adding/Subtracting this range around our point estimate gives us a 95% confidence interval that ranges from 168.765 to 169.235.
+
+```{r}
+#| fig-height: 4
+
+df<-data.frame(
+  estimate = "estimate",
+  mu  = 169, 
+           ub =  169 + 0.12 * 1.96,
+           lb = 169 - 0.12 * 1.96)
+
+ggplot(df, aes(x=mu, y=estimate, xmin=lb, xmax=ub)) +
+  geom_point() +
+  geom_errorbarh(height=0.2) +
+  xlim(169-1, 169+1) +
+  ylab("") +
+  xlab("")
+
+
+```
+
+## Confidence Intervals
+
+> We're 95% confident that the population height is between 168.765 to 169.235.
+
+```{r}
+#| fig-height: 5
+
+df<-data.frame(
+  estimate = "estimate",
+  mu  = 169, 
+           ub =  169 + 0.12 * 1.96,
+           lb = 169 - 0.12 * 1.96)
+
+ggplot(df, aes(x=mu, y=estimate, xmin=lb, xmax=ub)) +
+  geom_point() +
+  geom_errorbarh(height=0.2) +
+  xlim(169-1, 169+1) +
+  ylab("") +
+  xlab("")
+
+
+```
+
+## Confidence Intervals
+
+Important technical note: this *isn't* the same as saying that there's a 95% chance that the population height ranges between 168.765 169.235! Confidence intervals are a statement about our own confidence in our sample.
+
+## Confidence Intervals
+
+::::: columns
+::: {.column width="50%"}
+A 95% CI means "95% of confidence intervals calculated this way would contain the population parameter."
+:::
+
+::: {.column width="50%"}
+![](../images/Normal_distribution_50__CI_illustration.svg)
+:::
+:::::
+
+
+## Confidence Intervals
+
+You can see this yourself using some simulated samples:
+
+```{r}
+#| echo: true
+#| eval: false
+#| cache: true
+set.seed(999)
+
+Mu<-0 # population mean
+
+population<-rnorm(10000, mean=Mu, sd=1) # our simulated population
+# a function to calculate a ci from a sample
+ci<-function(x, level=.95){
+  alpha<-1- (1-level)/2
+  mu <- mean(x)
+  se<-sqrt(sd(x)/length(x))
+  moe<- se * qnorm(alpha)
+  return(c(lb = mu - moe, ub = mu + moe))
+  
+}
+# drawing 10,000 samples and calculating 95% Confidence intervals
+sampled_ci<- replicate(10000, ci(sample(population, size=50), level=.95))|>
+  t()|>
+  data.frame()
+
+# approximately 95% of these confidence intervals should contain Mu
+mean(sampled_ci$lb<Mu & sampled_ci$ub>Mu)
+
+
+
+
+```
+
+
+## Margin of Error
+
+::::: {.columns}
+::: {.column width="50%"}
+
+The margin of error reported on a poll will use similar math.
+
+:::
+::: {.column width="50%"}
+![](../images/241011-election-poll-3x2-4c78ec.webp)
+:::
+:::::
+
+
+## Margin of Error
+
+::::: {.columns}
+::: {.column width="50%"}
+
+::: fragment
+
+Using the simplified formula for the variance of a proportion: $$s^2 = .48 (1-.48) \approx .25$$ 
+
+:::
+
+::: fragment
+
+$$\text{SE} = \sqrt{\frac{2.5}{1000}} = 0.005$$
+
+
+:::
+
+::: fragment
+
+
+$$ .005 \times 1.96 \approx 0.031 = 3.1\% $$
+:::
+
+:::
+::: {.column width="50%"}
+![](../images/241011-election-poll-3x2-4c78ec.webp)
+:::
+:::::
+
+## Surveys and Confidence Intervals
+
+Two additional considerations that are specific to working with survey data:
+
+- Finite Population Corrections
+
+- The effect of clustering, stratification, and weighting.
+
+
+## Surveys and Confidence Intervals: Finite Population Corrections
+
+The CLT assumes that samples are drawn *with replacement*, but this is rarely how surveys are conducted. The [finite population correction]{.highlight} accounts for this discrepancy.
+
+
+
+### Finite Population Correction
+
+
+::::: {.columns}
+::: {.column width="50%"}
+::: {style="font-size: 60%;"}
+
+- Samples drawn without replacement will have less sampling variance than a similar sample drawn without replacement.
+- The size of this discrepancy depends on the sampling fraction, or the ratio of the sample size to the population size.
+
+:::
+:::
+::: {.column width="50%"}
+
+```{r}
+#| fig-height: 10
+#| fig-width: 8
+library(tidyverse)
+set.seed(1000)
+N<-1000
+n<-900
+nsamples<-4000
+population<-rnorm(1000, mean=0, sd=.1)
+sample_means <- tibble::tibble(samples = c(
+                                 replicate(nsamples, mean(sample(population, size=n, replace=T))),
+                                 replicate(nsamples, mean(sample(population, size=n, replace=F)))
+                           ),
+                               `sampling method` = rep(c("With replacement", "Without replacement (f = .90)"
+                                                         ), 
+                                                       each=nsamples)
+)
+
+ggplot(sample_means, aes(x=samples, fill=`sampling method`)) + 
+  geom_density(alpha=.5) +
+  scale_fill_manual(values=c("lightblue", "orange")) +
+  labs(caption="n = 900, N = 1000",
+       x="Sample means"
+       ) +
+   theme(legend.position = "top")
+
+
+
+
+
+```
+:::
+:::::
+
+
+
+### Finite Population Correction
+
+
+::::: {.columns}
+::: {.column width="50%"}
+Variance when sampling with replacement:
+$$SE(\bar{y}) =\sqrt{\frac{1}{n} s^2}$$
+
+:::
+::: {.column width="50%"}
+::: fragment
+Variance when sampling without replacement ($f$ is the sampling fraction)
+
+$$SE(\bar{y}) =\sqrt{\frac{1-f}{n} s^2}$$
+
+:::
+:::
+:::::
+
+
+### Finite Population Correction
+
+
+::: {style="font-size: 60%;"}
+
+- In practice, FPC will have a negligble effect unless the sampling fraction is quite large.
+
+- For instance, our NHANES sample had an $n$ of $7,424$ and we had about $345$ million adults, so $f = 0.00002151884$
+
+::: fragment
+$SE(\bar{y}) =\sqrt{\frac{1-0.00002151884}{7424} 102}  =  0.1172132$
+
+$SE(\bar{y}) =\sqrt{\frac{1}{7424} 102}  = 0.1172144$
+:::
+
+:::
+
+### Finite Population Correction
+
+As a rule of thumb, the FPC is generally only applied when the sampling fraction is above .05, and even then it may have a negligible effect.
+
+
+
+
+### Clustering, stratification and weighting
+
+- The Central Limit Theorem is based on the assumption that we're drawing simple random samples, where each element has an eqaul chance of being included.
+
+- Few surveys use this approach.
+
+### Clustering, stratification and weighting
+
+::: {style="font-size: 80%;"}
+
+- Clustering (sampling entire groups instead of individuals) will generally increase variance.
+
+- Stratification (sampling within subgroups) will usually decrease variance.
+
+- Survey weights also tend to inflate variance, but may needed to correct biases.
+
+::: fragment
+We'll discuss these issues in more detail in a later class.
+::: 
+
+:::
+
+## Statistical Testing and Significance  {background-color="#23373B"}
+
+
