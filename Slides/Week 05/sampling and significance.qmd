@@ -5,6 +5,7 @@ format:
     theme: [default, ../custom.scss]
     chalkboard: false
     embed-resources: true
+    fontsize: "0.9rem"
 bibliography: ../references.bib
 slide-level: 4
 execute:
@@ -265,7 +266,7 @@ $\sigma$: the standard deviation of $y$
 ![](../images/norm_colored.png){fig-align="center"}
 
 
-## Confidence {background-color="#23373B"}
+# Confidence {background-color="#23373B"}
 
 ## Confidence Intervals
 
@@ -519,7 +520,7 @@ $$ .005 \times 1.96 \approx 0.031 = 3.1\% $$
 :::
 :::::
 
-## Caveats {background-color="#23373B"}
+# Caveats {background-color="#23373B"}
 
 ## Surveys and Confidence Intervals
 
@@ -652,6 +653,5 @@ We'll discuss these issues in more detail in a later class.
 
 :::
 
-## Statistical Testing and Significance  {background-color="#23373B"}
 
 
