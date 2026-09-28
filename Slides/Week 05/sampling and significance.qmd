@@ -1,5 +1,5 @@
 ---
-title: "Sampling and significance"
+title: "Sampling"
 format:
   kakashi-revealjs:
     theme: [default, ../custom.scss]
@@ -264,6 +264,9 @@ $\sigma$: the standard deviation of $y$
 
 ![](../images/norm_colored.png){fig-align="center"}
 
+
+## Confidence {background-color="#23373B"}
+
 ## Confidence Intervals
 
 [Confidence intervals]{.highlight} (and the related concept of a [Margin of Error]{.highlight}) are one way to use this knowledge to quantify our uncertainty about an estimate from a sample.
@@ -515,6 +518,8 @@ $$ .005 \times 1.96 \approx 0.031 = 3.1\% $$
 ![](../images/241011-election-poll-3x2-4c78ec.webp)
 :::
 :::::
+
+## Caveats {background-color="#23373B"}
 
 ## Surveys and Confidence Intervals
 
