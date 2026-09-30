@@ -1,0 +1,862 @@
+---
+title: "Significance"
+format:
+  kakashi-revealjs:
+    theme: [default, ../custom.scss]
+    chalkboard: false
+    embed-resources: true
+    self-contained: true
+    width: 1280
+    height: 720
+    fontsize: "0.9rem"
+bibliography: ../references.bib
+slide-level: 4
+execute:
+  echo: false
+lightbox: true
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+
+
+heiss_theme <-
+  theme_minimal(base_family = "Roboto Condensed", base_size = 14) +
+  theme(
+    panel.grid.minor = element_blank(),
+    # Bold, bigger title
+    plot.title = element_text(face = "bold", size = rel(1.7)),
+    # Plain, slightly bigger subtitle that is grey
+    plot.subtitle = element_text(
+      face = "plain",
+      size = rel(1.3),
+      color = "grey70"
+    ),
+    # Italic, smaller, grey caption that is left-aligned
+    plot.caption = element_text(
+      face = "italic",
+      size = rel(0.7),
+      color = "grey70",
+      hjust = 0
+    ),
+    # Bold legend titles
+    legend.title = element_text(face = "bold"),
+    # Bold, slightly larger facet titles that are left-aligned for the sake of repetition
+    strip.text = element_text(
+      face = "bold",
+      size = rel(1.1),
+      hjust = 0
+    ),
+    # Bold axis titles
+    axis.title = element_text(face = "bold"),
+    # Add some space above the x-axis title and make it left-aligned
+    axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
+    # Add some space to the right of the y-axis title and make it top-aligned
+    axis.title.y = element_text(margin = margin(r = 10), hjust = 1)
+  )
+
+theme_set(heiss_theme)
+
+
+shade_curve <- function(MyDF, zstart, zend, fill = "red", alpha = .5){
+  geom_area(data = subset(MyDF, x >= mean.1 + zstart*sd.1
+                          & x < mean.1 + zend*sd.1),
+            aes(y=y), fill = fill, color = NA, alpha = alpha)
+}
+
+```
+
+## 2016 Polls and "Shy Trump Supporters"
+
+::::: columns
+::: {.column width="50%"}
+Pollsters underestimated Trump's support in many key states the 2016 election, could *social desirability bias* explain the discrepancy?
+:::
+
+::: {.column width="50%"}
+![](../images/2016_polling_miss.png)
+:::
+:::::
+
+## The "Shy Trump Voter"
+
+::::: columns
+::: {.column width="50%"}
+> ...\[2020\] <i>polls could again be undercounting Trump’s support. The reason is “shy” Trump voters—people reluctant to share their opinions for fear of being judged</i>
+:::
+
+::: {.column width="50%"}
+![](../images/shy_trump_politico.png){fig-align="center"}
+:::
+:::::
+
+## Looking for Shy Trump Supporters
+
+Are Trump supporters more likely to misreport their views? How would we show evidence for/against this claim?
+
+## Looking for Shy Trump Supporters
+
+Pew Research @pewresearch_shytrump used a survey experiment to look at the effects of phone vs. online polls on supporting Trump/Trump admin policies.
+
+![](../images/pew_shytrump_headline.png){fig-align="center"}
+
+### Looking for Shy Trump Supporters
+
+Pew's Methodology:
+
+-   Randomly assign respondents to answer the same 27 questions by phone (n=1,778) or online (n=2,066)
+-   Compare average support across different survey modes to look for evidence of social desirability bias.
+
+### Looking for Shy Trump Supporters
+
+:::::: columns
+:::: {.column width="50%"}
+::: {style="font-size: 70%;"}
+-   There's a small difference in Trump support across survey modes. But the authors say is is *not statistically significant*.
+
+-   There are some statistically significant differences, but they don't all go in the direction one would expect.
+:::
+::::
+
+::: {.column width="50%"}
+![](../images/PM.03.30.2017_mode.effects-00-05.webp){fig-align="center" width="60%"}
+:::
+::::::
+
+### Looking for Shy Trump Supporters
+
+So what does this mean, and how do we know it?
+
+![](../images/pew_shytrump.png){fig-align="center"}
+
+### Central Limit Theorem and sampling distributions
+
+Under the Central Limit Theorem, we know that the sampling distribution of a sample mean:
+
+:::::: columns
+:::: {.column width="50%"}
+::: {style="font-size: 50%;"}
+1.  Will be approximately normal distributed.
+2.  Will be centered around the population mean.
+3.  Will have a standard deviation (standard error) of $\sqrt{\frac{s^2}{n}}$
+:::
+::::
+
+::: {.column width="50%"}
+![](../images/sampling_distribution.svg){fig-align="center" width="60%"}
+:::
+::::::
+
+### Central Limit Theorem and sampling distributions
+
+We can use this knowledge to quantify how much uncertainty we have around a single sample mean.
+
+![](../images/norm_colored.png){fig-align="center"}
+
+### Linear combinations of random normal variables
+
+Moreover: **linear combinations (addition/subtraction) of random normal variables are themselves normally distributed.**
+
+### Linear combinations of random normal variables
+
+```{r}
+#| echo: true
+#| layout-ncol: 4
+n<-10000
+x1<-rnorm(n, mean=1.5, sd=2)
+x2<-rnorm(n, mean=4, sd=3)
+plot(density(x1 + x2), 
+     main ='Summing')
+plot(density(x1 - x2), 
+     main='Differencing')
+plot(density(x1*3 + x2*1.5), 
+     main = "Summing with multiplication by a constant")
+plot(density(x1 * x2), 
+     main ='Multiplying two random normal variables')
+
+
+
+```
+
+### Sampling distributions of a difference {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+We can also make inferences about the difference between two sampling distributions using the same basic logic we used to build a confidence interval around a single estimate.
+
+:::::: columns
+::: {.column width="50%"}
+```{r}
+
+
+distFunc<-function(mean, sd){
+  x <- seq(from = mean - 5*sd, to = mean + 5*sd, by = .001)
+  res <- data.frame(x = x, y = dnorm(x, mean = mean, sd = sd))
+  return(res)
+}
+
+df1<-distFunc(mean = 0, sd = 1)
+df2<-distFunc(mean = 5, sd = 1)
+
+
+
+plt<-ggplot(df1, aes(x=x, y=y)) + geom_line() +
+  geom_line(aes(x=df2$x, y=df2$y), lty=2) +
+  
+  labs(title = "Two groups with different means",
+       x = "", y = "Density") 
+
+
+ggsave(plt, file='../images/two_means.png')
+
+
+```
+
+![](../images/two_means.png)
+:::
+
+:::: {.column width="50%"}
+```{r}
+
+
+
+
+df3<-distFunc(mean = -5, sd = 0.12)
+
+
+plt<-ggplot(df3, aes(x=x, y=y)) + geom_line() +
+  
+  labs(title = "Group 2 - Group 1",
+       x = "", y = "Density") 
+
+ggsave(plt, file='../images/difference_of_means.png')
+
+
+```
+
+::: {data-id="difference_plot"}
+![](../images/difference_of_means.png)
+:::
+::::
+::::::
+
+### Confidence intervals for a difference {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+To get a confidence interval, we just need to find the variance for this sampling distribution.
+
+::: {data-id="difference_plot"}
+![](../images/difference_of_means.png){fig-align="center", width="60%"}
+:::
+
+### Confidence intervals for a difference
+
+The standard error of the difference between two means is just a weighted combination of their respective variances:
+
+$$
+\text{SE}_{\bar{y}_{a} - \bar{y}_{b}} =  \sqrt{\frac{s^2_a}{n_a} + \frac{s^2_b}{n_b}}
+$$
+
+::: fragment
+For example: if $s_a^2 = 10$, $n_a=100$ and $s_b^2 = 20$, $b_2 = 100$, then:
+
+$$
+\text{SE}(\bar{y}_1 - \bar{y}_2) = \sqrt{\frac{10}{100} + \frac{20}{100}} = 0.55
+$$
+:::
+
+### Confidence intervals for a difference
+
+In Pew's study:
+
+::: {style="font-size: 70%;"}
+-   Phone respondents had 42% approval for Trump at a sample size of 1,778.
+-   Web respondents had 44% approval for Trump at a sample size of 2,066.
+-   Pew reports the sample variances as: $s^2_{\text{phone}} = 0.244$ and $s^2_{\text{web}} = 0.246$
+:::
+
+### Confidence intervals for a difference
+
+$$\bar{y}_{\text{web}} - \bar{y}_{\text{phone}} = 0.02$$
+
+::: fragment
+$$s^2_{\text{phone}} = 0.244; n_{\text{phone}} =1,778$$
+:::
+
+::: fragment
+$$s^2_{\text{web}} =  0.246; n_{\text{web}} =2,066$$
+:::
+
+::: fragment
+$$SE_{\bar{y}_{\text{web}} - \bar{y}_{\text{phone}}} = \sqrt{\frac{0.244}{1,778} + \frac{0.246}{2,066}} = 0.016$$
+:::
+
+### Confidence intervals for a difference
+
+From here, we can calculate the 95% margin of error using the same strategy we used for a confidence interval $\text{SE}_\text{diff} \times 1.96 = 0.031$
+
+```{r}
+#| fig-height: 3
+
+mean.1 <-0.00
+sd.1 <- 0.016
+zstart <- 2
+zend <- 3
+zcritical <- 1.65
+
+my_col <- "#00998a"
+x <- seq(from = mean.1 - 3*sd.1, to = mean.1 + 3*sd.1, by = .001)
+MyDF <- data.frame(x = x, y = dnorm(x, mean = mean.1, sd = sd.1))
+
+shade_curve <- function(MyDF, zstart, zend, fill = "red", alpha = .5){
+  geom_area(data = subset(MyDF, x >= mean.1 + zstart*sd.1
+                          & x < mean.1 + zend*sd.1),
+            aes(y=y), fill = fill, color = NA, alpha = alpha)
+}
+
+ggplot(MyDF, aes(x=x, y=y)) + geom_line() +
+  shade_curve(MyDF = MyDF, zstart = -1.96, zend = 1.96, fill = my_col, alpha = .3) +
+  ylab("Density") +
+  xlab("Errors") +
+  annotate("text", x = 0.0, y = 1.5, label = "95%") + 
+  geom_segment(aes(x=sd.1 * 1.96, y = 0, yend=5), lty=2) +
+  geom_segment(aes(x=-sd.1 * 1.96, y = 0, yend=5), lty=2) +
+  annotate("text", x=-sd.1 * 1.96, y = 9,  label = -1* round(sd.1* 1.96, digits=3)) +
+  annotate("text", x=sd.1* 1.96, y = 9,  label = round(sd.1* 1.96, digits=3))
+
+
+
+
+
+```
+
+### Confidence intervals for a difference
+
+Adding/Subtracting this range around our point estimate gives us a 95% confidence interval for the effect of Web vs. Phone surveys: \[-0.01,0.51\]
+
+### Confidence intervals for a difference
+
+We are 95% confident that the effect of web vs. phone surveys is between -1% and +5%
+
+```{r}
+#| fig-height: 1
+
+mu<-0.02
+sd<-0.016
+
+df<-data.frame(
+  estimate = "",
+  mu  = mu, 
+           ub =  mu + sd * 1.96,
+           lb = mu - sd * 1.96)
+
+ggplot(df, aes(x=mu, y=estimate, xmin=lb, xmax=ub)) +
+  geom_point() +
+  geom_errorbarh(height=0.2) +
+  xlim(mu- sd * 3, mu+  sd * 3) +
+  ylab("") +
+  xlab("") +
+  xlab("Estimated effect of Web vs. Phone on proportion approving Trump") +
+  ylab("")
+
+
+```
+
+### Confidence intervals for a difference
+
+Note that this range includes a negative effect, *and* a positive effect *and* no effect at all.
+
+```{r}
+#| fig-height: 2
+
+mu<-0.02
+sd<-0.016
+
+df<-data.frame(
+  estimate = "",
+  mu  = mu, 
+           ub =  mu + sd * 1.96,
+           lb = mu - sd * 1.96)
+
+ggplot(df, aes(x=mu, y=estimate, xmin=lb, xmax=ub)) +
+  geom_point() +
+  geom_errorbarh(height=0.2) +
+  xlim(mu- sd * 3, mu+  sd * 3) +
+  ylab("") +
+  xlab("") +
+  xlab("Estimated effect of Web vs. Phone on proportion approving Trump") +
+  ylab("") +
+  geom_vline(xintercept=0, lty=2, col='red')
+
+
+```
+
+### Confidence intervals for a difference
+
+::::: columns
+::: {.column width="50%"}
+In broad terms, "non-significance" means we can't rule out a positive, negative, or null effect.
+:::
+
+::: {.column width="50%"}
+```{r}
+#| fig-height: 2
+
+mu<-0.02
+sd<-0.016
+
+df<-data.frame(
+  estimate = "",
+  mu  = mu, 
+           ub =  mu + sd * 1.96,
+           lb = mu - sd * 1.96)
+
+ggplot(df, aes(x=mu, y=estimate, xmin=lb, xmax=ub)) +
+  geom_point() +
+  geom_errorbarh(height=0.2) +
+  xlim(mu- sd * 3, mu+  sd * 3) +
+  ylab("") +
+  xlab("") +
+  xlab("Estimated effect of Web vs. Phone on proportion approving Trump") +
+  ylab("") +
+  geom_vline(xintercept=0, lty=2, col='red')
+
+
+```
+:::
+:::::
+
+### Confidence intervals for a difference
+
+::::::::: columns
+::: {.column width="50%"}
+Note here, that there are *some* confidence levels where we could rule this out.
+:::
+
+::::::: {.column width="50%"}
+:::::: r-stack
+::: fragment
+```{r}
+#| fig-height: 2
+
+mu<-0.02
+sd<-0.016
+
+df<-data.frame(
+  estimate = "",
+  mu  = mu, 
+           ub =  mu + sd * 1.96,
+           lb = mu - sd * 1.96)
+
+ggplot(df, aes(x=mu, y=estimate, xmin=lb, xmax=ub)) +
+  geom_point() +
+  geom_errorbarh(height=0.2) +
+  xlim(mu- sd * 3, mu+  sd * 3) +
+  ylab("") +
+  xlab("") +
+  xlab("Estimated effect of Web vs. Phone on proportion approving Trump") +
+  ylab("") +
+  geom_vline(xintercept=0, lty=2, col='red') +
+  labs(title = '95% Confidence')
+
+
+
+```
+:::
+
+::: fragment
+```{r}
+#| fig-height: 2
+
+mu<-0.02
+sd<-0.016
+
+df<-data.frame(
+  estimate = "",
+  mu  = mu, 
+  ub =  mu + sd * 1.96,
+  lb = mu - sd * 1.96,
+  ub2 =  mu + sd * qnorm(.95),
+  lb2 = mu - sd *  qnorm(.95),
+  ub3 =  mu + sd * qnorm(.80),
+  lb3 = mu - sd *  qnorm(.80)
+  )
+
+ggplot(df, aes(x=mu, y=estimate, xmin=lb, xmax=ub)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = lb2, xmax=ub2), height=0.2) +
+
+  xlim(mu- sd * 3, mu+  sd * 3) +
+  xlab("Estimated effect of Web vs. Phone on proportion approving Trump") +
+  ylab("") +
+  geom_vline(xintercept=0, lty=2, col='red') +
+  labs(title = '90% Confidence')
+
+
+```
+:::
+
+::: fragment
+```{r}
+#| fig-height: 2
+
+
+
+ggplot(df, aes(x=mu, y=estimate, xmin=lb, xmax=ub)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = lb3, xmax=ub3), height=0.2) +
+
+  xlim(mu- sd * 3, mu+  sd * 3) +
+  xlab("Estimated effect of Web vs. Phone on proportion approving Trump") +
+  ylab("") +
+  geom_vline(xintercept=0, lty=2, col='red') +
+  labs(title = '60% Confidence')
+
+
+```
+:::
+::::::
+:::::::
+:::::::::
+
+### Confidence intervals for a difference
+
+::::: columns
+::: {.column width="50%"}
+95% Confidence ranges are typically used *by convention*, which is why you'll often see the phrase *conventional levels of statistical significance*.
+:::
+
+::: {.column width="50%"}
+```{r}
+#| fig-height: 2
+
+mu<-0.02
+sd<-0.016
+
+df<-data.frame(
+  estimate = "",
+  mu  = mu, 
+           ub =  mu + sd * 1.96,
+           lb = mu - sd * 1.96)
+
+ggplot(df, aes(x=mu, y=estimate, xmin=lb, xmax=ub)) +
+  geom_point() +
+  geom_errorbarh(height=0.2) +
+  xlim(mu- sd * 3, mu+  sd * 3) +
+  ylab("") +
+  xlab("") +
+  xlab("Estimated effect of Web vs. Phone on proportion approving Trump") +
+  ylab("") +
+  geom_vline(xintercept=0, lty=2, col='red') +
+  labs(title = '95% Confidence')
+
+
+
+```
+:::
+:::::
+
+### P values for a difference
+
+**P values** are just an alternative method for conveying this same basic idea. A p-value represents the probability of seeing a result at least as large as the one in our sample if a null hypothesis is true.
+
+::: fragment
+In this case, our null hypothesis would typically be "there is no difference between web respondents vs. phone respondents"
+:::
+
+### P values for a difference
+
+Assuming the actual effect of phone vs. web is zero, how often would this process give us an absolute difference in Trump support \>= 0.02?
+
+### P values for a difference
+
+This amounts to summing up the area in the two shaded regions of the sampling distribution when the difference is 0:
+
+```{r}
+#| fig-height: 3
+
+mean.1 <-0.00
+sd.1 <- 0.016
+zstart <- 2
+zend <- 3
+zcritical <- 1.65
+
+my_col <- "#00998a"
+x <- seq(from = mean.1 - 3*sd.1, to = mean.1 + 3*sd.1, by = .001)
+MyDF <- data.frame(x = x, y = dnorm(x, mean = mean.1, sd = sd.1))
+
+shade_curve <- function(MyDF, zstart, zend, fill = "red", alpha = .5){
+  geom_area(data = subset(MyDF, x >= mean.1 + zstart*sd.1
+                          & x < mean.1 + zend*sd.1),
+            aes(y=y), fill = fill, color = NA, alpha = alpha)
+}
+
+ggplot(MyDF, aes(x=x, y=y)) + geom_line() +
+  shade_curve(MyDF = MyDF, zstart = -5, zend =-0.02/0.016, fill = my_col, alpha = .3) +
+  shade_curve(MyDF = MyDF, zstart = 0.02/0.016, zend =5, fill = my_col, alpha = .3) +
+
+  ylab("Density") +
+  xlab("Sampling Distribution under the null") +
+ # annotate("text", x = 0.0, y = 1.5, label = "95%") + 
+  geom_segment(aes(x=0.0195, y = 0, yend=20), lty=2) +
+  geom_segment(aes(x=-0.021, y = 0, yend=20), lty=2) +
+  annotate("text", x=-0.021, y = 22,  label = -0.02) +
+  annotate("text", x=0.0195, y = 22,  label = 0.02)
+
+
+
+
+
+```
+
+### P values for a difference
+
+We can use R to calculate the area under one "tail" of this distribution:
+
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| echo: true
+
+pnorm(0.02, 
+      mean=0, 
+      sd= 0.016, 
+      lower.tail=F)
+
+
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| fig-height: 3
+
+mean.1 <-0.00
+sd.1 <- 0.016
+zstart <- 2
+zend <- 3
+zcritical <- 1.65
+
+my_col <- "#00998a"
+x <- seq(from = mean.1 - 3*sd.1, to = mean.1 + 3*sd.1, by = .001)
+MyDF <- data.frame(x = x, y = dnorm(x, mean = mean.1, sd = sd.1))
+
+shade_curve <- function(MyDF, zstart, zend, fill = "red", alpha = .5){
+  geom_area(data = subset(MyDF, x >= mean.1 + zstart*sd.1
+                          & x < mean.1 + zend*sd.1),
+            aes(y=y), fill = fill, color = NA, alpha = alpha)
+}
+
+ggplot(MyDF, aes(x=x, y=y)) + geom_line() +
+  #shade_curve(MyDF = MyDF, zstart = -5, zend =-0.02/0.016, fill = my_col, alpha = .3) +
+  shade_curve(MyDF = MyDF, zstart = 0.02/0.016, zend =5, fill = my_col, alpha = .3) +
+
+  ylab("Density") +
+  xlab("Sampling Distribution under the null") +
+ # annotate("text", x = 0.0, y = 1.5, label = "95%") + 
+  geom_segment(aes(x=0.0195, y = 0, yend=20), lty=2) +
+  geom_segment(aes(x=-0.021, y = 0, yend=20), lty=2) +
+  annotate("text", x=-0.021, y = 22,  label = -0.02) +
+  annotate("text", x=0.0195, y = 22,  label = 0.02)
+
+
+
+
+
+```
+:::
+:::::
+
+### P values for a difference
+
+Since we're looking for the area under *both* tails, we would double this:
+
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| echo: true
+pnorm(0.02,
+      mean=0, 
+      sd= 0.016, 
+      lower.tail=F) * 2
+
+
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| fig-height: 3
+
+mean.1 <-0.00
+sd.1 <- 0.016
+zstart <- 2
+zend <- 3
+zcritical <- 1.65
+
+my_col <- "#00998a"
+x <- seq(from = mean.1 - 3*sd.1, to = mean.1 + 3*sd.1, by = .001)
+MyDF <- data.frame(x = x, y = dnorm(x, mean = mean.1, sd = sd.1))
+
+shade_curve <- function(MyDF, zstart, zend, fill = "red", alpha = .5){
+  geom_area(data = subset(MyDF, x >= mean.1 + zstart*sd.1
+                          & x < mean.1 + zend*sd.1),
+            aes(y=y), fill = fill, color = NA, alpha = alpha)
+}
+
+ggplot(MyDF, aes(x=x, y=y)) + geom_line() +
+  shade_curve(MyDF = MyDF, zstart = -5, zend =-0.02/0.016, fill = my_col, alpha = .3) +
+  shade_curve(MyDF = MyDF, zstart = 0.02/0.016, zend =5, fill = my_col, alpha = .3) +
+
+  ylab("Density") +
+  xlab("Sampling Distribution under the null") +
+ # annotate("text", x = 0.0, y = 1.5, label = "95%") + 
+  geom_segment(aes(x=0.0195, y = 0, yend=20), lty=2) +
+  geom_segment(aes(x=-0.021, y = 0, yend=20), lty=2) +
+  annotate("text", x=-0.021, y = 22,  label = -0.02) +
+  annotate("text", x=0.0195, y = 22,  label = 0.02)
+
+
+
+
+
+```
+:::
+:::::
+
+::: fragment
+There is about a 21% chance of getting a difference equal to or absolutely greater than 0.02 if the effect is actually zero.
+:::
+
+### P values for a difference
+
+By *convention* p-values less than or equal to .05 are considered *statistically significant*
+
+::: fragment
+Both p-value and confidence intervals are based on the same math, and "significance" under a 95% confidence interval also means "significance" under a (two-tailed) p-value.
+:::
+
+### Looking for Shy Trump Supporters
+
+So what does this mean, and how do we know it?
+
+![](../images/pew_shytrump.png){fig-align="center"}
+
+### Looking for Shy Trump Supporters
+
+:::::: columns
+:::: {.column width="50%"}
+::: {style="font-size: 70%;"}
+-   It means that we could rule out the possibility of "no effect" in four out of the 27 questions.
+-   We know if because of what we can infer about the sampling distribution of the differences.
+:::
+::::
+
+::: {.column width="50%"}
+![](../images/pew_shytrump.png){fig-align="center"}
+:::
+::::::
+
+
+### Notes
+
+::: {style="font-size: 70%;"}
+
+- P-values, confidence intervals, and statistical significance will come up again in this course. 
+- This same basic framework can be applied to a lot of different kinds of statistical tests, not just comparing means or proportions.
+- Keep in mind that these only address random sampling error, not any of the other kinds of error we might encounter.
+
+:::
+
+# Nuance! {background-color="#23373B"}
+
+## Statistical Insignificance
+
+The results here don't entirely rule out the possibility of a "Shy trump" supporter effect. There are really two reasons we might fail to find an effect:
+
+-   There's actually no effect.
+-   Not enough observations/too much variability to detect an effect/random chance.
+
+## Statistical Insignificance
+
+How large would the effect need to be for Pew's method to catch it?
+
+$$
+\frac{\text{Web vs. Phone}}{SE_\text{Web-Phone}}
+$$
+
+## Statistical Insignificance
+
+How large would the effect need to be for Pew's study to find a significant result?
+
+$$
+\frac{\text{Effect}}{0.016} = 1.96
+$$
+
+::: fragment
+At this sample size/standard error, the effect would need to be a little over $\pm3\%$ to be significant.
+
+$$
+1.96 \times 0.016 = 0.03136
+$$
+:::
+
+## Statistical Insignificance
+
+:::::: columns
+:::: {.column width="50%"}
+::: {style="font-size: 70%;"}
+-   On the other hand, Pew asked multiple questions about views on Trump, and none of them showed significant mode differences.
+-   Other analyses of this phenomenon were also unable to find significant effects. [@Dropp2016; @coppock2017did]
+:::
+::::
+
+::: {.column width="50%"}
+![](../images/pew_shytrump_other.png)
+:::
+::::::
+
+## Complex Surveys and Design Effects
+
+-   Pew recruited respondents using a complex sampling method, and responses were weighted to be more representative of the U.S. population.
+
+-   These methods should make us more uncertain about the results.
+
+## Design Effects
+
+[Design effects]{.highlight} are one way to quantify the additional uncertainty introduced by a complex sampling method. The design effect is the ratio of the variance under a complex design compared to the variance you would get from a simple random sample.
+
+## Design Effects
+
+::::: columns
+::: {.column width="50%"}
+Pew reports their design effect is 2.99, so our variance should be approximately 3 times larger than what we initially calculated.
+:::
+
+::: {.column width="50%"}
+![](../images/deff_pew.png)
+:::
+:::::
+
+## Design Effects
+
+Multiplying the variance by the design effect means that there's even more random sampling error expected here.
+
+$$SE_{\bar{y}_{\text{web}} - \bar{y}_{\text{phone}}} = \sqrt{\frac{0.244}{1,778} + \frac{0.246}{2,066}} \times \sqrt{2.99} = 0.028 $$
+
+::: fragment
+$$\text{This difference is }\frac{0.02}{0.028} = .71 \text{ standard errors away from 0}$$
+:::
+
+::: fragment
+This works out to around a p value of .4, well above the conventional threshold for significance.
+:::
+
+## Design Effects
+
+We can also formulate this as a 95% confidence interval around the difference of means.
+
+$$
+0.02 \pm 0.028\times 1.96 = (-0.53,0.57)
+$$
+
+
+
