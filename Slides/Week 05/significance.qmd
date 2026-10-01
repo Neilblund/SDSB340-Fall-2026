@@ -847,7 +847,7 @@ $$\text{This difference is }\frac{0.02}{0.028} = .71 \text{ standard errors away
 :::
 
 ::: fragment
-This works out to around a p value of .4, well above the conventional threshold for significance.
+This works out to around a p value of around .47, well above the conventional threshold for significance.
 :::
 
 ## Design Effects
@@ -855,8 +855,12 @@ This works out to around a p value of .4, well above the conventional threshold 
 We can also formulate this as a 95% confidence interval around the difference of means.
 
 $$
-0.02 \pm 0.028\times 1.96 = (-0.53,0.57)
+0.02 \pm 0.028\times 1.96 = (-0.035,0.075)
 $$
+
+
+
+## References
 
 
 
