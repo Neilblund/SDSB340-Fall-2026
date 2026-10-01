@@ -172,6 +172,8 @@ We'll give a basic overview of the course, and talk about the concept of an "err
 
 We'll discuss the concepts of reliability and validity in the context of a survey, and we'll identify some of the ways that a measurement by fail to capture the concept we're interested in, and we'll grapple with some challenging questions about what we *really* measure when we ask someone to tell us what they think about an issue.
 
+
+
 ::: reading-instructional
 -   Sahgal, Neha. 2019. [What Happens When a Survey Estimate Doesn’t Match a Known Benchmark](Https://www.pewresearch.org/decoded/2019/04/30/what-happens-when-a-survey-estimate-doesnt-match-a-known-benchmark/) — Pewresearch.org.
 :::
@@ -253,7 +255,8 @@ We'll explore how and why researchers might decide *not* to use simple random sa
 :::
 
 ::: reading-discussion
--   Lusinchi, D. 2012. “President” Landon and the 1936 Literary Digest Poll: were automobile and telephone owners to blame? *Social Science History*, *36*(1), 23-54.
+- Gimpel, James G. 2018. Sampling for Studying Context: Traditional Surveys and New Directions. Edited by Lonna Rae Atkeson and R. Michael Alvarez. Oxford University Press. https://doi.org/10.1093/oxfordhb/9780190213299.013.23.
+
 :::
 
 ::: reading-suggested
@@ -300,6 +303,9 @@ We'll examine some strategies researchers use to weight data they've already col
 
 ::: reading-suggested
 -   Cohn, Nate. 2016. [“How One 19-Year-Old Illinois Man Is Distorting National Polling Averages.”](https://www.nytimes.com/2016/10/13/upshot/how-one-19-year-old-illinois-man-is-distorting-national-polling-averages.html) *The New York Times*, October 12.
+
+- Lusinchi, D. 2012. “President” Landon and the 1936 Literary Digest Poll: were automobile and telephone owners to blame? *Social Science History*, *36*(1), 23-54.
+
 :::
 
 ## Week 10
@@ -374,7 +380,7 @@ In-class presentations!
 
 ## Grade Challenges
 
-Any challenges to a grade must be submitted in writing no sooner than one week after the assignment has been graded. All challenges must be submitted to the section teaching assistant first.
+Any challenges to a grade must be submitted in writing no sooner than one week after the assignment has been graded. 
 
 ## Code of Conduct
 
