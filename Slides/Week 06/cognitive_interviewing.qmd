@@ -30,7 +30,7 @@ lightbox: true
 
 - Your group can re-submit survey proposals for more feedback and a new grade. If you want to re-submit, please do so by 10/12.
 
-- Mid-term exam on 10/15. Review day on 10/13. See ELMs for additional info.
+- Mid-term exam on 10/20. Review day on 10/15. See ELMs for additional info.
 
 
 # Conventional vs. Cognitive pretests
