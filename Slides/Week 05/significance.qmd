@@ -770,10 +770,11 @@ So what does this mean, and how do we know it?
 
 ## Statistical Insignificance
 
-The results here don't entirely rule out the possibility of a "Shy trump" supporter effect. There are really two reasons we might fail to find an effect:
+The results here don't entirely rule out the possibility of a "Shy trump" supporter effect. There are really three reasons we might fail to find an effect:
 
 -   There's actually no effect.
--   Not enough observations/too much variability to detect an effect/random chance.
+-   Not enough observations/too much variability to detect an effect.
+-   Random chance.
 
 ## Statistical Insignificance
 
@@ -785,7 +786,7 @@ $$
 
 ## Statistical Insignificance
 
-How large would the effect need to be for Pew's study to find a significant result?
+How large would the difference in our sample need to be for Pew's study to find a significant result?
 
 $$
 \frac{\text{Effect}}{0.016} = 1.96
