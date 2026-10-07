@@ -1,0 +1,912 @@
+---
+title: "Clustering and Stratification"
+format:
+    revealjs:
+        theme: [blueyellow]
+        transition: fade
+        width: 1280
+        height: 720
+        df-print: tibble
+        scrollable: true
+        slide-number: true
+        self-contained: true
+        embed-resources: true
+        mermaid:
+            theme: forest
+        code-annotations: select
+        code-link: true
+        incremental: true
+        filters:
+          - code-fullscreen
+bibliography: ../references.bib
+lightbox: true
+slide-level: 4
+execute:
+  echo: false
+---
+
+### Simple random samples
+
+-   In simple random samples, all elements have an equal probability of being selected.
+
+-   This is the simplest method, but its also exceedingly rare in surveys because it's inefficient.
+
+::: notes
+SRS is the easiest to understand and methodologically the easiest to work with.
+
+But its wildly inefficient for most applications.
+:::
+
+## Deviations from the SRS
+
+-   The Central Limit Theorem assumes simple random sampling with replacement, but this isn't what we typically have in survey data.
+
+-   Deviations from simple random sampling will usually increase or decrease the expectations of the sampling variance (and thus make larger standard errors and wider confidence intervals)
+
+## Sampling Variance and Standard Errors
+
+
+
+The sampling variance of a sample mean $\hat{y}$ for a simple random sample of size $n$
+
+$$
+v(\bar{y}) =\frac{1-f}{n} s^2
+$$
+
+Where $s^2$ is:
+
+$$
+s^2 = \left(\frac{1}{n-1} \right)\sum^n_{i=1} (\bar{y_i} - \bar{y})^2
+$$
+
+(remember that $f$ is the sampling fraction, and this is typically close to 0.)
+
+
+## Sampling Variance and Standard Errors
+
+The standard error is just the square root of the variance:
+
+$$
+SE(\bar{y}) =\sqrt{\frac{1-f}{n} s^2}
+$$
+
+## Sampling Variance and Standard Errors
+
+Remember that there's a slightly simpler formula for the variance of a *proportion* $p$:
+
+$$
+v(\bar{y}) =\frac{1-f}{n} p(1-p)
+$$
+
+Or just
+
+$$
+v(\bar{y}) =\frac{p(1-p)}{n}
+$$ 
+
+If the FPC is close to zero.
+
+
+
+
+## Design effects
+
+-   The [design effect]{.yellow} is a way of summarizing how much the sampling variance increases or decreases due to designs that deviate from a simple random sample.
+
+-   $D_{eff} = \frac{\text{Variance under sample design}}{\text{Variance under SRS}}$
+
+-   A $D_{eff} > 1$ means that the sample has more sampling variance than an SRS, $D_{eff} < 1$ means the design shrinks the sampling variance.
+
+## Effective Sample Size
+
+-   The [Effective Sample Size]{.yellow} is another way to quantify how much this matters. ESS is just the $\frac{D_{eff}}{n}$ where $n$ is the actual sample size and $D_{eff}$ is the design effect.
+
+### Cluster sampling
+
+-   In a cluster sample, "groups" of observations are sampled instead of sampling each individual.
+
+-   For instance: a survey of students might randomly select 50 classes and then interview all students in those classes. (Why?)
+
+::: notes
+This is partly a cost-saving measure. It's much easier to create a sampling frame for "all city blocks" or "all classrooms" than to create one for "all people". Moreover, its more efficient because the selected units are close to each other.
+:::
+
+### Cluster sampling
+
+::::: columns
+::: {.column width="60%"}
+-   Imagine you're gauging support for an upcoming referendum.
+-   You sample 2 city blocks to get an $n=100$
+-   (The population mean here is 50% support)
+:::
+
+::: {.column width="40%"}
+```{dot}
+//| fig-width: 5
+//| fig-height: 6
+
+digraph G {
+    rankdir=LR;
+
+    subgraph cluster_level4 {
+            node [shape=box, style=filled, fontname="Arial"]; 
+        rank= same;
+        label="City Blocks";
+        labeljust="";
+        labelloc = "t";   
+        style=filled;
+        color=lightgrey;
+        house1 [label="Block A\n(20% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house2 [label="Block B\n(30% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house3 [label="Block C\n(30% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house4 [label="Block D\n(50% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house5 [label="Block E\n(80% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house6 [label="Block F\n(90% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+    }
+   // house1 -> house2 -> house3 -> house4 -> house5 -> house6 [style="invis"]
+    
+    subgraph same_rank_group {
+        
+        a[label = "25%", shape=box, style="invis"];
+        b[label = "85%", shape=box, style="invis"];
+        c[label = "40%", shape=box, style="invis"];
+    }
+    house2 -> a [style="invis"]
+    house1 -> a [style="invis"]
+    house3 -> c [style="invis"]
+    house4 -> c [style="invis"]
+    house5 -> b [style="invis"]
+    house6 -> b [style="invis"]
+
+
+}
+
+
+
+```
+:::
+:::::
+
+### Cluster sampling
+
+::::: columns
+::: {.column width="50%"}
+Depending on which blocks we sample, we can get some fairly bad errors here.
+:::
+
+::: {.column width="50%"}
+```{dot}
+//| fig-width: 5
+//| fig-height: 6
+
+digraph G {
+    rankdir=LR;
+    subgraph cluster_level4 {
+            node [shape=box, style=filled, fontname="Arial"]; 
+        rank= same;
+        label="City Blocks";
+        labeljust="";
+        labelloc = "t";   
+        style=filled;
+        color=lightgrey;
+        house1 [label="Block A\n(20% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house2 [label="Block B\n(30% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house3 [label="Block C\n(30% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house4 [label="Block D\n(50% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house5 [label="Block E\n(80% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house6 [label="Block F\n(90% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+    }
+   // house1 -> house2 -> house3 -> house4 -> house5 -> house6 [style="invis"]
+    subgraph same_rank_group {
+        
+        a[label = "25%", shape=box];
+        b[label = "85%", shape=box];
+        c[label = "40%", shape=box];
+    }
+    house2 -> a
+    house1 -> a
+    house3 -> c
+    house4 -> c
+    house5 -> b
+    house6 -> b
+}
+
+
+
+```
+:::
+:::::
+
+### Cluster sampling
+
+::::: columns
+::: {.column width="50%"}
+-   The estimate is still [unbiased]{.yellow}: the expected value matches the population parameter.
+
+-   However: it has much **higher variance** than you would expect given the sample size.
+:::
+
+::: {.column width="50%"}
+```{dot}
+//| fig-width: 5
+//| fig-height: 6
+digraph G {
+    rankdir=LR;
+
+    subgraph cluster_level4 {
+            node [shape=box, style=filled, fontname="Arial"]; 
+        rank= same;
+        label="City Blocks";
+        labeljust="";
+        labelloc = "t";   
+        style=filled;
+        color=lightgrey;
+        house1 [label="Block A\n(20% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house2 [label="Block B\n(30% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house3 [label="Block C\n(30% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house4 [label="Block D\n(50% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house5 [label="Block E\n(80% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house6 [label="Block F\n(90% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+    }
+    
+   // house1 -> house2 -> house3 -> house4 -> house5 -> house6 [style="invis"]
+    house1 -> mytable [style="invis"]
+    house2 -> mytable [style="invis"]
+    house3 -> mytable [style="invis"]
+    house4 -> mytable [style="invis"]
+    house5 -> mytable [style="invis"]
+    house6 -> mytable [style="invis"]
+    
+
+
+
+    mytable[shape=plaintext, label=<<table>
+    <tr>
+    <td colspan="2">Sampled Clusters</td>
+    <td>Estimate Prop.</td>
+    </tr>
+    <tr>
+    <td>A</td>
+    <td>B</td>
+    <td>.25</td>
+  </tr>
+  <tr>
+    <td>A</td>
+    <td>C</td>
+    <td>.25</td>
+  </tr>
+  <tr>
+    <td>A</td>
+    <td>D</td>
+    <td>.25</td>
+  </tr>
+  <tr>
+    <td>A</td>
+    <td>E</td>
+    <td>.50</td>
+  </tr>
+  <tr>
+    <td>A</td>
+    <td>F</td>
+    <td>.55</td>
+  </tr>
+  <tr>
+    <td>B</td>
+    <td>C</td>
+    <td>.30</td>
+  </tr>
+  <tr>
+    <td>B</td>
+    <td>D</td>
+    <td>.40</td>
+  </tr>
+  <tr>
+    <td>B</td>
+    <td>E</td>
+    <td>.55</td>
+  </tr>
+  <tr>
+    <td>B</td>
+    <td>F</td>
+    <td>.60</td>
+  </tr>
+  <tr>
+    <td>C</td>
+    <td>D</td>
+    <td>.40</td>
+  </tr>
+  <tr>
+    <td>C</td>
+    <td>E</td>
+    <td>.55</td>
+  </tr>
+  <tr>
+    <td>C</td>
+    <td>F</td>
+    <td>.60</td>
+  </tr>
+  <tr>
+    <td>D</td>
+    <td>E</td>
+    <td>.65</td>
+  </tr>
+  <tr>
+    <td>D</td>
+    <td>F</td>
+    <td>.70</td>
+  </tr>
+  <tr>
+    <td>E</td>
+    <td>F</td>
+    <td>.85</td>
+  </tr>
+  <tr>
+    <td colspan="2">Mean</td>
+    <td>0.50</td>
+  </tr>
+   <tr>
+    <td colspan="2">Variance</td>
+    <td>0.028</td>
+  </tr>
+  
+  </table>>]
+
+}
+
+
+```
+:::
+:::::
+
+### Cluster sampling: Sampling variance
+
+When sampling all elements in $a$ clusters:
+
+$$ 
+\begin{align*}
+v(\bar{y})  &= \left( \frac{1-f}{a} \right) s^2_a\\
+\text{Where}:\\
+s^2_a &= \left(\frac{1}{a-1} \right)\sum^a_{a=1} (\bar{y_a} - \bar{y})^2
+\end{align*}
+$$
+
+### Cluster sampling: Sampling variance
+
+Ex: If I gather a sample of 400 people by surveying everyone in 8 randomly selected city blocks and get proportions of .35, .39,.48, .49, .50, .52, .62, and .65 (sample mean = .50)
+
+. . .
+
+```{r}
+#| echo: true
+samples<-c(.35, .39,.48, .49, .50, .52, .62, .65)
+a <- length(samples)
+
+variance <- var(samples)
+cat("variance between clusters = ", variance)
+
+```
+
+. . .
+
+```{r}
+#| echo: true
+
+v_clustered<-(1/a) * variance
+cat("v(yhat) = ", v_clustered)
+
+
+```
+
+. . .
+
+How does that compare to a simple random sample with n = 400?
+
+### Cluster sampling: Sampling variance
+
+How does that compare to a simple random sample with n = 400?
+
+```{r}
+#| echo: true
+
+
+srs_v<-(.5 * (1-.5)) / 400
+cat("variance under SRS = ", srs_v)
+deff<-v_clustered/srs_v 
+cat("design effect = ", deff)
+
+ess<-400/deff
+cat("effective sample size = ", ess)
+
+```
+
+### Cluster sampling: Sampling variance
+
+:::::: columns
+::: {.column width="50%"}
+-   Note that the effect of clustering partly depends on the relative [homogeneity]{.yellow} within clusters compared to homogeneity between clusters.
+
+-   It also depends on the number of clusters sampled.
+:::
+
+:::: {.column width="50%"}
+::: {style="font-size: 80%"}
+$$ 
+\begin{align*}
+v(\bar{y})  &= \left( \frac{1-f}{a} \right) s^2_a\\
+\text{Where}:\\
+s^2_a &= \left(\frac{1}{a-1} \right)\sum^a_{a=1} (\bar{y_a} - \bar{y})^2
+\end{align*}
+$$
+:::
+::::
+::::::
+
+### Cluster sampling: Multi-Stage Designs
+
+[Multi-stage designs]{.yellow} can reduce some of he design effect by only sampling a *portion* elements within the sampled clusters.
+
+::::::: columns
+::::: {.column width="50%"}
+::: fragment
+For instance, we might select five blocks at random and then take 20 respondents from each group.
+:::
+
+::: fragment
+This may raise costs, but it should give us comparatively lower sampling variance compared to sampling all respondents from just two clusters.
+:::
+:::::
+
+::: {.column width="50%"}
+```{dot}
+//| fig-width: 5
+//| fig-height: 6
+
+digraph G {
+    rankdir=LR;
+
+    subgraph cluster_level4 {
+            node [shape=box, style=filled, fontname="Arial"]; 
+        rank= same;
+        label="City Blocks";
+        labeljust="";
+        labelloc = "t";   
+        style=filled;
+        color=lightgrey;
+        house1 [label="Block A\n(20% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house2 [label="Block B\n(30% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house3 [label="Block C\n(30% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house4 [label="Block D\n(50% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house5 [label="Block E\n(80% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+        house6 [label="Block F\n(90% support)\nn=50", fillcolor="#3498db", fontcolor=white];
+    }
+   // house1 -> house2 -> house3 -> house4 -> house5 -> house6 [style="invis"]
+    
+    subgraph same_rank_group {
+        
+        a[label = "25%", shape=box, style="invis"];
+        b[label = "85%", shape=box, style="invis"];
+        c[label = "40%", shape=box, style="invis"];
+    }
+    house2 -> a [style="invis"]
+    house1 -> a [style="invis"]
+    house3 -> c [style="invis"]
+    house4 -> c [style="invis"]
+    house5 -> b [style="invis"]
+    house6 -> b [style="invis"]
+
+
+}
+
+
+
+```
+:::
+:::::::
+
+### Cluster sampling: Multi-Stage Designs
+
+-   In multistage designs, you'll see the first sampled units referred to as "PSUs" or [Primary Sampling Units]{.yellow}.
+-   Secondary Sampling Units (SSUs) would be observations sampled from the PSUs.
+-   Tertiary Sampling Units (TSUs) might be sampled from the SSUs and so on...
+
+### Cluster sampling: Multi-Stage Designs
+
+Here's an example from the American National Election Study in 2024:
+
+:::::: columns
+:::: {.column width="50%"}
+::: {style="font-size: 80%"}
+-   PSUs were 60 metropolitan areas, counties, or combinations of counties.
+-   SSUs were census block groups with 100 houses selected from the PSUs.
+-   TSUs were households sampled from the SSUs. (The ANES attempted to survey all adults in the home.)
+:::
+::::
+
+::: {.column width="50%"}
+![](../images/anes_sample_description_multistage.png)
+:::
+::::::
+
+### Cluster sampling
+
+-   Clustering is typically a practical necessity and/or a cost-saving strategy. It's typically easier to create a sampling frame for things like groups of homes.
+
+-   Keep in mind that the design effect will depend on what you're estimating! A different question on the same survey may have a smaller design effect than another.
+
+## Stratification
+
+### Stratification
+
+-   [Strata]{.yellow} are *mutually exclusive* and *collectively exhaustive* subsets of the population.
+
+-   Stratified Sampling means separating the elements into strata and then drawing a sample *from each one.* (note the difference between this vs. clustering)
+
+
+
+### Stratification
+
+Stratification can *reduce* sampling variance because it limits the chance of drawing highly non-representative samples.
+
+### Stratification
+
+::::: columns
+::: {.column width="50%"}
+Think back to the example of drawing samples of $n=2$ from 8 student test scores
+:::
+
+::: {.column width="50%"}
+![](../images/student_scores1.png){fig-align="center" width="15%"}
+:::
+:::::
+
+### Stratification
+
+::::: columns
+::: {.column width="50%"}
+Consider stratifying "low" and "high" scores.
+:::
+
+::: {.column width="50%"}
+![](../images/student_scores2.png){fig-align="center" width="20%"}
+:::
+:::::
+
+### Stratification
+
+::::: columns
+::: {.column width="50%"}
+The "worst" samples are no longer possible here: because my sample always contains at least some "high" and some "low" scorers.
+:::
+
+::: {.column width="50%"}
+![](../images/stratified_table.png){fig-align="center" width="37%"}
+:::
+:::::
+
+### Stratification
+
+::::: columns
+::: {.column width="50%"}
+-   Sampling variance under SRS: $16$
+-   Sampling variance under stratification: $4.5$
+-   Design effect: $.28$
+:::
+
+::: {.column width="50%"}
+```{r}
+library(ggplot2)
+library(tidyverse)
+data<-data.frame( data=   c(72, 74, 76, 77, 81, 84, 85, 91),
+                  strata = c(1, 1, 1, 1, 2, 2, 2, 2)
+                   )
+
+
+
+combos<-combn(seq(nrow(data)), 2)
+cb<-apply(combos, 1, function(x) data[x,])|>dplyr::bind_cols()
+colnames(cb)<-c('obs1', 'strata1', 'obs2', 'strata2' )
+rownames(cb)<-NULL
+cb<-cb[,c(1, 3, 2, 4)]
+cb$`Possible with stratified sample?`<- factor(apply(cb[,c(3,4)], 1, function(x) length(unique(x))), labels=c("No", "Yes"))
+cb$means<-rowMeans(cb[,1:2])
+cb$sample<-'SRS'
+
+bind_rows(cb, cb|>filter(`Possible with stratified sample?` == "Yes")|>mutate(sample="Stratified"))|>
+  ggplot(aes(x=means, fill=sample) )  + geom_histogram(binwidth = 3, color='black') +
+  theme_bw() +
+  labs(x='Sample means')+
+  facet_wrap(~sample, ncol=1) +
+  theme(legend.position = "none")
+
+```
+:::
+:::::
+
+### Stratification: Sampling variance
+
+The sampling variance for a stratified random sample is a weighted combination of the $h$ strata variances
+
+::: {style="font-size: 70%"}
+$$
+v(\bar{y}_{st}) = \sum^H_{h=1}W^2_h \left(\frac{1-f_h}{n_h} \right) s^2_h
+$$
+
+Where
+
+$$
+s^2_h = \left(\frac{1}{n_h-1}\right)\sum^{n_h}_{i=1}(y_{hi} - \bar{y_h})^2
+$$
+
+And $W$ is the square of the population proportion for strata $h$
+:::
+
+### Stratification: Sampling variance
+
+We'll look at an example of calculating this from chapter 4 of your textbook.
+
+### Stratification: Sampling variance
+
+::: {style="font-size: 60%"}
+|   | schools on frame $N_h$ | proportion of population $W_h$ | stratum sample size $n_h$ | stratum sampling fraction $f_h$ | sample stratum mean $y_h$ | sample stratum variance $s^2_h$ |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| Central city schools | 3200 | 0.4 | 192 | 0.06 | 6 | 5 |
+| Other urban schools | 4000 | 0.5 | 240 | 0.06 | 5 | 4 |
+| Rural Schools | 800 | 0.1 | 48 | 0.06 | 8 | 7 |
+| Total | 8000 | 1.0 | 480 | 0.06 | 5.7 | SRS variance: 5.51 |
+
+: From Table 4.2 in @groves2009survey
+
+$$
+v(\bar{y}_{st}) = \sum^H_{h=1}W^2_h \left(\frac{1-f_h}{n_h} \right) s^2_h
+$$
+:::
+
+```{r}
+var2<-function(w, f, n, s){
+  a<-(w^2) 
+  b<-(( 1-f)/n)  
+  c<-s
+  
+  return(a*b*c)
+}
+
+```
+
+### Stratification: Sampling variance
+
+::: {style="font-size: 40%"}
+|   | schools on frame $N_h$ | proportion of population $W_h$ | stratum sample size $n_h$ | stratum sampling fraction $f_h$ | sample stratum mean $y_h$ | sample stratum variance $S^2_h$ |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| Central city schools | 3200 | 0.4 | 192 | 0.06 | 6 | 5 |
+| Other urban schools | 4000 | 0.5 | 240 | 0.06 | 5 | 4 |
+| Rural Schools | 800 | 0.1 | 48 | 0.06 | 8 | 7 |
+
+: From Table 4.2 in @groves2009survey
+:::
+
+::::::: {style="font-size: 60%"}
+::: fragment
+$$
+\text{Central City Schools} = (0.4)^2(\frac{1-0.06}{192})(5) =  0.00392
+$$
+:::
+
+::: fragment
+$$
+\text{Other Urban Schools} = (0.5)^2(\frac{1-0.06}{240})(4) =  0.00392
+$$
+:::
+
+::: fragment
+$$
+\text{Rural Schools} = (0.1)^2(\frac{1-0.06}{48})(7) =  0.00137
+$$
+:::
+
+::: fragment
+$$
+v(\bar{y}_{st}) = 0.0092
+$$
+:::
+:::::::
+
+### Stratification: Sampling variance
+
+::::::: {style="font-size: 70%"}
+::::: columns
+::: {.column width="50%"}
+The variance under stratification is:
+
+$$
+v(\bar{y}_{st}) = 0.0092
+$$
+:::
+
+::: {.column width="50%"}
+The authors report the variance under a simple random sample as:
+
+$$
+v(\bar{y}_{srs}) = (\frac{1-0.06}{480}) (5.51) = 0.0108
+$$
+:::
+:::::
+
+::: fragment
+So the design effect is $\frac{0.0092}{0.0108} = 0.85$
+:::
+:::::::
+
+### Stratification: Sampling variance
+
+::: {style="font-size: 60%"}
+|   | schools on frame $N_h$ | proportion of population $W_h$ | stratum sample size $n_h$ | stratum sampling fraction $f_h$ | sample stratum mean $y_h$ | sample stratum variance $S^2_h$ |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| Central city schools | 3200 | 0.4 | 192 | 0.06 | 6 | 5 |
+| Other urban schools | 4000 | 0.5 | 240 | 0.06 | 5 | 4 |
+| Rural Schools | 800 | 0.1 | 48 | 0.06 | 8 | 7 |
+| Total | 8000 | 1.0 | 480 | 0.06 | 5.7 | SRS variance: 5.51 |
+
+: From Table 4.2 in @groves2009survey
+
+
+::: fragment
+
+This works best when the variance within strata is smaller than the variance for the unstratified sample. So good stratification requires picking strata that are likely to be more similar to each other than they are to units in other strata.
+
+:::
+:::
+
+### Stratification: Sampling variance
+
+In the worst case scenario, stratification with proportional allocation will yield confidence intervals that are **no worse** than what you would expect under a simple random sample.
+
+::: fragment
+
+In most cases, stratification will yield confidence intervals that are better than a simple random sample.
+
+:::
+
+
+
+### Stratification
+
+::::: columns
+::: {.column width="50%"}
+-   The ANES stratifies counties/metro areas based on vote share, turnout, and region
+-   Then they sample from these with probability proportional to their size.
+:::
+
+::: {.column width="50%"}
+![](../images/anes_sample_method.png)
+:::
+:::::
+
+### Stratification
+
+Why choose these characteristics for stratification? Why don't they stratify on individual or household level characteristics?
+
+![](../images/anes_sample_method.png)
+
+### Stratification: requirements
+
+-   Note that stratification assumes **I already have the stratification variables before I conduct the survey.** This means we're fairly limited in the characteristics we can use.
+
+-   Ideally, stratification should try to identify groups that will be similar to each other with respect to the things we're studying.
+
+### Stratification: disproportionate allocation
+
+-   Under proportional allocation to strata, the number of units selected from each strata is proportional to the size of the strata in the population.
+
+-   What about disproportionate allocation?
+
+### Stratification: disproportionate allocation
+
+What if we sampled a bit more from the more high-variance rural schools in this example?
+
+::: {style="font-size: 60%"}
+|   | schools on frame $N_h$ | proportion of population $W_h$ | stratum sample size $n_h$ | stratum sampling fraction $f_h$ | sample stratum mean $y_h$ | sample stratum variance $S^2_h$ |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| Central city schools | 3200 | 0.4 | 192 | 0.06 | 6 | 5 |
+| Other urban schools | 4000 | 0.5 | 200 | 0.05 | 5 | 4 |
+| Rural Schools | 800 | 0.1 | 88 | 0.11 | 8 | 7 |
+
+: From Table 4.2 in @groves2009survey
+:::
+
+### Stratification: Sampling variance
+
+What if we sampled a bit more from the more high-variance rural schools in this example?
+
+::: {style="font-size: 40%"}
+|   | schools on frame $N_h$ | proportion of population $W_h$ | stratum sample size $n_h$ | stratum sampling fraction $f_h$ | sample stratum mean $y_h$ | sample stratum variance $S^2_h$ |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| Central city schools | 3200 | 0.4 | 192 | 0.06 | 6 | 5 |
+| Other urban schools | 4000 | 0.5 | 240 | 0.06 | 5 | 4 |
+| Rural Schools | 800 | 0.1 | 48 | 0.06 | 8 | 7 |
+
+: From Table 4.2 in @groves2009survey
+:::
+
+::: {style="font-size: 60%"}
+$$
+\text{Central City Schools} = (0.4)^2(\frac{1-0.06}{192})(5) =  0.00392
+$$
+
+$$
+\text{Other Urban Schools} = (0.5)^2(\frac{1-0.06}{240})(4) =  0.00392
+$$
+
+$$
+\text{Rural Schools} = (0.1)^2(\frac{1-0.06}{48})(7) =  0.00137
+$$
+
+$$
+v(\bar{y}_{st}) = 0.0092
+$$
+:::
+
+### Stratification: disproportionate allocation
+
+::: {style="font-size: 60%"}
+|   | schools on frame $N_h$ | proportion of population $W_h$ | stratum sample size $n_h$ | stratum sampling fraction $f_h$ | sample stratum mean $y_h$ | sample stratum variance $S^2_h$ |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| Central city schools | 3200 | 0.4 | **200** | 0.0625 | 6 | 5 |
+| Other urban schools | 4000 | 0.5 | **220** | 0.05 | 5 | 4 |
+| Rural Schools | 800 | 0.1 | **60** | 0.075 | 8 | 7 |
+
+: From Table 4.2 in @groves2009survey
+:::
+
+::::::: {style="font-size: 40%"}
+::: fragment
+$$
+\text{Central City Schools} = (0.4)^2(\frac{1-0.0625}{200})(5) =  0.00375
+$$
+:::
+
+::: fragment
+$$
+\text{Other Urban Schools} = (0.5)^2(\frac{1-0.05}{200})(4) =  0.0043
+$$
+:::
+
+::: fragment
+$$
+\text{Rural Schools} = (0.1)^2(\frac{1-0.075}{60})(7) =  0.00108
+$$
+:::
+
+::: fragment
+$$
+v(\bar{y}_{st}) = 0.00913
+$$
+:::
+:::::::
+
+### Stratification: disproportionate allocation
+
+-   Getting a larger sample of high variance strata can shrink the variance, but this requires good prior information about the variance with in each strata
+
+-   Disproportionate allocation might also be used to make it more feasible to study certain subgroups: if I want to get reliable estimates of the views of Alaskans (.2% of the population), I'd otherwise need a huge sample. So I might over sample from Alaskans.
+
+
+::: notes
+Critical detail: stratification, when performed correctly, *reduces* sampling variance.
+:::
+
+## Question:
+
+Design effects are supposed to vary depending on the question, so how is it that Pew is reported a single design effect and ESS for an entire survey?
+
+::::: columns
+::: {.column width="50%"}
+![](../images/deff_pew.png)
+:::
+
+::: {.column width="50%"}
+![](../images/PM.03.30.2017_mode.effects-00-05.webp){fig-align="center" width="40%"}
+:::
+:::::
+
+
+## References
