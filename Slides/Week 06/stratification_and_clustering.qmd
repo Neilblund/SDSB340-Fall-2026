@@ -58,6 +58,8 @@ Where $s^2$ is:
 $$
 s^2 = \left(\frac{1}{n-1} \right)\sum^n_{i=1} (\bar{y_i} - \bar{y})^2
 $$
+. . .
+
 
 (remember that $f$ is the sampling fraction, and this is typically close to 0.)
 
@@ -405,15 +407,28 @@ How does that compare to a simple random sample with n = 400?
 
 How does that compare to a simple random sample with n = 400?
 
+
+. . .
+
 ```{r}
 #| echo: true
 
 
 srs_v<-(.5 * (1-.5)) / 400
 cat("variance under SRS = ", srs_v)
+
+```
+
+. . .
+
+```{r}
 deff<-v_clustered/srs_v 
 cat("design effect = ", deff)
+```
 
+. . .
+
+```{r}
 ess<-400/deff
 cat("effective sample size = ", ess)
 
@@ -458,8 +473,8 @@ This may raise costs, but it should give us comparatively lower sampling varianc
 
 ::: {.column width="50%"}
 ```{dot}
-//| fig-width: 5
-//| fig-height: 6
+//| fig-width: 4
+//| fig-height: 4
 
 digraph G {
     rankdir=LR;
@@ -589,7 +604,6 @@ The "worst" samples are no longer possible here: because my sample always contai
 ::: {.column width="50%"}
 -   Sampling variance under SRS: $16$
 -   Sampling variance under stratification: $4.5$
--   Design effect: $.28$
 :::
 
 ::: {.column width="50%"}
