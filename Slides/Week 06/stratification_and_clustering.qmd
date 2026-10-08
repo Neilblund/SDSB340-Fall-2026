@@ -45,6 +45,7 @@ But its wildly inefficient for most applications.
 
 ## Sampling Variance and Standard Errors
 
+::: {style="font-size: 90%"}
 
 
 The sampling variance of a sample mean $\hat{y}$ for a simple random sample of size $n$
@@ -58,11 +59,15 @@ Where $s^2$ is:
 $$
 s^2 = \left(\frac{1}{n-1} \right)\sum^n_{i=1} (\bar{y_i} - \bar{y})^2
 $$
-. . .
+
+::: fragment
 
 
 (remember that $f$ is the sampling fraction, and this is typically close to 0.)
 
+:::
+
+:::
 
 ## Sampling Variance and Standard Errors
 
@@ -74,11 +79,17 @@ $$
 
 ## Sampling Variance and Standard Errors
 
+::: {style="font-size: 90%"}
+
+
 Remember that there's a slightly simpler formula for the variance of a *proportion* $p$:
 
 $$
 v(\bar{y}) =\frac{1-f}{n} p(1-p)
 $$
+
+
+::: fragment
 
 Or just
 
@@ -86,9 +97,10 @@ $$
 v(\bar{y}) =\frac{p(1-p)}{n}
 $$ 
 
-If the FPC is close to zero.
+If the sampling fraction is close to zero.
+:::
 
-
+:::
 
 
 ## Design effects
@@ -105,9 +117,10 @@ If the FPC is close to zero.
 
 ### Cluster sampling
 
--   In a cluster sample, "groups" of observations are sampled instead of sampling each individual.
+In a cluster sample, "groups" of observations are sampled instead of sampling each individual.
 
--   For instance: a survey of students might randomly select 50 classes and then interview all students in those classes. (Why?)
+![](../images/Cluster_sampling.png){fig-align="center"}
+
 
 ::: notes
 This is partly a cost-saving measure. It's much easier to create a sampling frame for "all city blocks" or "all classrooms" than to create one for "all people". Moreover, its more efficient because the selected units are close to each other.
@@ -422,6 +435,8 @@ cat("variance under SRS = ", srs_v)
 . . .
 
 ```{r}
+#| echo: true
+
 deff<-v_clustered/srs_v 
 cat("design effect = ", deff)
 ```
@@ -429,6 +444,8 @@ cat("design effect = ", deff)
 . . .
 
 ```{r}
+#| echo: true
+
 ess<-400/deff
 cat("effective sample size = ", ess)
 
@@ -552,9 +569,20 @@ Here's an example from the American National Election Study in 2024:
 
 ### Stratification
 
+::::: {.columns}
+::: {.column width="50%"}
+::: {style="font-size: 80%"}
+
 -   [Strata]{.yellow} are *mutually exclusive* and *collectively exhaustive* subsets of the population.
 
--   Stratified Sampling means separating the elements into strata and then drawing a sample *from each one.* (note the difference between this vs. clustering)
+-   Stratified Sampling means separating the elements into strata and then drawing a sample *from each one.*
+:::
+:::
+::: {.column width="50%"}
+![](../images/Stratified_sampling.png){fig-align="center"}
+:::
+:::::
+
 
 
 
