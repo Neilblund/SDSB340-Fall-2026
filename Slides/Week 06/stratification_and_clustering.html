@@ -1720,10 +1720,12 @@ v(\bar{y}_{st}) = 0.0092
 v(\bar{y}_{st}) = 0.0092
 \]</span></p>
 </div><div class="column" style="width:50%;">
+<div class="fragment">
 <p>The authors report the variance under a simple random sample as:</p>
 <p><span class="math display">\[
 v(\bar{y}_{srs}) = (\frac{1-0.06}{480}) (5.51) = 0.0108
 \]</span></p>
+</div>
 </div></div>
 <div class="fragment">
 <p>So the design effect is <span class="math inline">\(\frac{0.0092}{0.0108} = 0.85\)</span></p>
@@ -2061,7 +2063,11 @@ height: 1px!important;
 width: 1px!important;
 overflow: hidden!important;
 display:block!important;
-}</style></aside></section></section><section id="question" class="title-slide slide level2 center"><h2>Question:</h2>
+}</style></aside></section><section id="complex-surveys" class="title-slide slide level3 center"><h3>Complex Surveys</h3>
+<ul>
+<li class="fragment"><p>In practice, most surveys will use a mixture of clustering, and stratification as well as non-response adjustments and post-stratification.</p></li>
+<li class="fragment"><p>This kind of sample design is called a “complex” survey. Fortunately we have some specialized packages for handling these calculations automatically.</p></li>
+</ul></section></section><section id="question" class="title-slide slide level2 center"><h2>Question:</h2>
 <p>Design effects are supposed to vary depending on the question, so how is it that Pew is reported a single design effect and ESS for an entire survey?</p>
 <div class="columns">
 <div class="column" style="width:50%;">

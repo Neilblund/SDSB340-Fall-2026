@@ -765,11 +765,17 @@ $$
 :::
 
 ::: {.column width="50%"}
+
+::: fragment
+
 The authors report the variance under a simple random sample as:
 
 $$
 v(\bar{y}_{srs}) = (\frac{1-0.06}{480}) (5.51) = 0.0108
 $$
+
+:::
+
 :::
 :::::
 
@@ -935,6 +941,16 @@ $$
 ::: notes
 Critical detail: stratification, when performed correctly, *reduces* sampling variance.
 :::
+
+
+### Complex Surveys
+
+- In practice, most surveys will use a mixture of clustering, and stratification as well as non-response adjustments and post-stratification.
+
+- This kind of sample design is called a "complex" survey. Fortunately we have some specialized packages for handling these calculations automatically.
+
+
+
 
 ## Question:
 
