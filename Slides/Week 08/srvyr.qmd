@@ -89,7 +89,8 @@ anes<-anes|>
   mutate(across(where(is.factor), 
                 .fns=~fct_collapse(.x, "Missing" = missing)|>
                   fct_recode(NULL = "Missing")|>
-                  fct_drop()))
+                  fct_drop()))|>
+  drop_na(V240108b) 
 
 # re-attaching the variable labels (these get lost in some of the recoding)
 labelled::var_label(anes)<-question_labels
@@ -713,8 +714,6 @@ an employee association similar to a union?"
 
 ## Extra code: replicate weights
 
-
-
 ```{r}
 #| echo: false
 #| eval: false
@@ -730,36 +729,63 @@ wgts<-boot_design$repweights|>
  
 colnames(wgts) <- paste0('REPWT_', 1:ncol(wgts))
 wgts<-bind_cols(V240001 =  anes_survey$variables$V240001, wgts)
-write_csv(wgts, file=here::here("/data", "anes_repwts.csv"))
-
-anes_replicate<-anes|>
-  left_join(wgts, by='V240001')|> # matching on respondent IDs
-  as_survey_rep(repweights = starts_with("REPWT"), # all columns that start with "REPWT" are replicate weights
-                weights = V240108b,                # main weights for point estimates
-                type = 'bootstrap'                 # survey documentation should tell you the type of replicate weights to declare
-                )
-
-anes_replicate|>
-  group_by(V241497) |>
-  summarise(
-    `big_business_therm` = survey_mean(V242141 , vartype = "ci", na.rm = T),
-  ) |>
-  drop_na()
-
-
-anes_survey|>
-  group_by(V241497) |>
-  summarise(
-    `big_business_therm` = survey_mean(V242141 , vartype = "ci", na.rm = T),
-  ) |>
-  drop_na()
+write_csv(wgts, file=here::here("data", "anes_repwts.csv"))
 
 
 ```
 
-
+Here's an example of how you would set this up if this survey used replicate weights:
 
 ```{r}
+# reading in an example file with replicate weights
+wgts<-read_csv('https://raw.githubusercontent.com/Neilblund/SDSB340-Fall-2026/refs/heads/master/Data/anes_repwts.csv')
+
+anes_combined<-anes|>
+  drop_na(V240108b)|>
+  left_join(wgts, by='V240001') # matching on respondent IDs
+
+anes_replicate<-anes_combined|>
+  as_survey_rep(repweights = starts_with("REPWT"), # all columns that start with "REPWT" are replicate weights
+                weights = V240108b,                # main weights for point estimates
+                type = 'bootstrap',                 # survey documentation should tell you the type of replicate weights to declare
+                mse = TRUE
+                )
+```
+
+
+from here, survey analysis is identical to using the regular setup (and results should be very similar to what you get using anes_survey)
+
+```{r}
+anes_replicate|>
+  summarise(
+    `big_business_therm` = survey_mean(V242141 , vartype='var', na.rm = T),
+  )
+
+```
+
+## Extra code: replicate weights
+
+This is actually just calculating the same statistic for each replicate weight, and then calculating the variance around the point estimate:
+
+```{r}
+index<-which(!is.na(anes_combined$V242141))  # non-missing values of the big business feelings
+y <- anes_combined$V242141[index]            
+weights<-wgts[which(!is.na(anes_combined$V242141)) ,2:ncol(wgts)] # all the weights for non-missing values
+est<-weighted.mean(y, anes_combined$V240108b[index], na.rm=T) # weighted estimate
+
+df<-(ncol(weights)-1) # number of replicates minus 1
+rep_means<-numeric(length=ncol(weights)) # empty vector for replicates
+
+for(i in 1:ncol(weights)){
+  
+  w <- weights[[i]]
+  # estimating a weighted mean & storing the result
+  rep_means[i] <- sum(y * w) / sum(w) 
+}
+
+
+rep_var<- sum((est - rep_means) ^2) / df  # variance around est
+rep_var # this should match the variance from srvyr
 
 
 ```

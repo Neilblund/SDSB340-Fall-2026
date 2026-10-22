@@ -1172,7 +1172,7 @@ color: black;
 </section><section id="setup" class="title-slide slide level2 center"><h2>Setup</h2>
 <ul>
 <li class="fragment"><p>If you don’t have it already, get the Stata formatted version of the ANES data.</p></li>
-<li class="fragment"><p>Run <code>install.packages(c(&quot;srvyr&quot;, &quot;survey&quot;, &quot;haven&quot;))</code></p></li>
+<li class="fragment"><p>Run <code>install.packages(c(&quot;srvyr&quot;, &quot;survey&quot;, &quot;haven&quot;, &quot;labelled&quot;))</code></p></li>
 </ul></section><section id="setup-1" class="title-slide slide level2 center"><h2>Setup</h2>
 <p>Once you’ve got the packages installed, and the data downloaded, you can use the code below to import/cleanup the ANES 2024 data:</p>
 <div class="cell">
@@ -1206,10 +1206,11 @@ color: black;
 <span id="cb1-28"><a href></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.factor), </span>
 <span id="cb1-29"><a href></a>                <span class="at">.fns=</span><span class="sc">~</span><span class="fu">fct_collapse</span>(.x, <span class="st">&quot;Missing&quot;</span> <span class="ot">=</span> missing)<span class="sc">|&gt;</span></span>
 <span id="cb1-30"><a href></a>                  <span class="fu">fct_recode</span>(<span class="at">NULL =</span> <span class="st">&quot;Missing&quot;</span>)<span class="sc">|&gt;</span></span>
-<span id="cb1-31"><a href></a>                  <span class="fu">fct_drop</span>()))</span>
-<span id="cb1-32"><a href></a></span>
-<span id="cb1-33"><a href></a><span class="co"># re-attaching the variable labels (these get lost in some of the recoding)</span></span>
-<span id="cb1-34"><a href></a>labelled<span class="sc">::</span><span class="fu">var_label</span>(anes)<span class="ot">&lt;-</span>question_labels</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-31"><a href></a>                  <span class="fu">fct_drop</span>()))<span class="sc">|&gt;</span></span>
+<span id="cb1-32"><a href></a>  <span class="fu">drop_na</span>(V240108b) </span>
+<span id="cb1-33"><a href></a></span>
+<span id="cb1-34"><a href></a><span class="co"># re-attaching the variable labels (these get lost in some of the recoding)</span></span>
+<span id="cb1-35"><a href></a>labelled<span class="sc">::</span><span class="fu">var_label</span>(anes)<span class="ot">&lt;-</span>question_labels</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="note-on-the-setup" class="title-slide slide level2 center"><h2>Note on the setup</h2>
 <ul>
@@ -1283,12 +1284,14 @@ color: black;
 <p>If we’re just interested in calculating simple weighted proportions, averages, or counts, we can just use the <code>weight</code> variable alone.</p>
 <div class="columns">
 <div class="column" style="width:50%;">
-<p>Instead of: <span class="math display">\[
+<p>Instead of:</p>
+<p><span class="math display">\[
 \frac{\sum{y_i}}{n}
 \]</span></p>
 </div><div class="column" style="width:50%;">
 <div class="fragment">
-<p>We calculate a weighted proportion or average: <span class="math display">\[
+<p>We calculate a weighted proportion or average:</p>
+<p><span class="math display">\[
 \frac{\sum{y_i \times w_i}}{\sum{w_i}}
 \]</span></p>
 </div>
@@ -1311,8 +1314,8 @@ color: black;
 <pre><code># A tibble: 2 × 5
   protest                                  n weighted.n percent weighted.percent
   &lt;fct&gt;                                &lt;int&gt;      &lt;dbl&gt;   &lt;dbl&gt;            &lt;dbl&gt;
-1 1. Have done this in past 12 months    179       180.  0.0361           0.0363
-2 2. Have not done this in the past 1…  4779      4778.  0.964            0.964 </code></pre>
+1 1. Have done this in past 12 months    170       165.  0.0357           0.0349
+2 2. Have not done this in the past 1…  4590      4567.  0.964            0.965 </code></pre>
 </div>
 </div>
 </section><section id="weighted-proportions-in-r-2" class="title-slide slide level3 center"><h3>Weighted proportions in R</h3>
@@ -1409,7 +1412,7 @@ color: black;
 <div class="column" style="width:50%;">
 <div class="fragment" data-code-focus="2">
 <ul>
-<li>Respondents who skipped the post-election round of the ANES have missing weights. Dropping these avoids an error.</li>
+<li>Respondents who skipped the post-election round of the ANES have missing post-election weights. Dropping these avoids an error.</li>
 </ul>
 </div>
 <div class="fragment" data-code-focus="6">
@@ -3991,6 +3994,60 @@ N = 3,949<span class="gt_footnote_marks" style="white-space:nowrap;font-style:it
 </div>
 </div>
 </section><section id="extra-code-replicate-weights" class="title-slide slide level2 center"><h2>Extra code: replicate weights</h2>
+<p>Here’s an example of how you would set this up if this survey used replicate weights:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href></a><span class="co"># reading in an example file with replicate weights</span></span>
+<span id="cb34-2"><a href></a>wgts<span class="ot">&lt;-</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/Neilblund/SDSB340-Fall-2026/refs/heads/master/Data/anes_repwts.csv&#39;</span>)</span>
+<span id="cb34-3"><a href></a></span>
+<span id="cb34-4"><a href></a>anes_combined<span class="ot">&lt;-</span>anes<span class="sc">|&gt;</span></span>
+<span id="cb34-5"><a href></a>  <span class="fu">drop_na</span>(V240108b)<span class="sc">|&gt;</span></span>
+<span id="cb34-6"><a href></a>  <span class="fu">left_join</span>(wgts, <span class="at">by=</span><span class="st">&#39;V240001&#39;</span>) <span class="co"># matching on respondent IDs</span></span>
+<span id="cb34-7"><a href></a></span>
+<span id="cb34-8"><a href></a>anes_replicate<span class="ot">&lt;-</span>anes_combined<span class="sc">|&gt;</span></span>
+<span id="cb34-9"><a href></a>  <span class="fu">as_survey_rep</span>(<span class="at">repweights =</span> <span class="fu">starts_with</span>(<span class="st">&quot;REPWT&quot;</span>), <span class="co"># all columns that start with &quot;REPWT&quot; are replicate weights</span></span>
+<span id="cb34-10"><a href></a>                <span class="at">weights =</span> V240108b,                <span class="co"># main weights for point estimates</span></span>
+<span id="cb34-11"><a href></a>                <span class="at">type =</span> <span class="st">&#39;bootstrap&#39;</span>,                 <span class="co"># survey documentation should tell you the type of replicate weights to declare</span></span>
+<span id="cb34-12"><a href></a>                <span class="at">mse =</span> <span class="cn">TRUE</span></span>
+<span id="cb34-13"><a href></a>                )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>from here, survey analysis is identical to using the regular setup(and results should be very similar to what you get using anes_survey)</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href></a>anes_replicate<span class="sc">|&gt;</span></span>
+<span id="cb35-2"><a href></a>  <span class="fu">summarise</span>(</span>
+<span id="cb35-3"><a href></a>    <span class="st">`</span><span class="at">big_business_therm</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">survey_mean</span>(V242141 , <span class="at">vartype=</span><span class="st">&#39;var&#39;</span>, <span class="at">na.rm =</span> T),</span>
+<span id="cb35-4"><a href></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  big_business_therm big_business_therm_var
+               &lt;dbl&gt;                  &lt;dbl&gt;
+1               44.4                  0.372</code></pre>
+</div>
+</div>
+</section><section id="extra-code-replicate-weights-1" class="title-slide slide level2 center"><h2>Extra code: replicate weights</h2>
+<p>This is actually just calculating the same statistic for each replicate weight, and the calculating the variance around the point estimate:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href></a>index<span class="ot">&lt;-</span><span class="fu">which</span>(<span class="sc">!</span><span class="fu">is.na</span>(anes_combined<span class="sc">$</span>V242141))  <span class="co"># non-missing values of the big business feelings</span></span>
+<span id="cb37-2"><a href></a>y <span class="ot">&lt;-</span> anes_combined<span class="sc">$</span>V242141[index]            </span>
+<span id="cb37-3"><a href></a>weights<span class="ot">&lt;-</span>wgts[<span class="fu">which</span>(<span class="sc">!</span><span class="fu">is.na</span>(anes_combined<span class="sc">$</span>V242141)) ,<span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(wgts)] <span class="co"># all the weights for non-missing values</span></span>
+<span id="cb37-4"><a href></a>est<span class="ot">&lt;-</span><span class="fu">weighted.mean</span>(y, anes_combined<span class="sc">$</span>V240108b[index], <span class="at">na.rm=</span>T) <span class="co"># weighted estimate</span></span>
+<span id="cb37-5"><a href></a></span>
+<span id="cb37-6"><a href></a>df<span class="ot">&lt;-</span>(<span class="fu">ncol</span>(weights)<span class="sc">-</span><span class="dv">1</span>) <span class="co"># number of replicates minus 1</span></span>
+<span id="cb37-7"><a href></a>rep_means<span class="ot">&lt;-</span><span class="fu">numeric</span>(<span class="at">length=</span><span class="fu">ncol</span>(weights)) <span class="co"># empty vector for replicates</span></span>
+<span id="cb37-8"><a href></a></span>
+<span id="cb37-9"><a href></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(weights)){</span>
+<span id="cb37-10"><a href></a>  </span>
+<span id="cb37-11"><a href></a>  w <span class="ot">&lt;-</span> weights[[i]]</span>
+<span id="cb37-12"><a href></a>  <span class="co"># estimating a weighted mean &amp; storing the result</span></span>
+<span id="cb37-13"><a href></a>  rep_means[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(y <span class="sc">*</span> w) <span class="sc">/</span> <span class="fu">sum</span>(w) </span>
+<span id="cb37-14"><a href></a>}</span>
+<span id="cb37-15"><a href></a></span>
+<span id="cb37-16"><a href></a></span>
+<span id="cb37-17"><a href></a>rep_var<span class="ot">&lt;-</span> <span class="fu">sum</span>((est <span class="sc">-</span> rep_means) <span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> df  <span class="co"># variance around est</span></span>
+<span id="cb37-18"><a href></a>rep_var <span class="co"># this should match the variance from srvyr</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3716941</code></pre>
+</div>
+</div>
 <!--
 
 ### Formatting the output with gt
