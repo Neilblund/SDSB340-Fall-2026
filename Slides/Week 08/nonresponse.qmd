@@ -1270,26 +1270,8 @@ What variables should we use to impute missing data?
 :::
 
 ::: {.column width="50%"}
-```{dot}
-//# fig-width: 6
-//# fig-height: 6
-digraph Confounder {
-    rankdir=TD;
-    U [label="???"];
-    X [label="Non-response"];
-    Y [label="Y"];
-    
-    U -> X;
-    U -> Y;
-   
-    {
-        rank=same;
-        Y;
-        X;
-    }
-}
+![MAR](../images/common%20cause%20model.png){fig-align="center"}
 
-```
 :::
 :::::
 
