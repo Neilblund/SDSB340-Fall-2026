@@ -19,6 +19,8 @@ format:
         smaller: true
 bibliography: ../references.bib
 slide-level: 4
+filters:
+  - diagram
 execute:
   echo: false
 lightbox: true
@@ -130,25 +132,70 @@ pool_meanci<-function(.data, ...){
 
 ```
 
+````{=html}
+<!--
+
+```{.tikz}
+\begin{tikzpicture}[>={stealth}]
+  \node (p) at (0,0) {$P$};
+  \node (y) at (2,0) {$Y$};
+  \node (z) at (1,1) {$Z$};
+  \path[->] (z) edge (p);
+  \path[->] (z) edge (y);
+  \path[<->] (p) edge  [bend right=90]  (y);
+\end{tikzpicture}
+```
+
+
+
+```{.tikz}
+\begin{tikzpicture}[>={stealth}]
+  \node (p) at (0,0) {$P$};
+  \node (y) at (2,0) {$Y$};
+  \node (z) at (0,1) {$Z$};
+  \node (x) at (2,1) {$X$};
+  \path[->] (z) edge (p);
+  \path[->] (x) edge (y);
+\end{tikzpicture}
+```
+
+
+```{.tikz}
+\begin{tikzpicture}[>={stealth}]
+  \node (p) at (2,0) {$P$};
+  \node (y) at (0,0) {$Y$};
+  \path[->] (y) edge (p);
+\end{tikzpicture}
+```
+
+-->
+````
+
 ## Non-response
 
 -   [Unit non-response]{.yellow} a respondent is unable/unwilling to answer any of the questions (non-contact, or refusal)
 
 -   [Item non-response]{.yellow} a respondent is unwilling/unable to answer a single question on an otherwise complete survey.
 
-
-
 ## Non-response
 
 -   [Response rates]{.yellow} refer to the number (or share) of eligible sample units that cooperate in a survey.
 
-- [Response bias]{.yellow} refers to systematic differences between the respondents and non-respondents with respect to some survey estimate.
+-   [Response bias]{.yellow} refers to systematic differences between the respondents and non-respondents with respect to some survey estimate.
 
 -   Non-response can be understood as part of a broader issue of missing data, which also has applications outside of survey research.
 
+
 ## Response rates
 
-Sampling frames typically include at least *some* ineligible units:
+Intuitively, calculating a response rate seems relatively straightforward: take the number of people who responded and divide by the number of people who you attempted to contact.
+
+However, in practice, this is often more complicated than it might seem.
+
+
+## Response rates
+
+One problem is that sampling frames typically include at least *some* ineligible units:
 
 -   My telephone survey targets adult citizens but I may have some non-citizen phone numbers in my sampling frame.
 -   My sampling frame has a list of home addresses, but some of the homes are vacant.
@@ -159,8 +206,6 @@ Sampling frames typically include at least *some* ineligible units:
 I may fail to reach these sampled units, but it doesn't actually mean my response rate is lower: the unit was never eligible to begin with.
 
 ## Response rates
-
-
 
 $$
 \begin{align}
@@ -174,7 +219,7 @@ $$
 \text{Where}: \\
 I &= \text{Complete Interview}\\
 R &= \text{Refusal/Breakoff}\\
-NC &= \text{Noncontact}\\
+NC &= \text{Noncontact of known eligibility}\\
 O &= \text{Other eligible}\\
 U &=\text{Unknown eligibility}\\
 e &= \text{Share of unknown cases that are eligible}
@@ -209,67 +254,154 @@ $$
 
 ### Non-response: minimum and maximum allocation
 
-For example, the 2019 LAPOP survey of public opinion in Brazil had 5165 unknown eligible units out of 6,892 targeted.
+For example, here are some results for [2016/17 LAPOP survey](https://ropercenter.cornell.edu/latin-american-public-opinion-project-lapop) in Brazil:
 
-. . .
+:::: columns
+::: {.column width="50%"}
+| Measure                              | N     |
+|--------------------------------------|-------|
+| I (Completed Interviews)             | 1,532 |
+| R (Refusals)                         | 100   |
+| NC (non-contact of known eligibility)| 0     |
+| O (other eligible)                   | 95    |
+| U (Unknown eligibility)              | 5,165 |
+| Total Attempts                       | 7,443 |
+:::
 
-Their reported numbers indicate their lowest response rate would be:
+::: {.column width="50%"}
+
+
+
+$$
+\begin{align}
+& \frac{I}{I + R + NC + O  + e(U)} \\
+\end{align}
+$$
+
+
+
+
+::: {.fragment}
+
+$$
+\frac{1532}{1532 + 0 + 100 + 95 + e(5165)}
+$$
+
+:::
+
+:::
+
+::::
+
+
+### Non-response: minimum and maximum allocation
+
+
+If everyone in the unknown group was eligible, then the response rate is:
 
 $$
 \frac{1532}{1532 + 0 + 100 + 95 + 1(5165)} = .22
 $$
 
-. . .
 
-And their highest:
+::: fragment
+
+If everyone in the unknown group was ineligible, then the response rate is:
 
 $$
 \frac{1532}{1532 + 0 + 100 + 95 + 0(5165)} = .89
 $$
 
-. . .
 
-This is such a large range that it probably isn't very helpful as an indicator of survey quality.
+:::
 
-### Non-response: proportional allocation
+::: fragment
+
+This is such a large range that it probably isn't very helpful as an indicator of survey quality!
+
+:::
+
+## Non-response: proportional allocation
 
 What if we can use data on the "known eligible" respondents to make an inference about the unknown respondents?
 
 . . .
 
-:::::: columns
-:::: {.column width="50%"}
-For instance: sometimes I call a phone and the respondent *tells* me they're a non-citizen and ineligible, so I know the share of eligible respondents in the group who answered the phone.
+One commonly used technique for estimating $e$ is referred to as the [proportional allocation]{.yellow} or [CASRO]{.yellow} method.
+
+## Non-response: proportional allocation
+
+::::::: columns
+::::: {.column width="50%"}
+I know the share of eligible respondents among people who answered the survey.
 
 ::: fragment
 If I assume ineligibility is uncorrelated with answering, then $e$ can be inferred from the ineligibility rate among respondents.
 :::
-::::
+
+::: fragment
+:::
+:::::
 
 ::: {.column width="50%"}
 ![](../images/eligibility_flowchart.png)
 :::
-::::::
+:::::::
 
 ## Non-response: proportional allocation
 
 For example:
 
-The 2019 LAPOP survey had 551 ineligible respondents out of 2278 who were contacted, so the ineligible share in the "known eligibility group" was 0.76
+The 2016/2017 LAPOP survey had 551 ineligible respondents out of 2278 with known eligibility, so the ineligible share in the "known eligibility group" was 0.76
 
-. . .
+:::: columns
+::: {.column width="50%"}
+| Measure                              | N     |
+|--------------------------------------|-------|
+| I (Completed Interviews)             | 1,532 |
+| R (Refusals)                         | 100   |
+| NC (non-contact of known eligibility)| 0     |
+| O (other                             | 95    |
+| U (Unknown eligibility)              | 5,165 |
+| Total known ineligible               | 551   |
+| Total known eligible                 | 1,727 |
+| Total                                | 7,443 |
+:::
 
-Plugging that in to the formula gives us:
+::: {.column width="50%"}
+
+
+
+$$
+\begin{align}
+& \frac{I}{I + R + NC + O  + e(U)} \\
+\end{align}
+$$
+
+
+
+
+::: {.fragment}
+
+Plugging that in as our estimate for $e$ gives:
 
 $$
 \frac{1532}{1532 + 0 + 100 + 95 + .76(5165)} = .27
 $$
 
+:::
+
+:::
+
+::::
+
+
+
 ## Non-response: proportional allocation
 
--   This approach is typically assumed to give a *conservative* estimate of the response rate. ("Conservative" here means that it errs on the side of underestimating the responses rate.)
+-   Proportional allocation is easy to calculate with available resources, and it's often used as a default measure of response rates.
 
--   It's also easy to calculate with available data. So you'll often see it used as a sensible default when better measures aren't available.
+-   The proportional allocation is typically assumed to give a *conservative* estimate of the response rate. ("Conservative" here means that it errs on the side of underestimating the responses rate.)
 
 ## Non-response: estimating e
 
@@ -299,7 +431,7 @@ $$
 \begin{align}
 \text{Non-response Bias}(\bar{y}) &= \frac{\text{Cov}(y, \rho)}{\bar{\rho}}\\
 \bar{\rho} &= \text{Average propensity to respond} \\
-\text{Cov}(y, \rho) &= \text{Covariance between the variable and response propensity}
+\text{Cov}(y, \rho) &= \text{Covariance between the survey variable and response propensity}
 \end{align}
 $$
 
@@ -331,25 +463,22 @@ In practice, the correlation between non-response rates and bias is lower than y
 ![](../images/groves_nonresponse_meta.png)
 :::
 
-
 ## Checking for non-response bias: Campus Climate Surveys
 
 -   Many universities conduct "climate surveys" to measure things like the campus environment and student experiences, as well as to measure the prevalence of things like sexual violence victimization, mental health issues, and bias incidents.
 
-- But response rates are somewhat low, raising questions about whether these surveys can be reliable for generalizations about the campus environment.
+-   But response rates are somewhat low, raising questions about whether these surveys can be reliable for generalizations about the campus environment.
 
 ## Checking for non-response bias: Campus Climate Surveys
 
-- Some respondents responded to the survey after the first reminder, others responded after some reminders, and others never responded.
+-   Some respondents responded to the survey after the first reminder, others responded after some reminders, and others never responded.
 
-- The non-respondents are unobserved, but the "late responders" do have data. If we assume late responders are similar to non-responders, then we can use their results to get a rough idea of the direction and magnitude of bias in the results.
+-   The non-respondents are unobserved, but the "late responders" do have data. If we assume late responders are similar to non-responders, then we can use their results to get a rough idea of the direction and magnitude of bias in the results.
 
 ## Checking for non-response bias: Campus Climate Surveys
 
-::: {.center}
-
+::: center
 ![](../images/ccc_bias.png)
-
 :::
 
 . . .
@@ -358,52 +487,98 @@ This analysis provides some evidence of a (modest) response bias, but the more i
 
 ## Increasing response rates
 
-- Longer survey windows/repeated attempts
+-   Longer survey windows/repeated attempts
 
-- Different modes (in-person rates are typically much higher)
+-   Different modes (in-person rates are typically much higher)
 
-- Mixed modes (mail an invitation and then call)
+-   Mixed modes (mail an invitation and then call)
 
-- Incentives (modest payments or random lotteries end up being cheaper than repeated contact)
+-   Incentives (modest payments or random lotteries end up being cheaper than repeated contact)
 
 . . .
 
 What about after the data has already been collected?
 
+## Models of non-response and missing data
+
+Non-response can be thought of as specific instance of the more general problem of of missing data.
+
+How we handle missing data partly depends on how we think the missingness is generated.
 
 ## Models of non-response and missing data
 
-Non-response can be thought of us a form of missing data. We'll often use Donald Rubin's (admittedly terrible) terminology to refer to different "kinds" of missingness:
+We'll often use Donald Rubin's [-@rubin1976inference] terminology to distinguish different "kinds" of missingness:
 
 -   [Missing completely at random (MCAR)]{.yellow}: $\rho$ is completely independent of $y$.
 -   [Missing at random (MAR)]{.yellow}: $\rho$ and $y$ are both caused by some third factor (hopefully an observed one)
 -   [Missing not at random (MNAR)]{.yellow}: $y$ itself is the cause of $\rho$.
 
+. . .
+
+(These are, admittedly, some of the worst acronyms in all of statistics, but they're still the most widely used.)
+
 ## Missing data: MCAR
 
 [Missing completely at random (MCAR)]{.yellow}: $\rho$ is completely independent of $y$.
 
+::::: columns
+::: {.column width="50%"}
 -   For example: some interviewers are better at getting people to sit for a survey than others, but this doesn't necessarily correlate with the *answers* people give to any survey question.
+-   MCAR won't produce biased estimates, because $Cov(y, \rho) = 0$. It just means our sample is smaller.
+:::
+
+::: {.column width="50%"}
+![MCAR or Separate Cause Model](../images/separate%20cause%20model.png){fig-align="center"}
+:::
+:::::
 
 ## Missing data: MAR
 
-[Missing at random (MAR)]{.yellow}: $\rho$ and $y$ are both caused by some third factor.
+[Missing at random (MAR)]{.yellow}: $\rho$ and $y$ are both caused by some third measured characteristic.
 
--   For example: party ID might be associated with response propensity, but indirectly through its correlation with age.
+::::: columns
+::: {.column width="50%"}
+-   For example: party ID might be associated with response propensity indirectly through its correlation with age.
 
--   Notably, this implies that *controlling for age* would allow us to get an unbiased estimate of party ID, provided we measured this on our survey.
+-   This would give us bias, because non-response is correlated with the measured variable through Z. However, if we can control for Z, we can get unbiased estimates.
+:::
+
+::: {.column width="50%"}
+![MAR or Common Cause Model](../images/common%20cause%20model.png){fig-align="center"}
+:::
+:::::
 
 ## Missing data: MNAR
 
 [Missing not at random (MNAR)]{.yellow}: $y$ itself is the cause of $\rho$ (or $y$ is correlated with $\rho$ through some unobserved confounder)
 
+::::: columns
+::: {.column width="50%"}
 -   For example: people with very low incomes might be more likely to refuse to answer an income question.
 
--   This would also result in response bias, but, unlike the MAR case, we can't really "control" for this.
+-   This would also result in response bias, but, unlike the MAR case, we can't "control" for it because the relevant characteristic is itself missing.
+:::
+
+::: {.column width="50%"}
+![MNAR or Survey Variable Cause Model](../images/survey%20variable%20cause%20model.png){fig-align="center"}
+:::
+:::::
 
 ## Missing data
 
--   There's no objective test for whether data are MCAR, MAR, or MNAR, but the assumptions about the missingness model matter for the kinds of methods that might be able to address missing data.
+There's generally no objective test for whether data are MCAR, MAR, or MNAR, but the *assumptions* about the missingness model matter for how we might handle the problem.
+
+|   | Effect on parameter estimates | Post Survey Adjustments |
+|---------------------------|-------------------|---------------------------|
+| MCAR | Unbiased | Weighting or imputation might still be useful to increase precision. |
+| MAR | Biased | Weighting or imputation can increase precision and reduce bias. |
+| MNAR | Biased | Weighting or imputation can make bias *worse*. Specialized approaches (Heckman Selection model or Instrumental Variables) are needed. |
+
+## Missing data: Weighting
+
+-   Weighting is often used to address **unit** non-response. If I know a group is underrepresented relative to their prevalence in the sampling frame, I can weight them by the inverse of their response rate ($1/\rho$) to correct this.
+
+-   Unit non-response adjustments are often already factored in to the weights provided on publicly available surveys.
 
 ## Missing data: Weighting
 
@@ -421,27 +596,27 @@ If I assume that *within each gender*, respondents are still a random sample, th
 
 |       | Sample       | Responded | Response rate | Non-response weight |
 |-------|--------------|-----------|---------------|---------------------|
-| Men   | 990 (49.5%)  | 693 (46%) | .7            | 1/.7=1.43                |
-| Women | 1010 (50.5%) | 808 (54%) | .8            | 1/.8=1.25                |
+| Men   | 990 (49.5%)  | 693 (46%) | .7            | 1/.7=1.43           |
+| Women | 1010 (50.5%) | 808 (54%) | .8            | 1/.8=1.25           |
 | Total | 2000         | 1573      |               |                     |
 
-The weighted proportions would then equal the proportions in the sample. (in practice, this would likely be one of several weighting adjustments)
+The weighted proportions would then equal the proportions in the sample. (in practice, I would probably adjust several characteristics at once rather than just gender alone.)
 
 ## Missing data: Weighting
 
--   Note that the weighting approach assumes that gender is part of the sampling frame. This often isn't the case.
+-   Note that **the weighting approach assumes that the adjustment variable is part of the sampling frame**. So, in the previous example, I would need to know the gender of respondents and non-respondents alike. This is a major constraint on the variables I can use.
 
--   It also assumes that respondents are still a random sample within each gender. This is the MAR assumption: once we dis-aggregate by gender, there's no more response bias.
+-   It also assumes that respondents are still a random sample within each subgroup. This is the MAR assumption: once we dis-aggregate by gender, there's no more response bias.
 
 ## Imputation for item non-response
 
--   Most of the methods we've been discussing apply to unit non-response
+-   Unit non-response weights won't address item non-response, but this can also be substantial and can introduce bias in the same way that unit non-response does.
 
--   The weights that we've discussed before won't address item non-response, but it can be substantial and can introduce bias in the same way that unit non-response does.
+-   However, we also have more data on people who answered at least some survey questions, so we have more options for adjustment variables.
+
+## Imputation for item non-response
 
 -   The default behavior in most stats software is [listwise deletion]{.yellow}, which simply means removing any `NA` values.
-
-## Imputation for item non-response
 
 -   Listwise deletion assumes MCAR. Sometimes this is fine, sometimes it isn't.
 
@@ -451,7 +626,7 @@ The weighted proportions would then equal the proportions in the sample. (in pra
 
 ::::: columns
 ::: {.column width="50%"}
--   When encountering missing data, a simple option might be to replace missing values with a mode, mean, or median from the remaining data.
+-   When encountering missing data, a simple option might be to replace missing values with "typical" values from the observed data such as the mode, median or mean.
 :::
 
 ::: {.column width="50%"}
@@ -591,12 +766,11 @@ income_plot
 
 ::::: columns
 ::: {.column width="50%"}
--   This has the problem of distorting the distribution and artificially shrinking the variance of the imputed variable. 
--   It also doesn't necessarily offer much advantage over listwise deletion: if we have non-response bias, the mean of the observed data is still biased!
+-   However, this kind of imputation can distort the distribution of $y$ and artificially shrink its variance.
+-   It also doesn't necessarily offer much advantage over listwise deletion: if we have non-response bias, the mean of the observed data is biased!
 :::
 
 ::: {.column width="50%"}
-
 ```{r}
 #| fig-height: 6
 #| fig-width: 6
@@ -633,12 +807,9 @@ imputed_plot
 
 ## Imputation for item non-response
 
-
 One defining feature of item non-response is that we often have pretty good data on other characteristics of the respondent who refused to answer a question:
 
-
 . . .
-
 
 ```{r}
 unsorted_vals|>  tab_options(
@@ -649,21 +820,20 @@ unsorted_vals|>  tab_options(
 
 It might make sense to use the known data to make some inferences about the missing parts.
 
-## Imputation for item non-response: hot-deck method
+## Imputation for item non-response: the sequential hot-deck method
 
-One of the oldest methods of using known data is known as "hot-deck" imputation. The process proceeds as follows:
+One of the oldest methods of using known data is known as the "sequential hot-deck" imputation. The process proceeds as follows:
 
 1.  Sort all cases by some known variables assumed to be correlated with the variable you want to impute.
 2.  Iterate through each row.
     1.  If the imputed variable is present, store it as the "hot-deck" value.
     2.  If the imputed variable is missing, replace it with the current "hot-deck" value.
-    
+
 . . .
 
-(if the very first item is missing, this can be replaced with something like the mean or median for the variable)    
+(if the very first item is missing, this can be replaced with something like the mean or median for the variable)
 
-
-## Imputation for item non-response: hot-deck method
+## Sequential hot-deck
 
 For example, we could sort this data by sex and education:
 
@@ -674,10 +844,9 @@ vals|> tab_options(
   )
 ```
 
+## Sequential hot-deck
 
-## Imputation for item non-response: hot-deck method
-
-Then calculate the hot deck and fill missing values with the hot deck value:
+When we encounter a missing value, we replace it with the value from the most recent non-missing case (called a "donor")
 
 ```{r}
 vals<-bind_rows(nonmissing, missing)|>
@@ -720,16 +889,15 @@ vals|>
 
 ```
 
-## Imputation for item non-response: hot-deck method
+## Sequential hot-deck
 
-
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- Note that, in general, the hot deck value comes from a "donor" case that is similar to the known characteristics of the recipient.
+-   Note that, in general, the hot deck value comes from a "donor" case that is similar to the known characteristics of the recipient.
 
-- This makes sense if we assume that someone's gender and education will be a good predictor of their income.
-
+-   This makes sense if we assume that someone's gender and education will be good predictors of their income.
 :::
+
 ::: {.column width="50%"}
 ```{r}
 vals<-bind_rows(nonmissing, missing)|>
@@ -771,23 +939,15 @@ vals|>
   )
 
 ```
-
 :::
 :::::
 
+## Sequential hot-deck
 
-## Imputation for item non-response: hot-deck method
+This also preserves the original distribution of the response variables.
 
-
-Unlike mean-imputation, it also preserves the original distribution of the response variables.
-
-
-## Imputation for item non-response: hot-deck method
-
-
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-
 ```{r}
 #| fig-height: 6
 #| fig-width: 6
@@ -808,10 +968,9 @@ anes|>
   theme(legend.position = "none")
 
 ```
-
 :::
-::: {.column width="50%"}
 
+::: {.column width="50%"}
 ```{r}
 #| fig-height: 6
 #| fig-width: 6
@@ -836,22 +995,22 @@ anes|>
   scale_alpha_manual(values=c(.6, 1))
 
 ```
-
 :::
 :::::
 
+## Imputation methods
 
+-   There are [lots](https://stefvanbuuren.name/fimd/sec-linearnormal.html) of imputation methods.
 
-## Imputation for item non-response: hot-deck method
-
-- Methods like hot-deck imputation only work if the other characteristics are good predictors of the missing data. i.e. if the recipient case would have looked like the donor case if they had responded to the question.
-
-- This also applies to more sophisticated methods that use machine learning or statistical modeling approaches to infer missing items: they require the MAR assumption and they require researchers to identify good predictors.
-
+-   All of them require us to have known characteristics that are good predictors of the missing data.
 
 ## Imputation for lots of items
 
-- The previous example was based on imputing a handful of cases for a single variable, but many surveys have multiple questions with extensive missing data.
+Two remaining issues:
+
+-   The previous example was based on imputing a handful of cases for a single variable, but many surveys have multiple questions with extensive missing data.
+
+-   Imputation itself comes introduces some additional uncertainty into our estimation process. So how do we incorporate this additional uncertainty into our estimates?
 
 ## MICE
 
@@ -867,34 +1026,54 @@ Multiple Imputation Through Chained Equations
 
 5.  Repeat until the estimates stabilize.
 
-6.  Do all of these steps multiple times to create multiple versions of the data
-
-
-## MICE
-
-![](../images/mice_vis.png)
+6.  Do all of these steps multiple times using different starting points to create $M$ completed data sets. (typically 5 or more)
 
 ## MICE
 
-- The imputation process is repeated multiple times to create alternate versions of the completed data set. These are analyzed as if they were complete data sets.
+![](../images/mice_vis.png){fig-align="center" width="60%"}
 
-- Using multiple different versions allows researchers to get an estimate of the extra variance associated with the imputation process.
+Illustration of the MICE algorithm from: @naf2026practical
+
+## MICE
+
+:::::: columns
+::: {.column width="50%"}
+-   The imputation process is repeated multiple times to create alternate versions of the completed data set. These are analyzed as if they were complete data sets and estimates are just averaged across each version.
+
+-   Variance is estimated by pooling the variance within and between each data set.
+:::
+
+:::: {.column width="50%"}
+::: fragment
+$$
+\begin{align*}
+V_W &= \frac{1}{m} \sum_{i=1}^m{SE_i^2}\\
+V_B &= \frac{\sum_{i=1}^m (y_i - \overline{y})^2}{m-1}\\
+V_{Total} &= V_W + V_B + \frac{V_B}{m}\\
+m &=  \text{number of imputed data sets} \\
+y_i &= \text{mean for a single imputed data set}\\
+\bar{y} &= \text{average from all imputations}
+\end{align*}
+$$
+:::
+::::
+::::::
 
 ## Imputing some survey responses
 
-- Data: 996 responses to a survey circulated to a convenience sample of mostly UMD students.
+-   Data: 996 responses to a survey circulated to a convenience sample of mostly UMD students.
 
-- Responses with over 50% completion were retained.
+-   Responses with over 50% completion were retained.
 
-- Note that "unit non-response" isn't really measurable here because the population is already ill-defined. So we're only dealing with item non-response.
+-   Note that "unit non-response" isn't really measurable here because there's no defined sampling frame. So we're only dealing with item non-response.
 
 ## Imputing some survey data
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- Many respondents skipped or gave "don't know" responses to some questions.
-
+-   Many respondents skipped or gave "don't know" responses to some questions.
 :::
+
 ::: {.column width="50%"}
 ```{r}
 #| fig-width: 8
@@ -914,16 +1093,13 @@ missing_plot +
 :::
 :::::
 
-
 ## Multiple imputation: Example
 
-
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-
 The amount of non-response is negligible for some items, but substantial for others. The item with the most non-response is the feeling thermometer score for Kristi Noem.
-
 :::
+
 ::: {.column width="50%"}
 ```{r}
 ft_summary
@@ -933,18 +1109,13 @@ ft_summary
 :::
 :::::
 
-
-
-
 ## Multiple imputation: Example
 
-
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-
 People who skipped the Noem question are less likely to pay attention to political news.
-
 :::
+
 ::: {.column width="50%"}
 ```{r}
 
@@ -970,15 +1141,13 @@ survey_select|>
 :::
 :::::
 
-
 ## Multiple imputation: Example
 
-
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
 They're also more likely to be Republicans, and more conservative/centrist ideologically:
-
 :::
+
 ::: {.column width="50%"}
 ```{r}
 
@@ -1035,7 +1204,7 @@ survey_select|>
 
 ## Multiple imputation: Example
 
-- The results suggest that MCAR is probably not a plausible assumption, at least for the Kristi Noem question: non-respondents are different from respondents on a range of variables that we might expect to be correlated with feelings towards Kristi Noem.
+-   The results suggest that MCAR is probably not a plausible assumption, at least for the Kristi Noem question: non-respondents are different from respondents on a range of variables that we might expect to be correlated with feelings towards Kristi Noem.
 
 ## Multiple imputation: Example
 
@@ -1044,7 +1213,6 @@ What's the worst case for a biased estimate?
 . . .
 
 Since the feeling thermometer scores are bounded between 0 and 100, we can get a sort of "worst-case scenario" estimate for the potential bias in our estimate of some missing variable $x$:
-
 
 $$
 \begin{align}
@@ -1056,15 +1224,14 @@ n_2 &= \text{Number of missing values}
 \end{align}
 $$
 
-
 ## Multiple imputation: Example
-
 
 $$
 \begin{align}
 \bar{x}_{\text{complete}} = (821 \times 13.15 + 166 \times 100) / 987 = 27.76 
 \end{align}
 $$
+
 $$
 \begin{align}
 \bar{x}_{\text{complete}} = (821 \times 13.15 + 166 \times 0) / 987 = 10.94 
@@ -1083,7 +1250,6 @@ $$
 \end{align}
 $$
 
-
 ## Multiple imputation: Example
 
 There's probably *enough* missing data here to give us pause, and there's evidence that the missingness is at least partly systematic. So we have a good candidate for imputation.
@@ -1096,15 +1262,13 @@ What variables should we use to impute missing data?
 
 ## Multiple imputation: Example
 
-
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-
-- The most important variables should be the ones that we think are correlated with both non-response and the variable with missing data.
-- Of course, I can't measure this outcome for the non-respondents, but I can make some educated guesses based on the pattern among observed respondents.
-- In order to be useful for imputation, it also needs to be something that we observed for people who skipped the variable we're trying to impute.
-
+-   The most important variables should be the ones that we think are correlated with both non-response and the variable with missing data.
+-   Of course, I can't measure this outcome for the non-respondents, but I can make some educated guesses based on the pattern among observed respondents.
+-   In order to be useful for imputation, it also needs to be something that we observed for people who skipped the variable we're trying to impute.
 :::
+
 ::: {.column width="50%"}
 ```{dot}
 //# fig-width: 6
@@ -1129,44 +1293,36 @@ digraph Confounder {
 :::
 :::::
 
-
 ## Multiple imputation: Example
 
-- I'll include feeling thermometers toward ICE, J.D. Vance, Donald Trump, immigrants, police, and the national guard.
+-   I'll include feeling thermometers toward ICE, J.D. Vance, Donald Trump, immigrants, police, and the national guard.
 
-- I'll also include political engagement, age, and party ID.
+-   I'll also include political engagement, age, and party ID.
 
 ## Multiple imputation: Example
 
 [Link to Rcode](https://raw.githubusercontent.com/Neilblund/SDSB340-Spring-2026/refs/heads/master/Rcode/mice_example.R)
 
+## Multiple imputation
 
-
-
-## Multiple imputation 
-
-
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- Pew research used MICE to create a "synthetic population", which they then used to conduct an analysis of weighting non-representative polls.
+-   Pew research used MICE to create a "synthetic population", which they then used to conduct an analysis of different methods for weighting non-representative polls.
 
-- "Missingness", in this example, comes from the fact that some questions weren't asked at all on the ACS.
+-   "Missingness", in this example, comes from the fact that some questions are not asked on all three surveys, but the basic procedure and assumptions are the same.
 :::
+
 ::: {.column width="50%"}
-![](../images/pew_mice.webp)
-[Source: Pew Research](https://www.pewresearch.org/methods/2018/01/26/how-different-weighting-methods-work/)
+![](../images/pew_mice.webp) [Source: Pew Research](https://www.pewresearch.org/methods/2018/01/26/how-different-weighting-methods-work/)
 :::
 :::::
 
-
 ## Multiple imputation: pros and cons
 
-- Imputation can give less biased estimates than listwise deletion, provided the data are MAR and the predictive model is correct.
+-   Imputation can give less biased estimates than listwise deletion, provided the data are MAR and the predictive model is correct.
 
-- But it could also make things worse.
+-   But it could also make things worse.
 
-- Many researchers are uncomfortable with using "made up" data, but note that listwise deletion also involves a strong assumption about the reason data are missing.
+-   Many researchers are uncomfortable with using "made up" data, but note that listwise deletion also involves a strong assumption about the reason data are missing.
 
-
-
-
+# References
