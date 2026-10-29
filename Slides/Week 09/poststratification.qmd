@@ -34,7 +34,7 @@ library(gt)
 
 ## Reviewing weights
 
-Imagine you're conducting a survey of the DMV area, but you want to be able to make inferences about individual states and talk about the majority view among DMV residents, so you take an equal sized sample from each state.
+Imagine you're conducting a survey of the DMV area, but you take an equal sized sample from each state.
 
 ```{r}
 table_data<-read_tsv("State	Pop Size	Sample size
@@ -106,7 +106,6 @@ table_data|>
 
 Note that summing these weights for each respondent would now give you a total of 3,000.
 
-## Reviewing weights
 
 ## Reviewing weights
 
@@ -329,7 +328,7 @@ Raking (or iterative proportional fitting) is a method of calibration that only 
 ## Calibration with raking
 
 ::: center
-![](images/raking.gif)
+![](../images/raking.gif)
 :::
 
 ## Calibration with raking
@@ -340,7 +339,7 @@ One advantage of raking is that it makes it possible to use auxiliary data from 
 :::
 
 ::: {.column width="50%"}
-![](images/npors_raking.png) [NPORS 2023 Raking variables](https://www.pewresearch.org/internet/2024/01/31/social-media-2023-national-public-opinion-reference-survey-npors-methodology/)
+![](../images/npors_raking.png) [NPORS 2023 Raking variables](https://www.pewresearch.org/internet/2024/01/31/social-media-2023-national-public-opinion-reference-survey-npors-methodology/)
 :::
 :::::
 
@@ -375,7 +374,7 @@ Basic process:
 :::
 
 ::: {.column width="50%"}
-![](images/xbox_poll.png)
+![](../images/xbox_poll.png)
 
 <https://sites.stat.columbia.edu/gelman/research/published/high_frequency_polling.pdf>
 :::
