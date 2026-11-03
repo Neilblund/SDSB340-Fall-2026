@@ -34,6 +34,7 @@ library(gt)
 
 ## Reviewing weights
 
+
 Imagine you're conducting a survey of the DMV area, but you take an equal sized sample from each state.
 
 ```{r}

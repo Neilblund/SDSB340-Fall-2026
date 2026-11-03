@@ -1,0 +1,803 @@
+---
+title: "Regression"
+format:
+    revealjs:
+        theme: [blueyellow]
+        transition: fade
+        width: 1280
+        height: 720
+        df-print: tibble
+        scrollable: true
+        slide-number: true
+        self-contained: true
+        embed-resources: true
+        mermaid:
+            theme: forest
+        code-annotations: select
+        code-link: true
+        incremental: true
+        smaller: true
+        filters:
+          - code-fullscreen
+bibliography: ../references.bib
+slide-level: 4
+execute:
+  echo: false
+lightbox: true
+---
+
+```{r}
+library(ggplot2)
+library(latex2exp)
+library(equatiomatic)
+library(gt)
+
+knitr::opts_chunk$set(fig.align = 'center')
+```
+
+## Linear Regression
+
+-   [Regression]{.yellow} is a method for modeling the effect of one or more predictors (independent variables) on an outcome (dependent variable)
+
+-   [Linear regression]{.yellow} is the typically used when the dependent variable is continuous (or at least approximately continuous)
+
+## Linear Regression
+
+$$
+\begin{align*}
+y_i =& \beta_0 + \beta_1x_{1i} + \beta_2x_2{_i} + \beta_3x_3{_i}  ... + e_i\\
+y_i &= \text{The dependent variable}\\
+\beta_0 &=\text{Intercept or Constant: the expected value of } y_i \text{when all the X values = 0}\\
+\beta_1...\beta_k &= \text{Coefficient: the effect of a one unit increase in predictor } x_k \text{ on the expected value of y}\\
+e_i &= \text{error or residual: the difference between the prediction for }  y_i \text{ and its actual value}
+\end{align*}
+$$
+
+## Linear Regression
+
+In its simplest form, you can think of a linear regression as an estimate of the line through X (an independent variable) and Y (an outcome) that minimizes the [sum of squared errors]{.yellow} (the squared distance between the line and each point)
+
+::::: r-stack
+::: fragment
+```{r}
+
+
+# Fit linear model and augment data with predicted/fitted values
+
+dat<-mtcars
+dat$wt<-as.numeric(scale(dat$wt))
+model<-lm(mpg ~ wt, data = dat)
+
+
+dat$predicted <- predict(model)
+intercept = 40
+slope = -6
+dat$apred<-intercept + slope * dat$wt
+
+# Plot scatter points, regression line, and horizontal/vertical residual segments
+plot<-ggplot(dat, aes(x = wt, y = mpg)) +
+  geom_point(size = 3) +
+    labs(
+    title = "Scatter plot of X on Y",
+    x = "X",
+    y = "Y"
+  ) +
+
+  theme_minimal()
+
+plot
+  
+```
+:::
+
+::: fragment
+```{r}
+
+residual<-(dat$predicted - dat$mpg)^2
+ess<-sum(residual)|>round(digits=2)
+
+
+plot +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  # Draw segments from actual points (wt, mpg) to predicted points (wt, predicted)
+  geom_segment(aes(xend = wt, yend = predicted), color = "red", linetype = "dashed") +
+  annotate("text", x=quantile(dat$wt, .2), y=quantile(dat$mpg, .2), label = TeX(glue::glue("$SSR = {ess}$"), output = "character"),
+           parse=TRUE,
+           size=8
+           ) +
+    annotate('text', x=1.5, y=32, label=TeX("$SSE = \\sum^n_{i=1}{e^2_i}$", 
+                                          output='character'), parse=TRUE, size=6)
+  
+
+```
+:::
+:::::
+
+## Linear Regression
+
+The slope of this line (denoted with the symbol $\beta_1$) interpreted as the effect of a one unit increase on X on the expected value of Y.
+
+```{r}
+
+xloc<-(4 - mean(mtcars$wt))/sd(mtcars$wt)
+xend<-(5 - mean(mtcars$wt))/sd(mtcars$wt)
+yloc<-predict(model, newdata=data.frame(wt=xloc))
+yloc2<-predict(model, newdata=data.frame(wt=xend))
+
+
+ggplot(dat, aes(x = wt, y = mpg)) +
+  geom_point(size = 3, alpha=.2) +
+    labs(
+    title = "Scatter plot of X on Y",
+    x = "X",
+    y = "Y"
+  ) +
+  theme_minimal() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  geom_segment(y=yloc2, yend=yloc, x=xloc, lty=2, color='black') +
+  geom_segment(y=yloc2, x=xloc, xend=xend, lty=2, color='black') +
+  annotate('text', x=xloc, y=yloc-9, label=TeX("$\\hat{\\beta_1}= -5.344$", output='character'), parse=TRUE, size=8) +
+  annotate('text', x=1.5, y=32, label=TeX("$\\hat{\\beta_1} = \\frac{\\sum{(x_i-\\bar{x})} (y_i -\\bar{y})}{\\sum{(x_i-\\bar{x})^2}}$", 
+                                          output='character'), parse=TRUE, size=6)
+
+  
+
+```
+
+## Linear Regression
+
+The intercept of this line (denoted with the symbol $\beta_1$) can be interpreted as a predicted value for Y when X=0.
+
+```{r}
+
+ggplot(dat, aes(x = wt, y = mpg)) +
+  geom_point(size = 3, alpha=.2) +
+    labs(
+    title = "Scatter plot of X on Y",
+    x = "X",
+    y = "Y"
+  ) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  geom_vline(xintercept = 0, lty=2) +
+  theme_minimal() +
+  annotate('text', x=.5, y=22, label=TeX("$\\hat{\\beta_0}=20$", output='character'), parse=TRUE, size=8) +
+  annotate('text', x=1.5, y=32, label=TeX("$\\hat{\\beta_0} = \\bar{y} - \\hat{\\beta}_1\\bar{x}$", output='character'), parse=TRUE, size=6)
+```
+
+## Linear Regression
+
+The variance of the regression ($\sigma^2_e$) is based on the average error across the entire regression line:
+
+```{r}
+
+
+plot +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  # Draw segments from actual points (wt, mpg) to predicted points (wt, predicted)
+  geom_segment(aes(xend = wt, yend = predicted), color = "red", linetype = "dashed") +
+  annotate("text", x=quantile(dat$wt, .1), y=quantile(dat$mpg, .2), label = TeX("$\\sigma^2_e = \\frac{278}{32-2} = 9.28$",
+                                                                                output = "character"),
+           parse=TRUE,
+           size=6
+           ) +
+    annotate('text', x=1.5, y=32, label=TeX("$SSE = \\sum^n_{i=1}{e^2_i}$", 
+                                          output='character'), parse=TRUE, size=6) +
+    annotate('text', x=1.5, y=26, label=TeX("$\\hat{\\sigma}^2_e = \\frac{SSE}{n-2}$", output='character'), parse=TRUE, size=6)
+```
+
+## Linear Regression
+
+And the $\sigma^2_e$ can be used as part of the equation for calculating the standard error around the regression line:
+
+```{r}
+
+plot +
+  geom_smooth(method = "lm", se = TRUE, color = "blue", level=.95) +
+  # Draw segments from actual points (wt, mpg) to predicted points (wt, predicted)
+ # geom_segment(aes(xend = wt, yend = predicted), color = "red", linetype = "dashed") +
+  annotate("text", x=quantile(dat$wt, .1), y=quantile(dat$mpg, .2), label = TeX("$\\hat{\\sigma_{\\beta_1}} = \\sqrt{\\frac{9.28}{31}} = 0.55 $",
+                                                                                output = "character"),
+           parse=TRUE,
+           size=6
+           ) +
+    annotate('text', x=1.5, y=32, label=TeX("$\\hat{\\sigma_{\\beta_1}} = \\sqrt{\\frac{\\sigma_e^2}{\\sum{(x_i -\\bar{x})^2}}}$", 
+                                          output='character'), parse=TRUE, size=6) 
+```
+
+## Linear Regression
+
+The squared residuals can also be used to get a summary measure of the overall fit of the model called $R^2$, which represents the proportion of variance in the dependent variable explained by the model.
+
+```{r}
+
+residual<-(dat$predicted - dat$mpg)^2
+ess<-sum(residual)|>round(digits=2)
+
+sst <- sum((dat$mpg - mean(dat$mpg))^2)
+
+plot +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  # Draw segments from actual points (wt, mpg) to predicted points (wt, predicted)
+  geom_segment(aes(xend = wt, yend = predicted), color = "red", linetype = "dashed") +
+  annotate("text", x=quantile(dat$wt, .15), y=quantile(dat$mpg, .2), label = TeX("$R^2 = \\frac{1126 - 278}{1126} = 0.75$", output = "character"),
+           parse=TRUE,
+           size=5
+           ) +
+    annotate('text', x=1.5, y=32, label=TeX("$SSE = \\sum^n_{i=1}{e^2_i}$", 
+                                          output='character'), parse=TRUE, size=6)+
+    annotate('text', x=1.5, y=27.5, label=TeX("$SST = \\sum^n_{i=1}{(\\bar{y} - y_i)^2}$", 
+                                          output='character'), parse=TRUE, size=6)  +
+    annotate('text', x=1.5, y=22.5, label=TeX("$R^2 = \\frac{SST-SSE}{SSE}$", 
+                                          output='character'), parse=TRUE, size=6)
+  
+
+```
+
+## Regression with one predictor
+
+```{r}
+#| echo: true
+data<-readRDS(url('https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/lm_data.rds'))
+model<-lm(y ~ x, data = data)
+summary(model)
+
+
+```
+
+
+
+
+
+
+
+## Regression with one predictor
+
+- We'll try looking at a real life example using data from the American Time Use Survey (ATUS), which measures the amount of time people spend doing various activities such as working, attending school, caring for children etc.
+
+- For this regression, we'll look at the effect of age on the amount of time spent doing leisure activities (socializing, sports, games, etc.)
+
+## Regression with one predictor
+
+In R, you can use the `lm` function to make a linear model. Then write the name of the dependent variable followed by a `~` and then one or more predictors:
+
+```{r}
+#| echo: true
+library(tidyverse)
+library(modelsummary)
+filloc<-here::here("Data/atus25_subset.rds")
+atus<-readRDS(filloc)
+model1<-lm(leisure ~ age, data=atus)
+summary(model1)
+
+```
+
+
+```{r}
+#| echo: false
+atus$employment_status<-factor(atus$employment_status)
+
+```
+
+## Regression with one predictor
+
+
+::::: columns
+::: {.column width="50%"}
+-   At age 0, we expect an average person would spend 171 minutes on leisure activities in a day (note that this isn't meaningful! No infants responded to the survey)
+-   Every additional year older is associated with an additional 3.26 minutes of leisure time (95% CI: 2.97 - 3.56)
+-   Variation in age explains around 7% of the variation in leisure time.
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: false
+
+modelsummary(model1, 
+             fmt = 0,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+
+```
+:::
+:::::
+
+## Regression with one predictor
+
+What is the model's predicted leisure time for a 30 year old?
+
+
+::: fragment
+
+$\operatorname{leisure} = \beta_{0} + \beta_{1}(\operatorname{age}) + \epsilon$
+
+:::
+
+::: fragment
+
+$\operatorname{\widehat{leisure}} = 171.5 + 3.3(\operatorname{30}) = 269.3$
+
+:::
+
+```{r}
+#| echo: false
+
+modelsummary(model1, 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+
+```
+
+
+## Regression with multiple predictors
+
+-   Regression models allow us to include multiple predictors.
+-   When including additional variables in a model, the coefficient values should be interpreted as the average effect of a one unit increase in x while controlling for the remaining covariates.
+
+## Regression with multiple predictors
+
+For instance, I might include number of children as an additional predictor
+
+```{r}
+#| echo: true
+model2<-lm(leisure ~ age + num_children, data=atus)
+summary(model2)
+```
+
+## Regression with multiple predictors
+
+::::: columns
+::: {.column width="50%"}
+-   Notice that this *slightly*  changes the coefficient on age. That's because some of the observed effect of age in the previous model was actually accounted for by the fact that being younger is also associated with having kids in the household.
+-   You might also notice a slight jump in the R-squared value, because our more complex model also explains more variation.
+:::
+
+::: {.column width="50%"}
+```{r}
+modelsummary(list("Model 1"= model1, "Model 2" = model2), 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+```
+:::
+:::::
+
+## Regression with multiple predictors
+
+What's the predicted leisure time for a 30 year old with one child under model 2?
+
+
+::: fragment
+
+$\operatorname{leisure} = \beta_{0} + \beta_{1}(\operatorname{age}) + \beta_{2}(\operatorname{num\_children}) + \epsilon$
+
+:::
+
+::: fragment
+
+$\operatorname{\widehat{leisure}} = 219.9 + 2.6(30) - 28.9(1) = 269 $
+
+:::
+
+```{r}
+modelsummary(list("Model 1"= model1, "Model 2" = model2), 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+
+```
+
+
+
+
+## Regression with categorical predictors
+
+-   In some cases, regression models might include one or more categorical predictor variables.
+
+-   For instance, I might want to include employment status as an additional predictor for leisure time.
+
+## Regression with categorical predictors
+
+::::: columns
+::: {.column width="50%"}
+In order to make a categorical variable interpretable in a regression model, we need to "dummy-code" it
+:::
+
+::: {.column width="50%"}
+```{r}
+atus|>
+  select(leisure, age, num_children, employment_status)|>
+  group_by(employment_status)|>
+  slice_head(n=2)|>
+  ungroup()|>
+  distinct()|>
+  knitr::kable()
+
+
+```
+:::
+:::::
+
+## Regression with categorical predictors
+
+We would then include all but one column as separate predictors for the model. Coefficient values would then be interpreted as the expected difference for someone moving from the excluded category to the category for that coefficient.
+
+```{r}
+atus|>
+  select(age, employment_status)|>
+  group_by(employment_status)|>
+  slice_head(n=2)|>
+  ungroup()|>
+  mutate(value = 1)|>
+  pivot_wider(names_from = employment_status, values_from=value, values_fill=0)|>
+  knitr::kable()
+```
+
+## Regression with categorical predictors
+
+R performs this automatically if we include a non-numeric variable as a predictor in our model:
+
+```{r}
+#| echo: true
+model3<-lm(leisure ~ age + num_children + employment_status, data=atus)
+summary(model3)
+
+```
+
+## Regression with categorical predictors
+
+::::: columns
+::: {.column width="50%"}
+-   Note that "Employed" is the excluded category here, so the other employment status covariates should be interpreted as the effect of that status relative to being unemployed.
+-   So, controlling for age and number of children, people who are no longer in the labor force have 126.4 minutes more leisure time in a day than employed people.
+:::
+
+::: {.column width="50%"}
+```{r}
+modelsummary(list("Model 1"= model1, "Model 2" = model2, "Model 3" = model3), 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+
+```
+:::
+:::::
+
+## Regression with categorical predictors
+
+What's the expected leisure time for an unemployed 30 year old with one child?
+
+::::: {.columns}
+::: {.column width="60%"}
+$$
+\begin{aligned}
+\operatorname{leisure} &= \beta_{0}\ + \\
+&\quad \beta_{1}(\operatorname{age})\ + \\
+&\quad \beta_{2}(\operatorname{num\_children})\ + \\
+&\quad \beta_{3}(\operatorname{employment\_status}_{\operatorname{Not\ in\ labor\ force}})\ + \\
+&\quad \beta_{4}(\operatorname{employment\_status}_{\operatorname{Unemployed}})\ + \\
+&\quad \epsilon
+\end{aligned}
+$$
+:::
+::: {.column width="40%"}
+
+```{r}
+modelsummary(list("Model 3" = model3), 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+```
+:::
+:::::
+
+
+
+
+
+
+## Regression with categorical predictors
+
+What's the expected leisure time for an unemployed 30 year old with one child?
+
+::::: {.columns}
+::: {.column width="60%"}
+
+$$
+\begin{aligned}
+\operatorname{\widehat{leisure}} &= 253.8\ + \\
+&\quad 1(\operatorname{age = 30})\ - \\
+&\quad 30.7(\operatorname{num\_children = 1})\ + \\
+&\quad 126.4(\operatorname{employment}_{\operatorname{Not\ in\ labor\ force}}=0)\ + \\
+&\quad 80.5(\operatorname{employment}_{\operatorname{Unemployed}}=1)
+\end{aligned}
+$$
+
+::: fragment
+
+$$ 
+= 333.6
+$$
+
+:::
+
+:::
+::: {.column width="40%"}
+```{r}
+modelsummary(list("Model 3" = model3), 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+```
+:::
+:::::
+
+## Changing the reference category
+
+Note that we can modify the reference category here to change the excluded variable. This is effectively the same model, but it may slightly change how you interpret results:
+
+```{r}
+#| echo: true
+#| eval: false
+atus$employment_status_relevel<- relevel(atus$employment_status, "Not in labor force")
+model_alt<-lm(leisure ~ age + num_children + employment_status_relevel, data=atus)
+summary(model_alt)
+
+```
+
+```{r}
+
+atus$employment_status_relevel<- relevel(atus$employment_status, "Not in labor force")
+model_alt<-lm(leisure ~ age + num_children + employment_status_relevel, data=atus)
+summary(model_alt)
+modelsummary(list("Model" = model_alt), 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+
+```
+
+## Some considerations: non-linear effects
+
+Regression assumes that the relationship x and y is linear, but this isn't always the case.
+
+```{r}
+age_breaks <- c(0, 20, 30, 40, 50, 60, 70, 80, 90)
+
+atus |>
+  mutate(age_group = cut(
+    age,
+    breaks = age_breaks,
+   # labels = age_labels,
+    right = FALSE
+  )) |>
+  ggplot(aes(x = age_group, y = leisure)) + geom_boxplot() +
+  labs(y = 'Leisure time',
+       x= "Age group"
+       )
+
+```
+
+## Some considerations: non-linear effects
+
+If we think there are clear cut points (such as reaching retirement age) we might consider "binning" a continuous variable into a smaller number of values and then treating it as though it were categorical. These could be included on their own or alongside the original variable in one model.
+
+::::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| echo: true
+
+atus<-atus |>
+  mutate(age_group = case_when(age <18 ~ "Under 18",
+                               age >= 18 & age<65 ~ "Working age",
+                               age >=65 ~ "Retirement age"
+                               ))
+
+m1<-lm(leisure ~ age, data=atus)
+m2<-lm(leisure ~ age_group, data=atus)
+m3<-lm(leisure ~ age_group + age, data=atus)
+
+
+
+```
+:::
+::: {.column width="50%"}
+```{r}
+modelsummary(list(m1, m2, m3), 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+
+```
+:::
+:::::
+
+
+
+
+## Some considerations: non-linear effects
+
+Alternatively, we might add higher-order polynomial terms to capture more complex continuous relationships:
+
+::::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| 
+
+
+model_alt<-lm(leisure ~ poly(age, 3), data=atus)
+
+
+```
+
+```{r}
+modelsummary(model_alt, 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+
+```
+
+:::
+::: {.column width="50%"}
+
+```{r}
+ggplot(atus, aes(x = age, y = leisure)) +
+ #geom_jitter(alpha=.2, shape=1) +
+  # Fits a 2nd-degree (quadratic) polynomial model: y = β0 + β1*x + β2*x^2
+  geom_smooth(method = "lm", formula = y ~ poly(x, 3), se = FALSE, color = "blue", lty=2)  +
+
+  theme_minimal() +
+  labs(title = TeX("$leisure = age+age^2+age^3$"),
+       x= "Age",
+       y ="Predicted leisure time"
+       )
+
+```
+
+:::
+:::::
+
+## Some considerations: non-linear effects
+
+- Assuming things are linear (even when they really aren't) helps you avoid problems with "overfitting".
+
+- It also simplifies interpretation.
+
+- But remember this is an *assumption* that could be wrong in some situations.
+
+::: fragment
+(this comes up frequently when working with survey data because we frequently work with variables that aren't truly continuous)
+
+:::
+
+## Some considerations: non-continuous outcomes
+
+::::: {.columns}
+::: {.column width="50%"}
+- Linear regression also assumes the outcome is continuous, but our dependent variable in this case isn't really.
+- Leisure time can never become negative, can't exceed the number of minutes in a day, and is only reported in whole number increments.
+:::
+::: {.column width="50%"}
+```{r}
+ggplot(atus, aes(x=leisure)) + geom_histogram()
+
+```
+:::
+:::::
+
+## Some considerations: non-continuous outcomes
+
+
+- In some cases, the outcome variable may be "close enough" to continuous that we don't care much about these issues, but under some conditions, this may seriously distort regression results.
+
+- We'll talk next week about some ways to handle this, but the basic idea requires us to use a more generalized form of a linear model that can effectively model different kinds of outcome distributions.
+
+
+```{r}
+ggplot(atus, aes(x=leisure)) + geom_histogram()
+
+```
+
+
+
+## Model fit and model comparison
+
+
+::::: {.columns}
+::: {.column width="50%"}
+- Which model is "best"?
+:::
+::: {.column width="50%"}
+```{r}
+modelsummary(list("Model 3" = model3), 
+             fmt = 1,  # rounding coefficients to the nearest whole number
+             statistic = "conf.int",  # showing confidence intervals
+             coef_rename=TRUE,        # adding variable labels to the output
+             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
+             include_reference = TRUE,                           # automatically showing reference levels
+             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
+             )|>
+  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+```
+:::
+:::::
+
+
+## Model fit and model comparison
+
+- Which model is "best"?
+
+
+
+
+## Regression for scale validation
+
+```{r}
+#| eval: false
+
+library(dataverse)
+
+
+raw_data <- get_file_by_name(filename = 'dataS2.RData',
+                            dataset = '10.7910/DVN/YMKFPZ',
+                            server = "dataverse.harvard.edu",
+                            original=FALSE
+                            )
+tmp <- tempfile(fileext = ".RData")
+writeBin(raw_data, tmp)
+load(tmp)
+unlink(tmp)
+
+```
