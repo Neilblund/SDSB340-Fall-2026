@@ -48,8 +48,8 @@ $$
 y_i =& \beta_0 + \beta_1x_{1i} + \beta_2x_2{_i} + \beta_3x_3{_i}  ... + e_i\\
 y_i &= \text{The dependent variable}\\
 \beta_0 &=\text{Intercept or Constant: the expected value of } y_i \text{when all the X values = 0}\\
-\beta_1...\beta_k &= \text{Coefficient: the effect of a one unit increase in predictor } x_k \text{ on the expected value of y}\\
-e_i &= \text{error or residual: the difference between the prediction for }  y_i \text{ and its actual value}
+\beta_1...\beta_k &= \text{Coefficient: the effect of a one unit increase in predictor } x_k \text{ on expected y}\\
+e_i &= \text{Error or Residual: the difference between the prediction for }  y_i \text{ and its actual value}
 \end{align*}
 $$
 
@@ -344,9 +344,433 @@ modelsummary(model1,
 -   Regression models allow us to include multiple predictors.
 -   When including additional variables in a model, the coefficient values should be interpreted as the average effect of a one unit increase in x while controlling for the remaining covariates.
 
+
 ## Regression with multiple predictors
 
-For instance, I might include number of children as an additional predictor
+One way to think of this is as a regression that estimates the effect of one predictor after removing any variance that is associated with the predictors.
+
+
+::: fragment
+
+$$
+\begin{align*}
+y =& \beta_0 + \beta X  + e\\
+&\beta_0 + \beta X = \text{the part of } y \text{ that's explained by } X\\
+&e = \text{part of y that can't be explained by }  X
+\end{align*}
+$$
+
+:::
+
+## Regression with multiple predictors
+
+1. Regress $y \sim x_2$ and store the residuals $\color{Magenta}{(e_y|x_2)}$
+2. Regress $x_1 \sim x_2$ and store the residuals $\color{Orange}{(e_{x1}|x_2)}$
+3. Regress $\color{Magenta}{(e_y|x_2)} \sim \color{Orange}{(e_{x1}|x_2)}$ (with no intercept term) to get the effect of $x_1$ while holding constant for $x_2$
+
+::: fragment
+this is not really how things work computationally, but it's mathematically equivalent.
+:::
+
+
+### Intuition
+
+
+
+```{r}
+library(ggExtra)
+
+set.seed(1000)
+n <- 40
+R <- matrix(c(1, 0.5,
+              0.5, 1), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+beta<-c(1, -1.5, 2)
+mu <- c(X1 = 0, X2 = 0)
+X<-cbind(1, mvtnorm::rmvnorm(n, mean = mu, sigma = R))
+Y<-X%*%beta + rnorm(n)
+df<-data.frame(Y, X)
+df<-data.frame(scale(df))
+
+```
+
+::::: {.columns}
+::: {.column width="25%"}
+
+$$\color{Magenta}{(e_y|x_2)}$$
+
+:::
+::: {.column width="75%"}
+```{r}
+#| echo: true
+
+m0<-lm(Y ~ X2, data=df)
+ey_x2 <- df$Y - predict(m0)
+```
+::: {.r-stack}
+
+```{r}
+p<-ggplot(df, aes(x = X1, y = Y)) + geom_point(alpha = 1, size = 3) +
+  geom_point(aes(x =, y =  ey_x2), size = 3, color = 'magenta', alpha=0) +
+  theme_bw() +
+  labs(title ='Original Data') +
+  xlim(c(-2.5, 3.5)) +
+  ylim(c(-2.5, 3.5))
+
+
+ggMarginal(p, type='boxplot')
+
+```
+
+
+::: fragment
+
+```{r}
+p<-ggplot(df, aes(x = X1, y = ey_x2)) + geom_point(alpha = 1, size = 3, color='magenta') +
+  geom_point(aes(x = X1, y =  Y), size = 3, alpha=.1) +
+  theme_bw() +
+  labs(title ='Using residuals from Y~X2') +
+  xlim(c(-2.5, 3.5)) +
+  ylim(c(-2.5, 3.5))
+
+
+ggMarginal(p, type='boxplot', yparams = list(fill="magenta"))
+
+
+```
+:::
+
+:::
+:::
+:::::
+
+
+
+### Intuition
+
+::::: {.columns}
+::: {.column width="25%"}
+$$\color{Orange}{(e_{x1}|x_2)}$$
+:::
+::: {.column width="75%"}
+```{r}
+#| echo: true
+
+m1<-lm(X1 ~ X2, data=df)
+ex1_x2 <- df$X1 - predict(m1)
+```
+::: {.r-stack}
+
+```{r}
+p<-ggplot(df, aes(x = X1, y = ey_x2)) + geom_point(alpha = 1, size = 3, color='magenta') +
+  geom_point(aes(x = X1, y =  Y), size = 3, alpha=.1) +
+  theme_bw() +
+  labs(title ='Using residuals from Y~X2') +
+  xlim(c(-2.5, 3.5)) +
+  ylim(c(-2.5, 3.5))
+
+
+ggMarginal(p, type='boxplot', yparams = list(fill="magenta"))
+```
+
+
+::: fragment
+
+```{r}
+p<-ggplot(df, aes(x = ex1_x2, y = ey_x2)) + geom_point(alpha = 1, size = 3, color='orange') +
+  geom_point(aes(x = X1, y =  Y), size = 3, alpha=.1, color='magenta') +
+  theme_bw() +
+  labs(title ='Using residuals from Y~X2')+
+  xlim(c(-2.5, 3.5)) +
+  ylim(c(-2.5, 3.5))
+
+
+ggMarginal(p, type='boxplot', yparams = list(fill="magenta"), xparams=list(fill='orange'))
+
+```
+
+:::
+
+:::
+:::
+:::::
+
+
+### Intuition
+
+
+
+::::: {.columns}
+::: {.column width="25%"}
+
+$\color{Magenta}{(e_y|x_2)} \sim \color{Orange}{(e_{x1}|x_2)}$
+
+:::
+::: {.column width="75%"}
+```{r}
+#| echo: true
+
+m2<-lm(ey_x2 ~ 0 + ex1_x2, data=df)
+
+```
+::: {.r-stack}
+
+```{r}
+
+
+p<-ggplot(df, aes(x = X1, y = Y)) + 
+  geom_smooth(method='lm', aes(x=ex1_x2, y=ey_x2 ), se=FALSE, inherit.aes = FALSE, alpha=0, color='white') +
+  geom_point(alpha = 1, size = 3) +
+  geom_point(aes(x = ex1_x2, y = ey_x2 ), size = 3, color = 'blue', alpha=0) +
+  theme_bw() +
+  geom_smooth(method='lm', se=FALSE, color='grey') +
+  labs(x="X1", y="Y", title='Original Data')+
+  xlim(c(-2.5, 3.5)) +
+  ylim(c(-2.5, 3.5))
+
+
+
+#ggMarginal(p, type='boxplot', yparams = list(fill="magenta"), xparams=list(fill='orange'))
+
+ggMarginal(p, type='boxplot')
+
+```
+
+
+::: fragment
+
+```{r}
+
+
+p<-ggplot(df, aes(x = ex1_x2, y = ey_x2 )) + geom_point(alpha = .1, size = 3) +
+  geom_point(aes(x = X1, y = Y ), size = 3, color = 'blue', alpha=1) +
+  theme_bw() +
+  geom_smooth(method='lm', se=FALSE, color='grey') +
+  geom_smooth(method='lm', aes(x=ex1_x2, y=ey_x2 ), se=FALSE, inherit.aes = FALSE) +
+  labs(title = "Residuals") +
+  xlim(c(-2.5, 3.5)) +
+  ylim(c(-2.5, 3.5))
+
+
+ggMarginal(p, type='boxplot', yparams = list(fill="magenta"), xparams=list(fill='orange'))
+
+
+
+```
+
+:::
+
+:::
+:::
+:::::
+
+
+### Intuition
+
+Note that the coefficient for X1 is identical here:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: "See code for generating simulated data"
+set.seed(1000)
+n <- 40
+R <- matrix(c(1, 0.5,
+              0.5, 1), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+beta<-c(1, -1.5, 2)
+mu <- c(X1 = 0, X2 = 0)
+X<-cbind(1, mvtnorm::rmvnorm(n, mean = mu, sigma = R))
+Y<-X%*%beta + rnorm(n)
+df<-data.frame(Y, X)
+
+
+
+```
+
+::::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| echo: true
+ey_x2<-df$Y - predict(lm(Y~X2, data=df))
+ex1_x2  <- df$X1 - predict(lm(X1 ~ X2, data=df))
+lm(ey_x2 ~ 0 + ex1_x2)
+
+
+```
+:::
+::: {.column width="50%"}
+```{r}
+#| echo: true
+lm(Y ~ X1 +X2, data=df)
+
+
+```
+:::
+:::::
+
+
+### Key points
+
+
+Multiple regression coefficients can be interpreted as the expected change in y for each one unit change in x holding constant for the other predictors.
+
+
+```{r}
+
+ggplot(df, aes(x = X1, y = Y)) + geom_point(alpha = .1, size = 3) +
+  geom_point(aes(x = ex1_x2, y = ey_x2 ), size = 3, color = 'blue', alpha=1) +
+  theme_bw() +
+  geom_smooth(method='lm', se=FALSE, color='grey') +
+  geom_smooth(method='lm', aes(x=ex1_x2, y=ey_x2 ), se=FALSE, inherit.aes = FALSE) +
+  labs(title = "Residuals")
+
+
+```
+
+### Key points
+
+Adding an additional predictor (X2) can substantially change the estimated effect of another predictor (X1) if X2 is correlated with both X1 and Y
+
+
+```{r}
+#| layout-ncol: 3
+set.seed(1000)
+n <- 100
+R <- matrix(c(1, 0.5,
+              0.5, 1), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+beta<-c(1, -1.5, 2)
+mu <- c(X1 = 0, X2 = 0)
+X<-cbind(1, mvtnorm::rmvnorm(n, mean = mu, sigma = R))
+Y<-X%*%beta + rnorm(n)
+df<-data.frame(Y, X)
+ey_x2<-df$Y - predict(lm(Y~X2, data=df))
+ex1_x2  <- df$X1 - predict(lm(X1 ~ X2, data=df))
+
+ggplot(df, aes(x = X1, y = Y)) + geom_point(alpha = .1, size = 2) +
+  geom_point(aes(x = ex1_x2, y = ey_x2 ), size = 2, color = 'blue', alpha=1) +
+  theme_bw() +
+  geom_smooth(method='lm', se=FALSE, color='grey') +
+  geom_smooth(method='lm', aes(x=ex1_x2, y=ey_x2 ), se=FALSE, inherit.aes = FALSE) +
+  labs(title = "X2 is correlated with both X1 and Y")
+
+
+set.seed(9900)
+n <- 100
+
+beta<-c(1, -1.5, 2)
+X<-cbind(1, X1=rnorm(n),X2= rnorm(n))
+Y<-X%*%beta + rnorm(n)
+df<-data.frame(Y, X)
+ey_x2<-df$Y - predict(lm(Y~X2, data=df))
+ex1_x2  <- df$X1 - predict(lm(X1 ~ X2, data=df))
+
+ggplot(df, aes(x = X1, y = Y)) + geom_point(alpha = .1, size = 2) +
+  geom_point(aes(x = ex1_x2, y = ey_x2 ), size =2, color = 'blue', alpha=1) +
+  theme_bw() +
+  geom_smooth(method='lm', se=FALSE, color='grey') +
+  geom_smooth(method='lm', aes(x=ex1_x2, y=ey_x2 ), se=FALSE, inherit.aes = FALSE) +
+  labs(title = "X2 is only correlated with Y")
+
+
+
+set.seed(1000)
+n <- 100
+R <- matrix(c(1, 0.2,
+              0.2, 1), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+beta<-c(1, -1.5, 2)
+mu <- c(X1 = 0, X2 = 0)
+X<-cbind(1, mvtnorm::rmvnorm(n, mean = mu, sigma = R))
+Y<-X[,1:2] %*% beta[1:2] + rnorm(n)
+
+df<-data.frame(Y, X)
+ey_x2<-df$Y - predict(lm(Y~X2, data=df))
+ex1_x2  <- df$X1 - predict(lm(X1 ~ X2, data=df))
+
+ggplot(df, aes(x = X1, y = Y)) + geom_point(alpha = .1, size = 2) +
+  geom_point(aes(x = ex1_x2, y = ey_x2 ), size = 2, color = 'blue', alpha=1) +
+  theme_bw() +
+  geom_smooth(method='lm', se=FALSE, color='grey') +
+  geom_smooth(method='lm', aes(x=ex1_x2, y=ey_x2 ), se=FALSE, inherit.aes = FALSE) +
+  labs(title = "X2 is only correlated with X1")
+```
+
+
+### Key points
+
+Controlling for additional predictors means we lose some of the variability in the data, so adding too many predictors (or just a few strongly correlated predictors) can leave us without enough variability to estimate anything.
+
+
+```{r}
+set.seed(1000)
+n <- 100
+R <- matrix(c(1, 0.5,
+              0.5, 1), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+beta<-c(1, -1.5, 2)
+mu <- c(X1 = 0, X2 = 0)
+X<-cbind(1, mvtnorm::rmvnorm(n, mean = mu, sigma = R))
+Y<-X%*%beta + rnorm(n)
+df<-data.frame(Y, X)
+ey_x2<-df$Y - predict(lm(Y~X2, data=df))
+ex1_x2  <- df$X1 - predict(lm(X1 ~ X2, data=df))
+
+d<-data.frame(label=rep(c("Y", "X1", "EY_X2", "EX1_X2"), each=n),  
+              group = rep(c("Y", "X2", "Y", "X2"),  each=n),
+              value = c(df$X1, df$Y, ey_x2, ex1_x2))|>
+  mutate(label =factor(label, levels=c("Y", "X1", "EY_X2", "EX1_X2"))
+         )
+
+```
+
+
+
+::: r-stack
+
+```{r}
+
+d|>
+ # filter(!label%in%c("EY_X2", "EX1_X2"))|>
+ggplot( aes(x=value, fill=label)) + geom_histogram(binwidth = .3) + facet_wrap(~group) +
+  scale_fill_manual(values=c("grey", "grey", "grey", "grey")) +
+  theme_bw() +
+  guides(fill = "none") +
+  xlim(c(-3, 5)) +
+  labs(title = "Original Data")
+
+```
+
+::: fragment
+
+```{r}
+
+ggplot(d, aes(x=value, fill=label, alpha=label)) + geom_histogram(binwidth=.3) + facet_wrap(~group) +
+  scale_fill_manual(values=c("grey", "grey", "blue", "blue")) +
+  scale_alpha_manual(values=c(.4, .4, .8, .8)) +
+  guides(fill = "none",
+         alpha= "none"
+         ) +
+  theme_bw() +
+  xlim(c(-3, 5)) +
+  labs(title = "After controlling for X1")
+
+```
+
+:::
+
+:::
+
+## Regression with multiple predictors
+
+
+Going back to the original model, let's see what happens when we control for number of household children?
 
 ```{r}
 #| echo: true
@@ -358,7 +782,7 @@ summary(model2)
 
 ::::: columns
 ::: {.column width="50%"}
--   Notice that this *slightly*  changes the coefficient on age. That's because some of the observed effect of age in the previous model was actually accounted for by the fact that being younger is also associated with having kids in the household.
+-   Notice that this *slightly*  changes the coefficient on age.
 -   You might also notice a slight jump in the R-squared value, because our more complex model also explains more variation.
 :::
 
@@ -390,7 +814,7 @@ $\operatorname{leisure} = \beta_{0} + \beta_{1}(\operatorname{age}) + \beta_{2}(
 
 ::: fragment
 
-$\operatorname{\widehat{leisure}} = 219.9 + 2.6(30) - 28.9(1) = 269 $
+$\operatorname{\widehat{leisure}} = 219.9 + 2.6(30) - 28.9(1) = 269$
 
 :::
 
@@ -574,28 +998,23 @@ Note that we can modify the reference category here to change the excluded varia
 ```{r}
 #| echo: true
 #| eval: false
+
 atus$employment_status_relevel<- relevel(atus$employment_status, "Not in labor force")
 model_alt<-lm(leisure ~ age + num_children + employment_status_relevel, data=atus)
 summary(model_alt)
-
 ```
+
+
 
 ```{r}
-
 atus$employment_status_relevel<- relevel(atus$employment_status, "Not in labor force")
 model_alt<-lm(leisure ~ age + num_children + employment_status_relevel, data=atus)
 summary(model_alt)
-modelsummary(list("Model" = model_alt), 
-             fmt = 1,  # rounding coefficients to the nearest whole number
-             statistic = "conf.int",  # showing confidence intervals
-             coef_rename=TRUE,        # adding variable labels to the output
-             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
-             include_reference = TRUE,                           # automatically showing reference levels
-             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
-             )|>
-  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+
 
 ```
+
+
 
 ## Some considerations: non-linear effects
 
@@ -737,67 +1156,29 @@ ggplot(atus, aes(x=leisure)) + geom_histogram()
 :::
 :::::
 
+
 ## Some considerations: non-continuous outcomes
 
+In some cases, the outcome variable may be "close enough" to continuous that we don't care much about these issues, but under some conditions, this may seriously distort regression results.
 
-- In some cases, the outcome variable may be "close enough" to continuous that we don't care much about these issues, but under some conditions, this may seriously distort regression results.
-
-- We'll talk next week about some ways to handle this, but the basic idea requires us to use a more generalized form of a linear model that can effectively model different kinds of outcome distributions.
-
-
-```{r}
-ggplot(atus, aes(x=leisure)) + geom_histogram()
-
-```
-
-
-
-## Model fit and model comparison
+## Some considerations: non-continuous outcomes
 
 
 ::::: {.columns}
 ::: {.column width="50%"}
-- Which model is "best"?
+
+
+We'll talk next week about some ways to handle this, but the basic idea requires us to use a more generalized form of a linear model that can effectively model different kinds of outcome distributions.
 :::
 ::: {.column width="50%"}
+
 ```{r}
-modelsummary(list("Model 3" = model3), 
-             fmt = 1,  # rounding coefficients to the nearest whole number
-             statistic = "conf.int",  # showing confidence intervals
-             coef_rename=TRUE,        # adding variable labels to the output
-             gof_map = c("nobs", "r.squared", "adj.r.squared"), # showing only selected fit stats
-             include_reference = TRUE,                           # automatically showing reference levels
-             output = 'gt'                                      # Using gt backend so we can add formatting with gt functions
-             )|>
-  tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
+ggplot(atus, aes(x=ts_work)) + geom_histogram()
+
 ```
 :::
 :::::
 
 
-## Model fit and model comparison
-
-- Which model is "best"?
 
 
-
-
-## Regression for scale validation
-
-```{r}
-#| eval: false
-
-library(dataverse)
-
-
-raw_data <- get_file_by_name(filename = 'dataS2.RData',
-                            dataset = '10.7910/DVN/YMKFPZ',
-                            server = "dataverse.harvard.edu",
-                            original=FALSE
-                            )
-tmp <- tempfile(fileext = ".RData")
-writeBin(raw_data, tmp)
-load(tmp)
-unlink(tmp)
-
-```
