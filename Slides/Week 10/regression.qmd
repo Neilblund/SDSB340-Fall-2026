@@ -244,17 +244,11 @@ summary(model)
 
 ```
 
-
-
-
-
-
-
 ## Regression with one predictor
 
-- We'll try looking at a real life example using data from the American Time Use Survey (ATUS), which measures the amount of time people spend doing various activities such as working, attending school, caring for children etc.
+-   We'll try looking at a real life example using data from the American Time Use Survey (ATUS), which measures the amount of time people spend doing various activities such as working, attending school, caring for children etc.
 
-- For this regression, we'll look at the effect of age on the amount of time spent doing leisure activities (socializing, sports, games, etc.)
+-   For this regression, we'll look at the effect of age on the amount of time spent doing leisure activities (socializing, sports, games, etc.)
 
 ## Regression with one predictor
 
@@ -271,7 +265,6 @@ summary(model1)
 
 ```
 
-
 ```{r}
 #| echo: false
 atus$employment_status<-factor(atus$employment_status)
@@ -279,7 +272,6 @@ atus$employment_status<-factor(atus$employment_status)
 ```
 
 ## Regression with one predictor
-
 
 ::::: columns
 ::: {.column width="50%"}
@@ -310,17 +302,12 @@ modelsummary(model1,
 
 What is the model's predicted leisure time for a 30 year old?
 
-
 ::: fragment
-
 $\operatorname{leisure} = \beta_{0} + \beta_{1}(\operatorname{age}) + \epsilon$
-
 :::
 
 ::: fragment
-
 $\operatorname{\widehat{leisure}} = 171.5 + 3.3(\operatorname{30}) = 269.3$
-
 :::
 
 ```{r}
@@ -338,20 +325,16 @@ modelsummary(model1,
 
 ```
 
-
 ## Regression with multiple predictors
 
 -   Regression models allow us to include multiple predictors.
 -   When including additional variables in a model, the coefficient values should be interpreted as the average effect of a one unit increase in x while controlling for the remaining covariates.
 
-
 ## Regression with multiple predictors
 
 One way to think of this is as a regression that estimates the effect of one predictor after removing any variance that is associated with the predictors.
 
-
 ::: fragment
-
 $$
 \begin{align*}
 y =& \beta_0 + \beta X  + e\\
@@ -359,23 +342,19 @@ y =& \beta_0 + \beta X  + e\\
 &e = \text{part of y that can't be explained by }  X
 \end{align*}
 $$
-
 :::
 
 ## Regression with multiple predictors
 
-1. Regress $y \sim x_2$ and store the residuals $\color{Magenta}{(e_y|x_2)}$
-2. Regress $x_1 \sim x_2$ and store the residuals $\color{Orange}{(e_{x1}|x_2)}$
-3. Regress $\color{Magenta}{(e_y|x_2)} \sim \color{Orange}{(e_{x1}|x_2)}$ (with no intercept term) to get the effect of $x_1$ while holding constant for $x_2$
+1.  Regress $y \sim x_2$ and store the residuals $\color{Magenta}{(e_y|x_2)}$
+2.  Regress $x_1 \sim x_2$ and store the residuals $\color{Orange}{(e_{x1}|x_2)}$
+3.  Regress $\color{Magenta}{(e_y|x_2)} \sim \color{Orange}{(e_{x1}|x_2)}$ (with no intercept term) to get the effect of $x_1$ while holding constant for $x_2$
 
 ::: fragment
 this is not really how things work computationally, but it's mathematically equivalent.
 :::
 
-
 ### Intuition
-
-
 
 ```{r}
 library(ggExtra)
@@ -395,21 +374,20 @@ df<-data.frame(scale(df))
 
 ```
 
-::::: {.columns}
+::::::: columns
 ::: {.column width="25%"}
-
 $$\color{Magenta}{(e_y|x_2)}$$
-
 :::
-::: {.column width="75%"}
+
+::::: {.column width="75%"}
 ```{r}
 #| echo: true
 
 m0<-lm(Y ~ X2, data=df)
 ey_x2 <- df$Y - predict(m0)
 ```
-::: {.r-stack}
 
+:::: r-stack
 ```{r}
 p<-ggplot(df, aes(x = X1, y = Y)) + geom_point(alpha = 1, size = 3) +
   geom_point(aes(x =, y =  ey_x2), size = 3, color = 'magenta', alpha=0) +
@@ -423,9 +401,7 @@ ggMarginal(p, type='boxplot')
 
 ```
 
-
 ::: fragment
-
 ```{r}
 p<-ggplot(df, aes(x = X1, y = ey_x2)) + geom_point(alpha = 1, size = 3, color='magenta') +
   geom_point(aes(x = X1, y =  Y), size = 3, alpha=.1) +
@@ -440,28 +416,26 @@ ggMarginal(p, type='boxplot', yparams = list(fill="magenta"))
 
 ```
 :::
-
-:::
-:::
+::::
 :::::
-
-
+:::::::
 
 ### Intuition
 
-::::: {.columns}
+::::::: columns
 ::: {.column width="25%"}
 $$\color{Orange}{(e_{x1}|x_2)}$$
 :::
-::: {.column width="75%"}
+
+::::: {.column width="75%"}
 ```{r}
 #| echo: true
 
 m1<-lm(X1 ~ X2, data=df)
 ex1_x2 <- df$X1 - predict(m1)
 ```
-::: {.r-stack}
 
+:::: r-stack
 ```{r}
 p<-ggplot(df, aes(x = X1, y = ey_x2)) + geom_point(alpha = 1, size = 3, color='magenta') +
   geom_point(aes(x = X1, y =  Y), size = 3, alpha=.1) +
@@ -474,9 +448,7 @@ p<-ggplot(df, aes(x = X1, y = ey_x2)) + geom_point(alpha = 1, size = 3, color='m
 ggMarginal(p, type='boxplot', yparams = list(fill="magenta"))
 ```
 
-
 ::: fragment
-
 ```{r}
 p<-ggplot(df, aes(x = ex1_x2, y = ey_x2)) + geom_point(alpha = 1, size = 3, color='orange') +
   geom_point(aes(x = X1, y =  Y), size = 3, alpha=.1, color='magenta') +
@@ -489,33 +461,27 @@ p<-ggplot(df, aes(x = ex1_x2, y = ey_x2)) + geom_point(alpha = 1, size = 3, colo
 ggMarginal(p, type='boxplot', yparams = list(fill="magenta"), xparams=list(fill='orange'))
 
 ```
-
 :::
-
-:::
-:::
+::::
 :::::
-
+:::::::
 
 ### Intuition
 
-
-
-::::: {.columns}
+::::::: columns
 ::: {.column width="25%"}
-
 $\color{Magenta}{(e_y|x_2)} \sim \color{Orange}{(e_{x1}|x_2)}$
-
 :::
-::: {.column width="75%"}
+
+::::: {.column width="75%"}
 ```{r}
 #| echo: true
 
 m2<-lm(ey_x2 ~ 0 + ex1_x2, data=df)
 
 ```
-::: {.r-stack}
 
+:::: r-stack
 ```{r}
 
 
@@ -537,9 +503,7 @@ ggMarginal(p, type='boxplot')
 
 ```
 
-
 ::: fragment
-
 ```{r}
 
 
@@ -558,13 +522,10 @@ ggMarginal(p, type='boxplot', yparams = list(fill="magenta"), xparams=list(fill=
 
 
 ```
-
 :::
-
-:::
-:::
+::::
 :::::
-
+:::::::
 
 ### Intuition
 
@@ -590,7 +551,7 @@ df<-data.frame(Y, X)
 
 ```
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -601,6 +562,7 @@ lm(ey_x2 ~ 0 + ex1_x2)
 
 ```
 :::
+
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -611,12 +573,9 @@ lm(Y ~ X1 +X2, data=df)
 :::
 :::::
 
-
 ### Key points
 
-
 Multiple regression coefficients can be interpreted as the expected change in y for each one unit change in x holding constant for the other predictors.
-
 
 ```{r}
 
@@ -633,7 +592,6 @@ ggplot(df, aes(x = X1, y = Y)) + geom_point(alpha = .1, size = 3) +
 ### Key points
 
 Adding an additional predictor (X2) can substantially change the estimated effect of another predictor (X1) if X2 is correlated with both X1 and Y
-
 
 ```{r}
 #| layout-ncol: 3
@@ -701,11 +659,9 @@ ggplot(df, aes(x = X1, y = Y)) + geom_point(alpha = .1, size = 2) +
   labs(title = "X2 is only correlated with X1")
 ```
 
-
 ### Key points
 
 Controlling for additional predictors means we lose some of the variability in the data, so adding too many predictors (or just a few strongly correlated predictors) can leave us without enough variability to estimate anything.
-
 
 ```{r}
 set.seed(1000)
@@ -730,10 +686,7 @@ d<-data.frame(label=rep(c("Y", "X1", "EY_X2", "EX1_X2"), each=n),
 
 ```
 
-
-
-::: r-stack
-
+:::: r-stack
 ```{r}
 
 d|>
@@ -748,7 +701,6 @@ ggplot( aes(x=value, fill=label)) + geom_histogram(binwidth = .3) + facet_wrap(~
 ```
 
 ::: fragment
-
 ```{r}
 
 ggplot(d, aes(x=value, fill=label, alpha=label)) + geom_histogram(binwidth=.3) + facet_wrap(~group) +
@@ -762,13 +714,10 @@ ggplot(d, aes(x=value, fill=label, alpha=label)) + geom_histogram(binwidth=.3) +
   labs(title = "After controlling for X1")
 
 ```
-
 :::
-
-:::
+::::
 
 ## Regression with multiple predictors
-
 
 Going back to the original model, let's see what happens when we control for number of household children?
 
@@ -782,7 +731,7 @@ summary(model2)
 
 ::::: columns
 ::: {.column width="50%"}
--   Notice that this *slightly*  changes the coefficient on age.
+-   Notice that this *slightly* changes the coefficient on age.
 -   You might also notice a slight jump in the R-squared value, because our more complex model also explains more variation.
 :::
 
@@ -805,17 +754,12 @@ modelsummary(list("Model 1"= model1, "Model 2" = model2),
 
 What's the predicted leisure time for a 30 year old with one child under model 2?
 
-
 ::: fragment
-
 $\operatorname{leisure} = \beta_{0} + \beta_{1}(\operatorname{age}) + \beta_{2}(\operatorname{num\_children}) + \epsilon$
-
 :::
 
 ::: fragment
-
 $\operatorname{\widehat{leisure}} = 219.9 + 2.6(30) - 28.9(1) = 269$
-
 :::
 
 ```{r}
@@ -830,9 +774,6 @@ modelsummary(list("Model 1"= model1, "Model 2" = model2),
   tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
 
 ```
-
-
-
 
 ## Regression with categorical predictors
 
@@ -916,7 +857,7 @@ modelsummary(list("Model 1"= model1, "Model 2" = model2, "Model 3" = model3),
 
 What's the expected leisure time for an unemployed 30 year old with one child?
 
-::::: {.columns}
+::::: columns
 ::: {.column width="60%"}
 $$
 \begin{aligned}
@@ -929,8 +870,8 @@ $$
 \end{aligned}
 $$
 :::
-::: {.column width="40%"}
 
+::: {.column width="40%"}
 ```{r}
 modelsummary(list("Model 3" = model3), 
              fmt = 1,  # rounding coefficients to the nearest whole number
@@ -945,18 +886,12 @@ modelsummary(list("Model 3" = model3),
 :::
 :::::
 
-
-
-
-
-
 ## Regression with categorical predictors
 
 What's the expected leisure time for an unemployed 30 year old with one child?
 
-::::: {.columns}
-::: {.column width="60%"}
-
+:::::: columns
+:::: {.column width="60%"}
 $$
 \begin{aligned}
 \operatorname{\widehat{leisure}} &= 253.8\ + \\
@@ -968,14 +903,12 @@ $$
 $$
 
 ::: fragment
-
 $$ 
 = 333.6
 $$
-
 :::
+::::
 
-:::
 ::: {.column width="40%"}
 ```{r}
 modelsummary(list("Model 3" = model3), 
@@ -989,7 +922,7 @@ modelsummary(list("Model 3" = model3),
   tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
 ```
 :::
-:::::
+::::::
 
 ## Changing the reference category
 
@@ -1004,8 +937,6 @@ model_alt<-lm(leisure ~ age + num_children + employment_status_relevel, data=atu
 summary(model_alt)
 ```
 
-
-
 ```{r}
 atus$employment_status_relevel<- relevel(atus$employment_status, "Not in labor force")
 model_alt<-lm(leisure ~ age + num_children + employment_status_relevel, data=atus)
@@ -1013,8 +944,6 @@ summary(model_alt)
 
 
 ```
-
-
 
 ## Some considerations: non-linear effects
 
@@ -1041,7 +970,7 @@ atus |>
 
 If we think there are clear cut points (such as reaching retirement age) we might consider "binning" a continuous variable into a smaller number of values and then treating it as though it were categorical. These could be included on their own or alongside the original variable in one model.
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -1060,6 +989,7 @@ m3<-lm(leisure ~ age_group + age, data=atus)
 
 ```
 :::
+
 ::: {.column width="50%"}
 ```{r}
 modelsummary(list(m1, m2, m3), 
@@ -1076,14 +1006,11 @@ modelsummary(list(m1, m2, m3),
 :::
 :::::
 
-
-
-
 ## Some considerations: non-linear effects
 
 Alternatively, we might add higher-order polynomial terms to capture more complex continuous relationships:
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -1107,10 +1034,9 @@ modelsummary(model_alt,
   tab_header( title = md("**DV: Minutes spent on leisure activities**"))  # adding a title
 
 ```
-
 :::
-::: {.column width="50%"}
 
+::: {.column width="50%"}
 ```{r}
 ggplot(atus, aes(x = age, y = leisure)) +
  #geom_jitter(alpha=.2, shape=1) +
@@ -1124,30 +1050,29 @@ ggplot(atus, aes(x = age, y = leisure)) +
        )
 
 ```
-
 :::
 :::::
 
 ## Some considerations: non-linear effects
 
-- Assuming things are linear (even when they really aren't) helps you avoid problems with "overfitting".
+-   Assuming things are linear (even when they really aren't) helps you avoid problems with "overfitting".
 
-- It also simplifies interpretation.
+-   It also simplifies interpretation.
 
-- But remember this is an *assumption* that could be wrong in some situations.
+-   But remember this is an *assumption* that could be wrong in some situations.
 
 ::: fragment
 (this comes up frequently when working with survey data because we frequently work with variables that aren't truly continuous)
-
 :::
 
 ## Some considerations: non-continuous outcomes
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- Linear regression also assumes the outcome is continuous, but our dependent variable in this case isn't really.
-- Leisure time can never become negative, can't exceed the number of minutes in a day, and is only reported in whole number increments.
+-   Linear regression also assumes the outcome is continuous, but our dependent variable in this case isn't really.
+-   Leisure time can never become negative, can't exceed the number of minutes in a day, and is only reported in whole number increments.
 :::
+
 ::: {.column width="50%"}
 ```{r}
 ggplot(atus, aes(x=leisure)) + geom_histogram()
@@ -1156,22 +1081,18 @@ ggplot(atus, aes(x=leisure)) + geom_histogram()
 :::
 :::::
 
-
 ## Some considerations: non-continuous outcomes
 
 In some cases, the outcome variable may be "close enough" to continuous that we don't care much about these issues, but under some conditions, this may seriously distort regression results.
 
 ## Some considerations: non-continuous outcomes
 
-
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-
-
 We'll talk next week about some ways to handle this, but the basic idea requires us to use a more generalized form of a linear model that can effectively model different kinds of outcome distributions.
 :::
-::: {.column width="50%"}
 
+::: {.column width="50%"}
 ```{r}
 ggplot(atus, aes(x=ts_work)) + geom_histogram()
 
@@ -1179,6 +1100,6 @@ ggplot(atus, aes(x=ts_work)) + geom_histogram()
 :::
 :::::
 
+## Example code
 
-
-
+[Example code](https://raw.githubusercontent.com/Neilblund/SDSB340-Fall-2026/refs/heads/master/Code/regression_example.R)
