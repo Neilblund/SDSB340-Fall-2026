@@ -264,7 +264,7 @@ In R, you can use the `lm` function to make a linear model. Then write the name 
 #| echo: true
 library(tidyverse)
 library(modelsummary)
-filloc<-here::here("Data/atus25_subset.rds")
+filloc<-url('https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/atus25_subset.rds')
 atus<-readRDS(filloc)
 model1<-lm(leisure ~ age, data=atus)
 summary(model1)
