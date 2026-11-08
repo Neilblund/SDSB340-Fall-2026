@@ -1,0 +1,734 @@
+---
+title: "Maximum Likelihood and Generalized Linear Models"
+format:
+    revealjs:
+        theme: [blueyellow]
+        transition: fade
+        width: 1280
+        height: 720
+        df-print: tibble
+        scrollable: true
+        slide-number: true
+        self-contained: true
+        embed-resources: true
+        mermaid:
+            theme: forest
+        code-annotations: select
+        code-link: true
+        incremental: true
+        smaller: true
+        filters:
+          - code-fullscreen
+bibliography: ../references.bib
+slide-level: 4
+execute:
+  echo: false
+lightbox: true
+---
+
+```{=html}
+<style>
+/* Targets the numeric readout next to the slider */
+form:has(input[type="range"]) input[type="number"] {
+  color: #000000; /* Change this to your preferred color */
+  font-weight: bold;
+}
+</style>
+```
+
+
+```{r}
+library(tidyverse)
+heiss_theme <-
+  theme_minimal(base_family = "Roboto Condensed", base_size = 14) +
+  theme(
+    panel.grid.minor = element_blank(),
+    # Bold, bigger title
+    plot.title = element_text(face = "bold", size = rel(1.7)),
+    # Plain, slightly bigger subtitle that is grey
+    plot.subtitle = element_text(
+      face = "plain",
+      size = rel(1.3),
+      color = "grey70"
+    ),
+    # Italic, smaller, grey caption that is left-aligned
+    plot.caption = element_text(
+      face = "italic",
+      size = rel(0.7),
+      color = "grey70",
+      hjust = 0
+    ),
+    # Bold legend titles
+    legend.title = element_text(face = "bold"),
+    # Bold, slightly larger facet titles that are left-aligned for the sake of repetition
+    strip.text = element_text(
+      face = "bold",
+      size = rel(1.1),
+      hjust = 0
+    ),
+    # Bold axis titles
+    axis.title = element_text(face = "bold"),
+    # Add some space above the x-axis title and make it left-aligned
+    axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
+    # Add some space to the right of the y-axis title and make it top-aligned
+    axis.title.y = element_text(margin = margin(r = 10), hjust = 1)
+  )
+
+theme_set(heiss_theme)
+
+```
+
+
+## Generalized Linear Models
+
+
+Generalized Linear Models (GLM) are a way of extending the Linear Modeling framework to situations where the outcome is not continuous.
+
+::: fragment
+Every GLM has three components:
+
+1. A specific [probability distribution]{.yellow} (Y) for the outcome variable. Such as: normal, binomial, poisson, gamma etc.
+
+2. A systematic component ($\eta$) that is a linear function of the independent variables (this looks like a linear model $\eta = \beta_0 + \beta_1X_1 + \beta_2X_2...$)
+
+3. A link function $g$ that transforms the linear component into the expected value on the outcome scale (and that can be inverted to transform the outcome back to the linear scale.)
+
+:::
+
+## Notation note
+
+We'll use some matrix notation here just to make things a bit more readable. Just note that this:
+
+$$
+X'\beta
+$$
+
+Is the same thing as the linear model we've been writing:
+
+$$
+\beta_0 + \beta_1X_1 + \beta_2X_2... = 
+$$
+
+
+
+## Generalized Linear Models: dichotomous outcomes
+
+We want to use a line to model $y= X'\beta$, but a linear model doesn't quite work here.
+
+::::: {.columns}
+::: {.column width="50%"}
+- Probabilities should be bounded between 0 and 1, but a line can go from $-\infty$ to $+\infty$
+
+- In practice, we typically see "diminishing returns" for dichotomous outcomes: changing x has a bigger effect when the probability of y=1 is close to .5 compared to when it's close to .99.
+
+
+
+:::
+::: {.column width="50%"}
+```{r}
+
+set.seed(123)
+
+
+# 1. Define sample size and parameters
+n <- 100
+beta_0 <- -1.0   # Intercept
+beta_1 <- 0.7    # Slope for predictor x
+# 2. Generate a random predictor variable (e.g., normal or uniform)
+x <- runif(n, min=-10, max=10)
+# 3. Calculate log-odds (logit of probabilities)
+log_odds <- beta_0 + beta_1 * x
+# 4. Convert log-odds to probabilities using the inverse-logit (sigmoid) function
+p <- 1 / (1 + exp(-log_odds))
+# 5. Generate binary response variable (0 or 1) using a binomial distribution
+y <- rbinom(n, size = 1, prob = p)
+
+            newdata =data.frame(x=min(x), max(x), by=.1)
+# Combine into a data frame
+sim_data <- data.frame(x = x, log_odds = log_odds, prob = p, y = y)
+
+ggplot(data=sim_data,aes(x=x, y=y))+ 
+  geom_point() +
+  geom_smooth(method='lm', se=FALSE)
+
+
+```
+:::
+:::::
+
+
+## Generalized Linear Models: dichotomous outcomes
+
+
+So, we need a function that transforms a continuous input into values that are bounded between 0 and 1 and that has a steeper slope towards the center compared to the ends.
+
+
+## Generalized Linear Models: dichotomous outcomes
+
+
+::::: {.columns}
+::: {.column width="50%"}
+- One option is to use a logit link function. This amounts to modeling $\log{\frac{p}{1-p}} = \beta ' X $. This amounts to modeling the logged odds of y=1. 
+
+- This gives us the [logit model]{.yellow}.
+:::
+::: {.column width="50%"}
+```{r}
+invlogit<-function(x){
+  ret<-1/(1+exp(-x))
+  return(ret)
+}
+
+ggplot() +
+  xlim(-10, 10) +
+  geom_function(fun = invlogit, color = "blue", linewidth = 1) +
+  xlab("logged odds") +
+  ylab("probability")
+
+```
+:::
+:::::
+
+
+
+
+## Generalized Linear Models: dichotomous outcomes
+
+
+::::: {.columns}
+::: {.column width="50%"}
+- Another option is to use the probit function $\Phi^{-1}(XB)$, where $\Phi$ is the standard normal cumulative distribution function (the same integral math that turns a z-score into a probability under the normal distribution)
+
+- This gives us the [probit model]{.yellow}
+:::
+::: {.column width="50%"}
+```{r}
+invprobit<-function(x){
+  x<-pnorm(x)
+}
+
+ggplot() +
+  xlim(-10, 10) +
+  geom_function(fun = invprobit, color = "red", linewidth = 1,lty=2) +
+  xlab("probit") +
+  ylab("probability")
+
+```
+:::
+:::::
+
+
+
+## Logit and probit
+
+
+
+::::: {.columns}
+::: {.column width="50%"}
+- Both the [logit]{.yellow} and [probit]{.yellow} models will give us a result that is bounded between 0 and 1.
+
+- The logit model has slightly "fatter tails", but, in practice, the results tend to be substantively very similar.
+
+- Today, logit models are more common because they have a slightly more intuitive interpretation than probit models.
+
+
+:::
+::: {.column width="50%"}
+
+```{ojs}
+//| panel: sidebar
+viewof beta0 = Inputs.range([-5, 5], {value: 0, step: 0.1, label: html`<b>Intercept (β₀)</b>`})
+viewof beta1 = Inputs.range([0.1, 5], {value: 1, step: 0.1, label: html`<b>Slope (β₁)</b>`})
+```
+
+```{ojs}
+// 1. Import jStat for a robust, natively tested standard normal CDF implementation
+jStat = require("jstat@1.9.6")
+
+// 2. Generate the domain grid
+xValues = d3.range(-6, 6.01, 0.05)
+
+// 3. Map the clean, verified data structure
+chartData = xValues.flatMap(x => {
+  const linearPredictor = beta0 + beta1 * x;
+  
+  // Logit (Logistic Link)
+  const pLogit = 1 / (1 + Math.exp(-linearPredictor));
+  
+  // Probit (Standard Normal Cumulative Distribution) using jStat
+  // Parameters for jStat.normal.cdf are: (x, mean, stdDev)
+  const pProbit = jStat.normal.cdf(linearPredictor, 0, 1);
+  
+  return [
+    { x: x, probability: pLogit, model: "Logit (Logistic CDF)" },
+    { x: x, probability: pProbit, model: "Probit (Normal CDF)" }
+  ];
+})
+```
+
+```{ojs}
+// 4. Render the chart with structural axis lines, ticks, and dynamic changeover indicators
+Plot.plot({
+  title: `Probability Curves for Linear Predictor: z = ${beta0.toFixed(1)} + ${beta1.toFixed(1)} * X`,
+  subtitle: "Corrected Probit implementation using jStat",
+  grid: true,
+  x: { domain: [-6, 6], label: "Explanatory Variable (X)" },
+  y: { domain:, label: "Predicted Probability P(Y=1)" },
+  color: {
+    domain: ["Logit (Logistic CDF)", "Probit (Normal CDF)"],
+    range: ["#2c7bb6", "#d7191c"],
+    legend: true
+  },
+  marks: [
+    // 1. Structural axis lines and tick marks
+    Plot.axisX({anchor: "bottom", tickSize: 6, stroke: "#333"}),
+    Plot.axisY({anchor: "left", tickSize: 6, stroke: "#333"}),
+
+    // 2. Horizontal baseline visual anchor at y = 0.5
+    Plot.ruleY([0.5], { stroke: "#aaa", strokeDasharray: "4,4" }),
+    
+    // 3. DYNAMIC CHANGEOVER POINT (Vertical Red Dashed Line)
+    // Formula: x = -beta0 / beta1 when linear predictor equals 0
+    Plot.ruleX([-beta0 / beta1], {
+      stroke: "#d7191c",
+      strokeDasharray: "5,5",
+      strokeWidth: 1.5
+    }),
+
+    // 4. Text label tracking the changeover point coordinate
+    Plot.text([-beta0 / beta1], {
+      y: 0.55, 
+      text: d => `X = ${d.toFixed(2)}`,
+      textAnchor: "start",
+      dx: 8,
+      fill: "#d7191c",
+      fontWeight: "bold"
+    }),
+    
+    // 5. Continuous probability curves
+    Plot.line(chartData, {
+      x: "x",
+      y: "probability",
+      stroke: "model",
+      strokeWidth: 2.5
+    })
+  ]
+})
+```
+
+
+
+```{r}
+#| eval: false
+ggplot() +
+  xlim(-10, 10) +
+  geom_function(fun = invprobit, color = "blue", linewidth = 1,) +
+  geom_function(fun = invlogit, color = "red", linewidth = 1, lty=2) +
+  xlab("") +
+  ylab("probability")
+```
+
+
+:::
+:::::
+
+
+## Generalized Linear Models: dichotomous outcomes
+
+So, now we've got everything we need for a generalized linear model:
+
+1. Our outcome has a binomial distribution where everything is a 1 or a 0.
+
+2. We have a systematic component that can be defined with a linear model $\eta= X'B$
+
+3. We have a function (such as logit) that can map $\eta$ onto the response scale.
+
+## Fitting GLMs
+
+
+In a linear model, we can identify the line of best fit by minimizing the sum of squared residuals, but we don't really have a direct analog for this when we've transformed the outcome like this.
+
+So how do I know whether one model is better than any other?
+
+
+
+```{r}
+set.seed(123)
+
+
+# 1. Define sample size and parameters
+n <- 100
+beta_0 <- -1.0   # Intercept
+beta_1 <- 0.7    # Slope for predictor x
+# 2. Generate a random predictor variable (e.g., normal or uniform)
+x <- runif(n, min=-10, max=10)
+# 3. Calculate log-odds (logit of probabilities)
+log_odds <- beta_0 + beta_1 * x
+# 4. Convert log-odds to probabilities using the inverse-logit (sigmoid) function
+p <- 1 / (1 + exp(-log_odds))
+# 5. Generate binary response variable (0 or 1) using a binomial distribution
+y <- rbinom(n, size = 1, prob = p)
+
+            newdata =data.frame(x=min(x), max(x), by=.1)
+# Combine into a data frame
+sim_data <- data.frame(x = x, log_odds = log_odds, prob = p, y = y)
+
+ggplot(data=sim_data,aes(x=x, y=y))+ 
+  geom_point() +
+  geom_smooth(method='glm',
+              method.args = list(family = "binomial"), 
+              se=FALSE)
+
+
+```
+
+
+## Maximum Likelihood Estimation
+
+- Rather than minimizing the sum of squared errors, most generalized linear models will find the best fit using [Maximum Likelihood Estimation (MLE)]{.yellow}
+
+- In MLE, we find the set of parameter values (typically denoted using the symbol $\theta$) that are *most likely* to have generated the data we see.
+
+- We'll look at a simple application to get a sense of how this works.
+
+
+
+## MLE of a proportion
+
+
+- Imagine a survey of 100 randomly selected adults finds that about 26% believe in bigfoot 
+
+- What is the population probability of Bigfoot belief ($\theta$) that is [most likely]{.yellow} to have generated this result?
+
+
+## MLE of a proportion
+
+$\theta$ *could* be any number $>0$  and $<1$. It's *possible* to get a sample where 26% believe in Bigfoot even if the population percent is 40%:
+
+```{r}
+#| cache: true
+#| fig-height: 3
+set.seed(1000)
+
+df<-data.frame(x=rbinom(1e6, 100, .40))
+
+ggplot(df, aes(x=x)) + geom_histogram() +
+  geom_vline(xintercept=26, lty=2, color='red') +
+  labs(title = "1 million simulated samples",
+       subtitle = "n = 100; θ = .40",
+     xlab="Number of sampled respondents who believe in Bigfoot")
+
+```
+
+::: fragment
+
+You can probably already guess that the correct answer here is $\theta = .26$, but we want a way to *systematically* pick the best value of $\theta$ for more complicated problems.
+
+:::
+
+## MLE of a proportion
+
+
+Since "belief in Bigfoot" is a simple yes/no question, then we can model a single response using the Bernoulli Probability Mass Function:
+
+$$
+\begin{align*}
+P(y_i=1|\theta) = \theta^{y_i}(1-\theta)^{1-y_i}\\
+\theta = \text{probability that y is 1}\\
+y_i = \text{a single response to the question}
+\end{align*}
+$$
+
+
+. . .
+
+
+So, if $y_i=1$ and $\theta = .20$
+
+$$
+P(1|.20) = .20^{1}(.75)^{0} = .20
+$$
+
+
+. . .
+
+
+If $y_i=0$ and $\theta = .20$ 
+
+$$
+P(0|.20) = .20^{0}(.80)^{1} = .80
+$$
+
+## MLE of a proportion
+
+Assuming that the observations are all independent and identically distributed, we can calculate the *likelihood* of the entire sample by simply multiplying together all the individual probabilities from each of the 100 observations:
+
+$$
+L(y|\theta) =  \prod^n_{i=1} \theta^{y_i}(1-\theta)^{1-y_i} = \theta^{\sum{y_i}}(1-\theta)^{n-\sum{y_i}}
+$$
+
+
+::: fragment
+
+However, we run into a bit of a computational problem here because the likelihood gets very small very quickly:
+
+```{r}
+#| echo: true
+
+.25 * .25 * .75 * .25 * .25 * .25 * .75 * .25 # ... and so on
+
+```
+
+:::
+
+::: fragment 
+
+Using a logarithm gets around this problem by turning the tiny fractions into large negative numbers, and allowing us to use addition rather than multiplication:
+
+```{r}
+#| echo: true
+log(.25) + log(.25) + log(.75) + log(.25) + log(.25) + log(.25) + log(.75)  + log(.25)
+
+```
+
+:::
+
+::: fragment
+
+
+
+```{r}
+#| echo: true
+
+exp(-8.89313)
+
+```
+
+:::
+
+## MLE of a proportion
+
+$$
+\theta^{\sum{y_i}}(1-\theta)^{n-\sum{y_i}}
+$$
+
+
+::: fragment
+
+
+Taking the log here turns the multiplication into addition, and the exponentiation into multiplication:
+
+$$
+\log L(y|\theta) = (\sum^n_{i=1}y_i) \log(\theta) + (n-\sum^n_{i=1}{y_i}) \log(1-\theta)
+$$
+
+:::
+
+## MLE of a proportion
+
+So now we have a function we can use to distinguish good guesses at $\theta$ from bad guesses: we just want to find a parameter that maximizes this function:
+
+$$
+\log L(y|\theta) = (\sum^n_{i=1}y_i) \log(\theta) + (n-\sum^n_{i=1}{y_i}) \log(1-\theta)
+$$
+
+
+```{r}
+#| echo: true
+# 100 responses with p = .26
+y<-rep(c(0, 1), c(74, 26))
+ll_prop<-function(y, theta){
+  n<-length(y)
+  sumy<-sum(y)
+  ll<-sumy * log(theta) + (n-sumy) * log(1-theta)
+  return(ll)
+}
+
+
+ll_prop(y, .5)
+ll_prop(y, .4)
+ll_prop(y, .8)
+
+```
+
+
+## MLE of a proportion
+
+Again, we could probably just eyeball this, but to find it mathematically we would need to do a bit of calculus:
+
+```{r}
+curve(ll_prop(y=y, theta=x), from = .01, to = .99, 
+      xname ='x',
+      xlab ='Theta',
+      ylab  ="log likelihood",
+      main = "Plot if logged likelihoods for different values of theta", 
+      col = "blue", lwd = 2)
+abline(v = .26, col = "red", lwd = 2, lty = "dashed")
+
+
+```
+
+
+## MLE of a proportion
+
+The maximum is the point where the derivative (slope) of this line with respect to $\theta$ is 0 (and where the second derivative of this line is negative)
+
+
+
+```{r}
+# 1. Define the data (Number of successes 'x' and total trials 'n')
+x <- 26
+n <- 100
+mle <- x / n  # The Maximum Likelihood Estimate (0.26)
+
+# 2. Define a sequence of possible proportion values (p) 
+# We slightly exclude exact 0 and 1 to prevent log(0) or division by zero errors
+p <- seq(0.01, 0.99, length.out = 500)
+
+# 3. Calculate Log-Likelihood and its Derivative (Score function)
+# Log-likelihood: l(p) = x*log(p) + (n-x)*log(1-p)
+log_likelihood <- x * log(p) + (n - x) * log(1 - p)
+
+# Derivative: dl/dp = x/p - (n-x)/(1-p)
+derivative <- (x / p) - ((n - x) / (1 - p))
+
+# 4. Set up a side-by-side plotting layout
+par(mfrow = c(1, 2))
+
+# --- Plot 1: Log-Likelihood ---
+plot(p, log_likelihood, type = "l", col = "blue", lwd = 2,
+     xlab = "θ", ylab = "Log-Likelihood l(θ)",
+     main = "Log-Likelihood of a Proportion")
+
+# Add a vertical dashed line at the maximum likelihood estimate (MLE)
+abline(v = mle, col = "red", lty = 2, lwd = 1.5)
+text(mle, min(log_likelihood)+.8, labels = paste("MLE =", mle), pos = 4, col = "red")
+
+# --- Plot 2: Derivative of Log-Likelihood (Score Function) ---
+plot(p, derivative, type = "l", col = "darkgreen", lwd = 2,
+     xlab = "θ", ylab = "dl / dθ",
+     main = "Derivative of Log-Likelihood")
+
+# Add a horizontal line at 0 (where derivative equals zero)
+abline(h = 0, col = "black", lty = 1)
+# Add a vertical dashed line at the root (MLE)
+abline(v = mle, col = "red", lty = 2, lwd = 1.5)
+
+# Reset plotting parameters back to default
+par(mfrow = c(1, 1))
+
+```
+
+## MLE of a proportion
+
+The maximum is the point where the derivative (slope) of this line with respect to $\theta$ is 0 (and where the second derivative of this line is negative)
+
+$$
+\log L(y|\theta) = (\sum^n_{i=1}y_i) \log(\theta) + (n-\sum^n_{i=1}{y_i}) \log(1-\theta)
+$$
+
+## MLE of a proportion
+
+Simplifying the notation a bit...
+
+$$
+\begin{align*}
+&Y \log(\theta) + (n-Y) \log(1-\theta)\\
+\end{align*}
+$$
+
+where $Y = \sum^n_{i=1}{y_i}$
+
+::: fragment
+
+
+Applying the [chain rule](https://en.wikipedia.org/wiki/Chain_rule)
+
+$$
+Y \frac{1}{\theta} +  (n-Y) \frac{-1}{1-\theta}
+$$
+
+:::
+
+::: fragment
+
+And simplifying...
+
+$$
+\frac{d}{d\theta} = \frac{Y}{\theta} +  \frac{(n-Y) }{1-\theta}
+$$
+
+
+:::
+
+## MLE of a proportion
+
+
+Now we can set it to zero and solve algebraically for $\theta$
+
+$$
+0 = \frac{Y}{\theta} +  \frac{(n-Y) }{1-\theta}
+$$
+
+. . .
+
+
+$$
+\begin{align}
+\frac{Y}{\theta} =  \frac{(n-Y) }{1-\theta}  && \text{Adding } \frac{(n-Y) }{1-\theta} \text{ to both sides} \\
+Y(1-\theta) =(n-Y)\theta   && \text{cross multiplying by } \theta(1-\theta)\\ 
+Y-Y\theta  = n\theta - Y\theta && \text{Expanding}\\
+Y = n\theta  && \text{Cancelling } -Y\theta\\ 
+\theta = \frac{Y}{n} && \text{Solving for } \theta
+\end{align}
+$$
+
+
+## MLE of a proportion
+
+What is the population probability of Bigfoot belief ($\theta$) that is [most likely]{.yellow} to have generated a sample with 26% Bigfoot believers?
+
+. . .
+
+The estimate of $\theta$ that maximizes the likelihood of observing our data is just the sample proportion: .26!
+
+$$
+\begin{align*}
+\hat{\theta} = \frac{Y}{n}  \\
+\end{align*}
+$$
+
+### Key points
+
+The answer here was kind of obvious to begin with, but Maximum Likelihood Estimation is useful because it gives us a flexible way to judge models where we don't have an easy metric like the sum of squared errors.
+
+. . .
+
+For instance, we could estimate the conditional probability of belief in Bigfoot as a function of some predictors ($X$)
+
+
+$$
+L(y|\beta, X) =  \prod^n_{i=1} (\text{logit}^{-1} X_i\beta)^{y_i}(1-\text{logit}^{-1} X_i\beta)^{1-y_i}
+$$
+
+
+::: fragment
+
+We've definitely made the problem here more complex, but 
+
+:::
+
+
+
+# 
+
+
+::::: {.columns}
+::: {.column width="50%"}
+
+:::
+::: {.column width="50%"}
+
+:::
+:::::
+
