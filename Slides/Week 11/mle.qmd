@@ -1845,6 +1845,7 @@ If you're interested in playing around with NORC's Civic Health Poll, you can ac
 
 ```{r}
 #| eval: false
+#| echo: true
 library(tidyverse)
 library(haven)
 fname<-here::here("Data", "chep.zip")
@@ -1872,6 +1873,7 @@ Running the logistic regression on example data:
 
 ```{r}
 #| eval: false
+#| echo: true
 library(tidyverse)
 # pre-filtered and formatted subset of the data
 chep_subset<-readRDS(here::here("Data", "chep_subset.rds"))
