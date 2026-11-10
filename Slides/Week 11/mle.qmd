@@ -154,6 +154,10 @@ if(!file.exists(fname)){
 
 chep<-read_dta(unz(fname, filename='civichealth_datafile.dta' ))
 
+# Converting to factors
+chep_fac<-chep|>
+  as_factor()
+
 labs<-labelled::var_label(chep)
 
 labsframe<-tibble(variable = names(labs), description = unname(labs))
@@ -1833,3 +1837,77 @@ preds|>
 
 
 
+
+## R-code
+
+
+If you're interested in playing around with NORC's Civic Health Poll, you can access the whole file using the code below:
+
+```{r}
+#| eval: false
+library(tidyverse)
+library(haven)
+fname<-here::here("Data", "chep.zip")
+if(!file.exists(fname)){
+  download.file('https://civichealth.norc.org/downloads/civichealth_datafile.zip',
+                mode='wb',
+                dest=fname
+  )
+}
+
+chep<-read_dta(unz(fname, filename='civichealth_datafile.dta' ))
+
+# Converting stata formatted variables to factors
+chep_fac<-chep|>
+  as_factor()
+
+# https://civichealth.norc.org/index.html for more info on the data
+
+```
+
+
+## R-code
+
+Running the logistic regression on example data:
+
+```{r}
+#| eval: false
+library(tidyverse)
+# pre-filtered and formatted subset of the data
+chep_subset<-readRDS(here::here("Data", "chep_subset.rds"))
+
+model<-glm(
+  REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
+  family = binomial(link='logit'),
+  data = chep_subset)
+summary(model)
+# getting predictions on the response scale for different values of the predictors:
+
+# 1. create a data frame with combinations of the predictors:
+df<-expand.grid(VOTE24_CHOICE = c("(1) Kamala Harris","(2) Donald Trump",
+                                  "(3) Someone else", "(4) Did not vote"
+                                  ), 
+               HARDSHIP_INDEX = 0:13)
+
+#2. use predict on the model object with the newdata and type='response' options:
+df$prediction<-predict(model, 
+        newdata= df,
+        type='response'
+        )
+
+ggplot(df, aes(x=HARDSHIP_INDEX, y=prediction,
+               color =VOTE24_CHOICE 
+               )) + geom_line() +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(y='Probability of voting for Republican',
+       x = "Number of financial hardships",
+       subtitle = "Number of financial hardships in the last year",
+       caption = "Source: NORC Civic Health & Elections Project 2026",
+       color = '2024 Presidential Vote'
+       ) +
+    scale_color_manual(values=c("blue","#DC143C", "purple", "grey"))
+
+  
+
+
+```
