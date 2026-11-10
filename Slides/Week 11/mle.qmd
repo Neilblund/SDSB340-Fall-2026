@@ -19,6 +19,9 @@ format:
         smaller: true
         filters:
           - code-fullscreen
+knitr:
+  opts_chunk:
+    fig-align: center
 bibliography: ../references.bib
 slide-level: 4
 execute:
@@ -28,17 +31,76 @@ lightbox: true
 
 ```{=html}
 <style>
-/* Targets the numeric readout next to the slider */
-form:has(input[type="range"]) input[type="number"] {
-  color: #000000; /* Change this to your preferred color */
-  font-weight: bold;
-}
+
 </style>
 ```
 
 
+
+```{=html}
+<style>
+/* Targets the numeric readout next to the slider */
+form:has(input[type="range"]) input[type="number"] {
+  color: #000000; /* Change this to your preferred color */
+  font-weight: bold;
+  min-width: 10rem !important;
+
+}
+  /* Target the elements aggressively by drilling down through the Reveal.js structural hierarchy */
+div.reveal #slide-dashboard-container table {
+    font-size: 1rem !important; 
+    line-height: 1.0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  
+  div.reveal #slide-dashboard-container td {
+    padding: 1px 3px !important;
+    font-size: 2rem !important;
+    border-bottom: 1px solid #eee !important;
+    text-align: center;
+  }
+
+  /* Target table headers under the slide canvas to enforce black-on-white rules */
+  div.reveal #slide-dashboard-container th {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+    font-size: 0.7rem !important;
+    padding: 3px 3px !important;
+    border-bottom: 2px solid #000000 !importan  t;
+    text-transform: none !important; /* Prevents Reveal.js from forcing ALL CAPS */
+    letter-spacing: 0 !important;
+    text-align: center;
+
+  }
+  
+  /* Restrict outer bounding boxes completely to prevent vertical scrolling */
+  div.reveal #slide-dashboard-container .oi-3a0e61-container,
+  div.reveal #slide-dashboard-container div[style*="max-height"] {
+    max-height: 500px !important;
+    overflow-y: hidden !important; /* Strips out scrollbars completely */
+  }
+  
+/* CRITICAL NEW FIX: Target the number outputs adjacent to the range tracks */
+  div.reveal form[class*="oi-"] output,
+  div.reveal .oi-3a0e61 output {
+    width: auto !important;
+    min-width: 10rem !important;
+    display: inline-block !important;
+    text-align: right !important;
+    font-family: monospace !important;
+  }
+</style>
+```
+
 ```{r}
+library(haven)
 library(tidyverse)
+library(gt)
+library(modelsummary)
+chep_subset<-readRDS(here::here("Data", "chep_subset.rds"))
+
 heiss_theme <-
   theme_minimal(base_family = "Roboto Condensed", base_size = 14) +
   theme(
@@ -79,10 +141,112 @@ theme_set(heiss_theme)
 ```
 
 
+```{r}
+#| eval: false
+
+fname<-here::here("Data", "chep.zip")
+if(!file.exists(fname)){
+  download.file('https://civichealth.norc.org/downloads/civichealth_datafile.zip',
+                mode='wb',
+                dest=fname
+  )
+}
+
+chep<-read_dta(unz(fname, filename='civichealth_datafile.dta' ))
+
+labs<-labelled::var_label(chep)
+
+labsframe<-tibble(variable = names(labs), description = unname(labs))
+
+# Converting to factors
+chep_fac<-chep|>
+  as_factor()
+
+
+# Calculating hardship index
+chep_fac$HARDSHIP_INDEX<-chep_fac|>
+  select(starts_with("FINANCE"))|>
+  select(-FINANCE_NONE)|>
+  mutate(across(everything(), .fns=~as.numeric(.x)-1))|>
+  rowSums()
+
+
+# subsetting, recoding, and dropping some missing data
+chep_subset<-chep_fac|>
+  #filter(VOTE24_CHOICE %in% c("(1) Kamala Harris","(2) Donald Trump"))|>
+  filter(VOTE24_CHOICE != "(99) DON'T KNOW/SKIPPED/REFUSED")|>
+
+  select(VOTE24_CHOICE, HOUSEVOTE, AGE6, EDUC, INCOME, RACETH4, HARDSHIP_INDEX, CHEP_WEIGHT, AIFAV_LOCALDATA,
+         PARTYFULL, SEX, starts_with("FINANCE"))|>
+  mutate(across(c("AGE6", "EDUC", "INCOME", "RACETH4", "AIFAV_LOCALDATA", "SEX"), .fns=~replace_values(.x, 
+                                                                            c("(99) DON'T KNOW/SKIPPED/REFUSED") ~ NA)
+                
+                ),
+         across(c("AGE6","RACETH4"), .fns=~replace_values(.x, 
+                                                                            c("(88) REMOVED FOR DISCLOSURE RISK") ~ NA))
+         
+         )|>
+  droplevels()|>
+  mutate(REPVOTE = case_when(HOUSEVOTE == "(2) Republican candidate for Congress" ~ "Yes",
+                             HOUSEVOTE != "(2) Republican candidate for Congress" ~ "No" 
+                             
+                             )|>factor(),
+         AIFAV_LOCALDATA_NUMERIC = as.numeric(AIFAV_LOCALDATA)
+         
+         )|>
+  # dropping missing data (we lose a lot here which is probably not great! but
+  # we're going to ignore that for the sake of simplicity)
+  drop_na()
+
+labs<-labs[colnames(chep_subset)[which(colnames(chep_subset)%in%names(labs))]]
+
+labelled::var_label(chep_subset) <- labs
+
+labelled::var_label(chep_subset$HARDSHIP_INDEX) <- "Financial Hardship Index"
+labelled::var_label(chep_subset$REPVOTE) <- "Did R vote for Republican Candidate in the House?"
+labelled::var_label(chep_subset$VOTE24_CHOICE) <- "2024 Presidential Vote"
+
+
+saveRDS(chep_subset, file=here::here("Data", "chep_subset.rds"))
+```
+
+
+```{r}
+chep_subset<-readRDS(here::here("Data", "chep_subset.rds"))
+model1<-glm(
+  REPVOTE  ~ HARDSHIP_INDEX ,
+  family = binomial,
+  data = chep_subset)
+
+model2<-glm(
+  REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
+  family = binomial,
+  data = chep_subset)
+
+
+
+```
+
+## Linear models
+
+How should we model outcomes that are non-continuous?
+
+- The "Time spent on childcare" measured on the American Time Use survey is always a non-negative integer value.
+
+- Responses to a "yes/no" question can be treated as 0 and 1, but they're still discrete outcomes.
+
+- Responses on a Likert scale might be ordered from 1 to 5, but they're technically not continuous.
+
+::: fragment
+Linear models will typically be a poor fit for this kind of outcome.
+
+:::
+
+
 ## Generalized Linear Models
 
 
-Generalized Linear Models (GLM) are a way of extending the Linear Modeling framework to situations where the outcome is not continuous.
+Generalized Linear Models (GLM) are a way of extending the Linear Modeling framework to fit models with all sorts of distributions.
 
 ::: fragment
 Every GLM has three components:
@@ -111,20 +275,331 @@ $$
 
 
 
-## Generalized Linear Models: dichotomous outcomes
+## Linear models and Binary Outcomes
 
-We want to use a line to model $y= X'\beta$, but a linear model doesn't quite work here.
+
+
+To make the problem more concrete, we can use some recently released polling data from the NORC Civic Health & Elections Project to look at modeling vote choice.
+
+
+::: fragment
+As usual, we're going to initially ignore the survey weights initially, but we'll bring those back into the analysis in a bit.
+
+:::
+
+
+## NORC Data
+
 
 ::::: {.columns}
 ::: {.column width="50%"}
-- Probabilities should be bounded between 0 and 1, but a line can go from $-\infty$ to $+\infty$
 
-- In practice, we typically see "diminishing returns" for dichotomous outcomes: changing x has a bigger effect when the probability of y=1 is close to .5 compared to when it's close to .99.
+::: non-incremental
+
+
+::: {.fragment data-fragment-index="1"}
+
+Respondents were asked a series of questions about financial hardships experienced within the last year.
+:::
+
+::: {.fragment data-fragment-index="2"}
+
+
+These were combined to create an additive index of "financial hardship"
+
+:::
+
+:::
+
+:::
+::: {.column width="50%"}
+
+:::: {.r-stack}
+
+
+::: {.fragment data-fragment-index="1" .fade-in-then-out}
+
+```{r}
+library(gt)
+library(srvyr)
+library(survey)
+
+chep_yesno <- chep_subset|>
+  mutate(CHEP_WEIGHT = CHEP_WEIGHT * (n()/sum(CHEP_WEIGHT)) )|>
+  select(starts_with("FINANCE_"), CHEP_WEIGHT)|>
+    select(-FINANCE_NONE)|>
+  pivot_longer(cols=-CHEP_WEIGHT)|>
+  group_by(name, value)|>
+  summarise(CHEP_WEIGHT = sum(CHEP_WEIGHT))|>
+  group_by(name)|>
+  mutate(wtd_prop = (CHEP_WEIGHT/sum(CHEP_WEIGHT)))|>
+  ungroup()|>
+  select(-CHEP_WEIGHT)|>
+  pivot_wider(names_from =  value, values_from =wtd_prop)
+
+chep_yesno$label<- labelled::var_label(chep_subset[chep_yesno$name])|>unname()|>unlist()
+chep_yesno|>
+  mutate(label = str_replace(label, "In the past year, have you done or experienced any of the following\\? ", ""))|>
+  select(Question = label, No = `(0) Not selected`, Yes=`(1) Selected`)|>
+  arrange(Yes)|>
+  select(Question, Yes)|>
+  gt()|>
+  fmt_percent(decimals=0)|>
+  cols_label(Question = md("**In the past year, have you done or experienced any of the following?**"))|>
+  tab_source_note("Source: NORC Civic Health & Elections Project 2026")
+  
+```
+
+:::
+
+::: {.fragment data-fragment-index="2"}
+
+```{r}
+
+chep_subset|>
+  mutate(CHEP_WEIGHT = CHEP_WEIGHT * (n()/sum(CHEP_WEIGHT)) )|>
+  select(HARDSHIP_INDEX, CHEP_WEIGHT)|>
+  group_by(HARDSHIP_INDEX)|>
+  summarise(num = sum(CHEP_WEIGHT))|>
+  ungroup()|>
+  mutate(prop = num/sum(num))|>
+  ggplot(aes(x=HARDSHIP_INDEX, y=prop)) + geom_col() +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(y='Weighted Percent',
+       x = "Number of financial hardships",
+       subtitle = "Number of financial hardships in the last year",
+       caption = "Source: NORC Civic Health & Elections Project 2026"
+       )
+
+  
+```
+:::
+
+::::
+
+:::
+
+:::::
+
+## Modeling a dichotomous outcome
+
+::::: {.columns}
+::: {.column width="50%"}
+
+::: {.fragment data-fragment-index="1"}
+I want to look at the effects of the hardship index on the probability of voting for the Republican candidate in their local congressional race.
+:::
+
+::: {.fragment data-fragment-index="2"}
+I suspect past vote choice may be a confounding variable here, so I also want to control for 2024 vote.
+:::
+
+:::
+::: {.column width="50%"}
+
+
+:::: {.r-stack}
+::: {.fragment data-fragment-index="1" .fade-in-then-out}
+
+```{r}
+
+chep_subset|>
+  group_by(HARDSHIP_INDEX)|>
+  summarise(prop = sum(REPVOTE=="Yes")/n(),
+            wtd_prop = sum(CHEP_WEIGHT[which(REPVOTE=="Yes")])/sum(CHEP_WEIGHT)
+            )|>
+ggplot(aes(x=HARDSHIP_INDEX, y=wtd_prop)) + 
+  geom_line() +
+  geom_point() +
+  labs(y= "Weighted % Vote for Rep. Candidate",
+       x ="Number of Financial Hardships Experienced",
+       title = "House vote in 2026",
+       subtitle = "by number of financial difficulties in last year",
+       caption = "Source: NORC Civic Health & Elections Project 2026",
+       ) +
+  scale_y_continuous(labels = scales::label_percent())
+
+```
+
+:::
+
+::: {.fragment data-fragment-index="2" .fade-in-then-out}
+
+
+```{r}
+
+chep_subset|>
+  group_by(HARDSHIP_INDEX, VOTE24_CHOICE)|>
+  summarise(prop = sum(REPVOTE=="Yes")/n(),
+            wtd_prop = sum(CHEP_WEIGHT[which(REPVOTE=="Yes")])/sum(CHEP_WEIGHT)
+            )|>
+ggplot(aes(x=HARDSHIP_INDEX, y=wtd_prop, color=VOTE24_CHOICE)) + 
+  geom_line() +
+  geom_point() +
+  labs(y= "Weighted % Vote for Rep. Candidate",
+       x ="Number of Financial Hardships Experienced",
+       title = "House vote in 2026",
+       subtitle = "by number of financial difficulties in last year",
+       caption = "Source: NORC Civic Health & Elections Project 2026",
+       color ='2024 Vote Choice'
+       ) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_color_manual(values=c("blue","#DC143C", "purple", "grey"))
+
+```
+:::
+
+::::
+
+:::
+:::::
+
+
+## Modeling a dichotomous outcome
+
+If I convert the yes/no outcome to 1s and 0s, I can still fit a linear model even though the outcome isn’t continuous:
+
+```{r}
+#| echo: true
+chep_subset$repvote_numeric<-as.numeric(chep_subset$REPVOTE=="Yes")
+model<-lm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset)
+
+```
+
+## Modeling a dichotomous outcome
+
+
+::::: {.columns}
+::: {.column width="40%"}
+The coefficients here can be interpreted as the effect of a one unit increase on each variable on the probability of voting for the Republican in 2026.
+:::
+::: {.column width="60%"}
+::: {.panel-tabset}
+
+###### Unformatted Output
+
+```{r}
+lm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset)|>
+  summary()
+
+
+```
+
+###### Formatted Output
+
+
+```{r}
+library(modelsummary)
+chep_subset$repvote_numeric<-as.numeric(chep_subset$REPVOTE=="Yes")
+model<-lm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset)
+
+
+modelsummary(list("2026 House Vote" = model), 
+             coef_rename = TRUE,
+             fmt = 3,  
+             statistic = "conf.int",  
+             gof_map = c("nobs"), # showing only selected fit stats
+             output = 'gt'  
+)
+
+```
+
+
+:::
+
+:::
+:::::
+
+
+
+## Modeling a dichotomous outcome
+
+However, the model gives us nonsensical predictions under some conditions:
+
+
+```{r}
+library(ggeffects)
+model<-lm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset)
+
+preds <- predict_response(model, terms = c("HARDSHIP_INDEX", "VOTE24_CHOICE"))
+
+preds|>
+  plot() + 
+  ylab("predicted %") + 
+  labs(title = "Predicted % Voting for Republican",
+       ) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_x_continuous(breaks = seq(0, 13, by = 1)) +
+    scale_color_manual(values=c("blue","#DC143C", "purple", "grey"))+
+  heiss_theme 
+
+
+  
+
+```
+
+
+## Modeling a dichotomous outcome
+
+
+
+::::: {.columns}
+::: {.column width="50%"}
+This is the key problem with fitting a linear model to an outcome that isn't continuous: the outcome here just can't really be modeled with a line.
+:::
+::: {.column width="50%"}
+```{r}
+preds|>
+  filter(group  == "(1) Kamala Harris")|>
+  plot(colors='blue') + 
+  ylab("predicted %") + 
+  labs(title = "Predicted % Voting for Republican",
+       subtitle = "Harris Voters only"
+       ) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_x_continuous(breaks = seq(0, 13, by = 1)) +
+    scale_color_manual(values=c("blue","#DC143C", "purple", "grey"))+
+  heiss_theme 
+
+```
+:::
+:::::
+
+
+
+
+
+## Generalized Linear Models: dichotomous outcomes
+
+We still want to retain the linear modeling framework $y= X'\beta$, but we need a function that can transform a straight line into something with these properties:
+
+::::: {.columns}
+::: {.column width="50%"}
+- The function should take any real number as an input and map it onto a 0, 1 range.
+
+- Ideally, we'd like to capture the "diminishing returns" of changes when the probability of y is really high or really low. 
 
 
 
 :::
 ::: {.column width="50%"}
+
+```{r}
+
+preds|>
+  filter(group  == "(1) Kamala Harris")|>
+  plot(colors='blue') + 
+  ylab("predicted %") + 
+  labs(title = "Predicted % Voting for Republican",
+       subtitle = "Harris Voters only"
+       ) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_x_continuous(breaks = seq(0, 13, by = 1)) +
+    scale_color_manual(values=c("blue","#DC143C", "purple", "grey"))+
+  heiss_theme 
+```
+
+
 ```{r}
 
 set.seed(123)
@@ -133,7 +608,7 @@ set.seed(123)
 # 1. Define sample size and parameters
 n <- 100
 beta_0 <- -1.0   # Intercept
-beta_1 <- 0.7    # Slope for predictor x
+beta_1 <- -0.7    # Slope for predictor x
 # 2. Generate a random predictor variable (e.g., normal or uniform)
 x <- runif(n, min=-10, max=10)
 # 3. Calculate log-odds (logit of probabilities)
@@ -147,9 +622,9 @@ y <- rbinom(n, size = 1, prob = p)
 # Combine into a data frame
 sim_data <- data.frame(x = x, log_odds = log_odds, prob = p, y = y)
 
-ggplot(data=sim_data,aes(x=x, y=y))+ 
-  geom_point() +
-  geom_smooth(method='lm', se=FALSE)
+#ggplot(data=sim_data,aes(x=x, y=y))+ 
+#  geom_point() +
+ # geom_smooth(method='lm', se=FALSE)
 
 
 ```
@@ -160,15 +635,11 @@ ggplot(data=sim_data,aes(x=x, y=y))+
 ## Generalized Linear Models: dichotomous outcomes
 
 
-So, we need a function that transforms a continuous input into values that are bounded between 0 and 1 and that has a steeper slope towards the center compared to the ends.
-
-
-## Generalized Linear Models: dichotomous outcomes
-
-
 ::::: {.columns}
 ::: {.column width="50%"}
-- One option is to use a logit link function. This amounts to modeling $\log{\frac{p}{1-p}} = \beta ' X $. This amounts to modeling the logged odds of y=1. 
+- The logistic function $p = \frac{1}{1+e^{-(X'\beta)}}$ maps a linear prediction back to the probability scale.
+
+- This amounts to modeling $\log{\frac{p}{1-p}} = \beta ' X$ or the logged odds of y=1. 
 
 - This gives us the [logit model]{.yellow}.
 :::
@@ -197,7 +668,7 @@ ggplot() +
 
 ::::: {.columns}
 ::: {.column width="50%"}
-- Another option is to use the probit function $\Phi^{-1}(XB)$, where $\Phi$ is the standard normal cumulative distribution function (the same integral math that turns a z-score into a probability under the normal distribution)
+- Another option is to use $\Phi(XB)$ where  $\Phi$ is the standard normal cumulative distribution function (the same integral math that turns a z-score into a probability under the normal distribution)
 
 - This gives us the [probit model]{.yellow}
 :::
@@ -235,91 +706,10 @@ ggplot() +
 :::
 ::: {.column width="50%"}
 
-```{ojs}
-//| panel: sidebar
-viewof beta0 = Inputs.range([-5, 5], {value: 0, step: 0.1, label: html`<b>Intercept (β₀)</b>`})
-viewof beta1 = Inputs.range([0.1, 5], {value: 1, step: 0.1, label: html`<b>Slope (β₁)</b>`})
-```
-
-```{ojs}
-// 1. Import jStat for a robust, natively tested standard normal CDF implementation
-jStat = require("jstat@1.9.6")
-
-// 2. Generate the domain grid
-xValues = d3.range(-6, 6.01, 0.05)
-
-// 3. Map the clean, verified data structure
-chartData = xValues.flatMap(x => {
-  const linearPredictor = beta0 + beta1 * x;
-  
-  // Logit (Logistic Link)
-  const pLogit = 1 / (1 + Math.exp(-linearPredictor));
-  
-  // Probit (Standard Normal Cumulative Distribution) using jStat
-  // Parameters for jStat.normal.cdf are: (x, mean, stdDev)
-  const pProbit = jStat.normal.cdf(linearPredictor, 0, 1);
-  
-  return [
-    { x: x, probability: pLogit, model: "Logit (Logistic CDF)" },
-    { x: x, probability: pProbit, model: "Probit (Normal CDF)" }
-  ];
-})
-```
-
-```{ojs}
-// 4. Render the chart with structural axis lines, ticks, and dynamic changeover indicators
-Plot.plot({
-  title: `Probability Curves for Linear Predictor: z = ${beta0.toFixed(1)} + ${beta1.toFixed(1)} * X`,
-  subtitle: "Corrected Probit implementation using jStat",
-  grid: true,
-  x: { domain: [-6, 6], label: "Explanatory Variable (X)" },
-  y: { domain:, label: "Predicted Probability P(Y=1)" },
-  color: {
-    domain: ["Logit (Logistic CDF)", "Probit (Normal CDF)"],
-    range: ["#2c7bb6", "#d7191c"],
-    legend: true
-  },
-  marks: [
-    // 1. Structural axis lines and tick marks
-    Plot.axisX({anchor: "bottom", tickSize: 6, stroke: "#333"}),
-    Plot.axisY({anchor: "left", tickSize: 6, stroke: "#333"}),
-
-    // 2. Horizontal baseline visual anchor at y = 0.5
-    Plot.ruleY([0.5], { stroke: "#aaa", strokeDasharray: "4,4" }),
-    
-    // 3. DYNAMIC CHANGEOVER POINT (Vertical Red Dashed Line)
-    // Formula: x = -beta0 / beta1 when linear predictor equals 0
-    Plot.ruleX([-beta0 / beta1], {
-      stroke: "#d7191c",
-      strokeDasharray: "5,5",
-      strokeWidth: 1.5
-    }),
-
-    // 4. Text label tracking the changeover point coordinate
-    Plot.text([-beta0 / beta1], {
-      y: 0.55, 
-      text: d => `X = ${d.toFixed(2)}`,
-      textAnchor: "start",
-      dx: 8,
-      fill: "#d7191c",
-      fontWeight: "bold"
-    }),
-    
-    // 5. Continuous probability curves
-    Plot.line(chartData, {
-      x: "x",
-      y: "probability",
-      stroke: "model",
-      strokeWidth: 2.5
-    })
-  ]
-})
-```
 
 
 
 ```{r}
-#| eval: false
 ggplot() +
   xlim(-10, 10) +
   geom_function(fun = invprobit, color = "blue", linewidth = 1,) +
@@ -345,58 +735,31 @@ So, now we've got everything we need for a generalized linear model:
 
 ## Fitting GLMs
 
-
-In a linear model, we can identify the line of best fit by minimizing the sum of squared residuals, but we don't really have a direct analog for this when we've transformed the outcome like this.
+In a linear model, we can identify the line of best fit by minimizing the sum of squared residuals, but there's no real analog for this with a GLM.
 
 So how do I know whether one model is better than any other?
 
 
-
-```{r}
-set.seed(123)
-
-
-# 1. Define sample size and parameters
-n <- 100
-beta_0 <- -1.0   # Intercept
-beta_1 <- 0.7    # Slope for predictor x
-# 2. Generate a random predictor variable (e.g., normal or uniform)
-x <- runif(n, min=-10, max=10)
-# 3. Calculate log-odds (logit of probabilities)
-log_odds <- beta_0 + beta_1 * x
-# 4. Convert log-odds to probabilities using the inverse-logit (sigmoid) function
-p <- 1 / (1 + exp(-log_odds))
-# 5. Generate binary response variable (0 or 1) using a binomial distribution
-y <- rbinom(n, size = 1, prob = p)
-
-            newdata =data.frame(x=min(x), max(x), by=.1)
-# Combine into a data frame
-sim_data <- data.frame(x = x, log_odds = log_odds, prob = p, y = y)
-
-ggplot(data=sim_data,aes(x=x, y=y))+ 
-  geom_point() +
-  geom_smooth(method='glm',
-              method.args = list(family = "binomial"), 
-              se=FALSE)
-
-
-```
-
-
-## Maximum Likelihood Estimation
+## Fitting GLMs: Maximum Likelihood
 
 - Rather than minimizing the sum of squared errors, most generalized linear models will find the best fit using [Maximum Likelihood Estimation (MLE)]{.yellow}
 
 - In MLE, we find the set of parameter values (typically denoted using the symbol $\theta$) that are *most likely* to have generated the data we see.
 
-- We'll look at a simple application to get a sense of how this works.
+
+
+
+## Fitting GLMs: Maximum Likelihood
+
+
+We'll look at a simple application to get a sense of how MLE works: finding the maximum likelihood estimate of a population proportion from a sample proportion.
 
 
 
 ## MLE of a proportion
 
 
-- Imagine a survey of 100 randomly selected adults finds that about 26% believe in bigfoot 
+- Imagine a survey of 100 randomly selected adults finds that about 26% believe in Bigfoot 
 
 - What is the population probability of Bigfoot belief ($\theta$) that is [most likely]{.yellow} to have generated this result?
 
@@ -405,9 +768,11 @@ ggplot(data=sim_data,aes(x=x, y=y))+
 
 $\theta$ *could* be any number $>0$  and $<1$. It's *possible* to get a sample where 26% believe in Bigfoot even if the population percent is 40%:
 
+
 ```{r}
 #| cache: true
 #| fig-height: 3
+#| fig-width: 6
 set.seed(1000)
 
 df<-data.frame(x=rbinom(1e6, 100, .40))
@@ -419,6 +784,9 @@ ggplot(df, aes(x=x)) + geom_histogram() +
      xlab="Number of sampled respondents who believe in Bigfoot")
 
 ```
+
+
+
 
 ::: fragment
 
@@ -468,9 +836,13 @@ L(y|\theta) =  \prod^n_{i=1} \theta^{y_i}(1-\theta)^{1-y_i} = \theta^{\sum{y_i}}
 $$
 
 
-::: fragment
+## MLE of a proportion
 
-However, we run into a bit of a computational problem here because the likelihood gets very small very quickly:
+$$
+L(y|\theta) =  \prod^n_{i=1} \theta^{y_i}(1-\theta)^{1-y_i} = \theta^{\sum{y_i}}(1-\theta)^{n-\sum{y_i}}
+$$
+
+We run into a bit of a computational problem here because we're multiplying a bunch of probabilities, this gets very small very quickly.
 
 ```{r}
 #| echo: true
@@ -479,9 +851,8 @@ However, we run into a bit of a computational problem here because the likelihoo
 
 ```
 
-:::
 
-::: fragment 
+::: fragment
 
 Using a logarithm gets around this problem by turning the tiny fractions into large negative numbers, and allowing us to use addition rather than multiplication:
 
@@ -495,7 +866,7 @@ log(.25) + log(.25) + log(.75) + log(.25) + log(.25) + log(.25) + log(.75)  + lo
 
 ::: fragment
 
-
+And we can always exponentiate to turn a log likelihood back to a likelihood:
 
 ```{r}
 #| echo: true
@@ -557,14 +928,57 @@ ll_prop(y, .8)
 Again, we could probably just eyeball this, but to find it mathematically we would need to do a bit of calculus:
 
 ```{r}
-curve(ll_prop(y=y, theta=x), from = .01, to = .99, 
-      xname ='x',
-      xlab ='Theta',
-      ylab  ="log likelihood",
-      main = "Plot if logged likelihoods for different values of theta", 
-      col = "blue", lwd = 2)
-abline(v = .26, col = "red", lwd = 2, lty = "dashed")
+library(patchwork)
 
+# 1. Define the data/parameters
+# Let's assume we observed x successes out of n trials
+x <- 26
+n <- 100
+
+# Create a data frame over the domain of the proportion p (0 to 1)
+# Avoiding exactly 0 and 1 to prevent log(0) errors
+p_seq <- seq(0.01, 0.99, length.out = 500)
+
+df <- data.frame(
+  p = p_seq,
+  log_lik = x * log(p_seq) + (n - x) * log(1 - p_seq),
+  derivative = (x / p_seq) - ((n - x) / (1 - p_seq))
+)
+
+# Maximum Likelihood Estimate (MLE) for reference lines
+mle <- x / n
+
+# 2. Create the Log-Likelihood Plot
+p1 <- ggplot(df, aes(x = p, y = log_lik)) +
+  geom_line(color = "#2c3e50", linewidth = 1) +
+  geom_vline(xintercept = mle, linetype = "dashed", color = "#e74c3c", linewidth = 0.8) +
+  labs(
+    title = "Log-Likelihood Function",
+  #  subtitle = paste("Maximum at p =", mle),
+    x = "Proportion (p)",
+    y = "Log-Likelihood l(p)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"))
+
+# 3. Create the Derivative (Score Function) Plot
+p2 <- ggplot(df, aes(x = p, y = derivative)) +
+  geom_line(color = "#16a085", linewidth = 1) +
+  geom_vline(xintercept = mle, linetype = "dashed", color = "#e74c3c", linewidth = 0.8) +
+  geom_hline(yintercept = 0, linetype = "solid", color = "gray60", linewidth = 0.5) +
+  labs(
+    title = "Derivative of Log-Likelihood",
+   # subtitle = "Equals 0 at the MLE",
+    x = "Proportion (p)",
+    y = "Score U(p)"
+  ) +
+  # Constrain y-axis slightly so asymptotes near 0 and 1 don't distort the scale
+
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"))
+
+# 4. Display them side by side using patchwork
+p1
 
 ```
 
@@ -576,46 +990,9 @@ The maximum is the point where the derivative (slope) of this line with respect 
 
 
 ```{r}
-# 1. Define the data (Number of successes 'x' and total trials 'n')
-x <- 26
-n <- 100
-mle <- x / n  # The Maximum Likelihood Estimate (0.26)
+p1 + p2
 
-# 2. Define a sequence of possible proportion values (p) 
-# We slightly exclude exact 0 and 1 to prevent log(0) or division by zero errors
-p <- seq(0.01, 0.99, length.out = 500)
 
-# 3. Calculate Log-Likelihood and its Derivative (Score function)
-# Log-likelihood: l(p) = x*log(p) + (n-x)*log(1-p)
-log_likelihood <- x * log(p) + (n - x) * log(1 - p)
-
-# Derivative: dl/dp = x/p - (n-x)/(1-p)
-derivative <- (x / p) - ((n - x) / (1 - p))
-
-# 4. Set up a side-by-side plotting layout
-par(mfrow = c(1, 2))
-
-# --- Plot 1: Log-Likelihood ---
-plot(p, log_likelihood, type = "l", col = "blue", lwd = 2,
-     xlab = "θ", ylab = "Log-Likelihood l(θ)",
-     main = "Log-Likelihood of a Proportion")
-
-# Add a vertical dashed line at the maximum likelihood estimate (MLE)
-abline(v = mle, col = "red", lty = 2, lwd = 1.5)
-text(mle, min(log_likelihood)+.8, labels = paste("MLE =", mle), pos = 4, col = "red")
-
-# --- Plot 2: Derivative of Log-Likelihood (Score Function) ---
-plot(p, derivative, type = "l", col = "darkgreen", lwd = 2,
-     xlab = "θ", ylab = "dl / dθ",
-     main = "Derivative of Log-Likelihood")
-
-# Add a horizontal line at 0 (where derivative equals zero)
-abline(h = 0, col = "black", lty = 1)
-# Add a vertical dashed line at the root (MLE)
-abline(v = mle, col = "red", lty = 2, lwd = 1.5)
-
-# Reset plotting parameters back to default
-par(mfrow = c(1, 1))
 
 ```
 
@@ -698,37 +1075,761 @@ $$
 \end{align*}
 $$
 
-### Key points
 
-The answer here was kind of obvious to begin with, but Maximum Likelihood Estimation is useful because it gives us a flexible way to judge models where we don't have an easy metric like the sum of squared errors.
+## MLE with a model
+
+The answer in this example was kind of obvious to begin with, but Maximum Likelihood Estimation is useful because it gives us a flexible way to judge models when we can't rely on an easy metric like the sum of squared errors.
 
 . . .
 
-For instance, we could estimate the conditional probability of belief in Bigfoot as a function of some predictors ($X$)
+For instance, $\theta$ could be a set of coefficient values in a regression instead of a single average:
 
 
 $$
-L(y|\beta, X) =  \prod^n_{i=1} (\text{logit}^{-1} X_i\beta)^{y_i}(1-\text{logit}^{-1} X_i\beta)^{1-y_i}
+\begin{align*}
+L(y|\theta, X) =  \prod^n_{i=1} p ^{y_i} (1-p)^{1-y_i} \\
+p = \frac{1}{1+e^{-(\theta'X)}}
+\end{align*}
 $$
 
 
 ::: fragment
 
-We've definitely made the problem here more complex, but 
+We've definitely made the problem here more complex, but the goal is the same: we want to find parameters for $\theta$ that maximize the likelihood of our observed data.
 
 :::
 
 
+## MLE with a model
 
-# 
+
+
+::::: {.columns}
+::: {.column width="50%"}
+So, with a simple dataset of 10 observations, we need to come up with two parameter values ($\beta_0$ and $\beta_1$) that maximize the likelihood of the data.
+
+$$
+\begin{align*}
+L(y|\theta, X) =  \prod^n_{i=1} p ^{y_i} (1-p)^{1-y_i} \\
+p = \frac{1}{1+e^{-(\theta'X)}}
+\end{align*}
+$$
+
+:::
+::: {.column width="50%"}
+```{r}
+
+
+data<-tribble(
+  ~"id", ~"x", ~"y", 
+    1,   -2.5,  0 ,
+    2,   -1.8,  0 ,
+    3,   -1.2,  0 ,
+    4,   -0.5,  0 ,
+    5,   -0.1,  1 ,
+    6,    0.4,  0 ,
+    7,    0.9,  1 ,
+    8,    1.6,  1 ,
+    9,    2.2,  1 ,
+    10,   3.0,  1 )
+
+knitr::kable(data)
+
+
+```
+
+:::
+:::::
+
+
+## MLE with a model
+
 
 
 ::::: {.columns}
 ::: {.column width="50%"}
 
+- Let's try $\beta_0 = 1$ and $\beta_1 = 2$
+
+- Plugging that in to observation 1 gives us: $p = \frac{1}{1+e^{-(1 + 2\times-2.5)}} = 0.018$
+
+- The likelihood for observation 1 under these values is $L(y_i|\beta, X_i) =  0.018 ^{0} (1-0.018)^{1-0} = 0.982$
+
+- The log likelihood of this observation is $\ln(0.982) = -0.0180$
+
+
 :::
 ::: {.column width="50%"}
+```{r}
+
+
+data<-tribble(
+  ~"id", ~"x", ~"y", 
+    1,   -2.5,  0 ,
+    2,   -1.8,  0 ,
+    3,   -1.2,  0 ,
+    4,   -0.5,  0 ,
+    5,   -0.1,  1 ,
+    6,    0.4,  0 ,
+    7,    0.9,  1 ,
+    8,    1.6,  1 ,
+    9,    2.2,  1 ,
+    10,   3.0,  1 )
+
+knitr::kable(data)
+
+
+```
 
 :::
 :::::
+
+
+## MLE with a model
+
+
+
+
+::::: {.columns}
+::: {.column width="50%"}
+
+- We can do this same calculation separately for each row with our chosen parameters, and then add up all the log likelihoods to get the logged likelihood under this model.
+
+
+- The log likelihood is -3.4063. 
+:::
+::: {.column width="50%"}
+
+::: {style="font-size: 85%;"}
+
+
+```{r}
+data$`predicted P` = round(boot::inv.logit(1 + data$x*2), digits=3)
+
+data$likelihood <- if_else(data$y==1, data$`predicted P`, 1-data$`predicted P`)
+data$loglikelihood<-round(log(data$likelihood), digits=4)
+latex_cols<-c("id", "x", "y", 
+              "probability = 1 / (1 + e⁻⁽ᵝ₀ ⁺ ᵝ₁ˣ⁾)",
+              "Likelihood = pʸⁱ (1-p)¹⁻ʸⁱ",
+              "Log Likelihood"
+              )
+knitr::kable(data, col.names = latex_cols, align='c')
+
+
+```
+
+:::
+
+:::
+:::::
+
+
+## MLE with a model
+
+::::: {.columns}
+::: {.column width="50%"}
+
+
+What if we use  $\beta_0 = 1$ and $\beta_1 = 1$?
+
+
+:::
+::: {.column width="50%"}
+
+::: {style="font-size: 85%;"}
+
+```{r}
+
+data<-tribble(
+  ~"id", ~"x", ~"y", 
+    1,   -2.5,  0 ,
+    2,   -1.8,  0 ,
+    3,   -1.2,  0 ,
+    4,   -0.5,  0 ,
+    5,   -0.1,  1 ,
+    6,    0.4,  0 ,
+    7,    0.9,  1 ,
+    8,    1.6,  1 ,
+    9,    2.2,  1 ,
+    10,   3.0,  1 )
+
+knitr::kable(data)
+
+
+
+```
+
+:::
+:::
+:::::
+
+
+## MLE with a model
+
+::::: {.columns}
+::: {.column width="50%"}
+
+
+What if we use  $\beta_0 = 1$ and $\beta_1 = 1$?
+
+
+The new log likelihood is slightly worse: -4.3721.
+
+
+
+:::
+::: {.column width="50%"}
+
+::: {style="font-size: 85%;"}
+
+```{r}
+
+data$`predicted P` = round(boot::inv.logit(1 + data$x*1), digits=3)
+
+data$likelihood <- if_else(data$y==1, data$`predicted P`, 1-data$`predicted P`)
+data$loglikelihood<-round(log(data$likelihood), digits=4)
+latex_cols<-c("id", "x", "y", 
+              "probability = 1 / (1 + e⁻⁽ᵝ₀ ⁺ ᵝ₁ˣ⁾)",
+              "Likelihood = pʸⁱ (1-p)¹⁻ʸⁱ",
+              "Log Likelihood"
+              )
+knitr::kable(data, col.names = latex_cols, align='c')
+
+
+
+```
+:::
+
+:::
+:::::
+
+
+## Trying out some parameters
+
+::: {#slide-dashboard-container}
+
+
+::::: {.columns}
+::: {.column width="50%"}
+
+
+
+
+```{ojs}
+//| echo: false
+// 2. Mock dataset of 20 real-world styled binary outcome observations
+sampleData = [
+  { id: 1,  x: -2.5, y: 0 },
+  { id: 2,  x: -1.8, y: 0 },
+  { id: 3,  x: -1.2, y: 0 },
+  { id: 4,  x: -0.5, y: 0 },
+  { id: 5,  x: -0.1, y: 1 }, // Inflection zone mixing begins
+  { id: 6,  x:  0.4, y: 0 },
+  { id: 7,  x:  0.9, y: 1 },
+  { id: 8,  x:  1.6, y: 1 },
+  { id: 9,  x:  2.2, y: 1 },
+  { id: 10, x:  3.0, y: 1 }
+]
+
+// 3. Compute dynamic row valuations and overall Log Likelihood
+evaluatedData = sampleData.map(row => {
+  const linearPredictor = beta0 + beta1 * row.x;
+  const p = 1 / (1 + Math.exp(-linearPredictor));
+  
+  // Boundary safety clamp for math log stability near 0 or 1
+  const pClamped = Math.max(0.00001, Math.min(0.99999, p));
+  const Likelihood = row.y === 1 ? pClamped : 1 - pClamped;
+  const logLikelihood = row.y === 1 ? Math.log(pClamped) : Math.log(1 - pClamped);
+
+  return {
+    "Obs ID": row.id,
+    "Predictor (X)": row.x.toFixed(1),
+    "Observed Outcome (Y)": row.y,
+    "Predicted Prob (P)": p.toFixed(3),
+    "Likelihood": Likelihood.toFixed(3),
+    "Log Likelihood": logLikelihood.toFixed(3)
+  };
+})
+
+// 4. Calculate total log likelihood score sum
+totalLogLikelihood = evaluatedData.reduce((sum, row) => sum + parseFloat(row["Log Likelihood"]), 0)
+
+// 5. Output the responsive HTML dynamic grid table with summary line
+viewof dynamicTable = Inputs.table(evaluatedData, {
+  columns: ["Predictor (X)", "Observed Outcome (Y)", "Predicted Prob (P)","Likelihood", "Log Likelihood"],
+  header: {
+    "Obs ID": "ID",
+    "Predictor (X)": "X",
+    "Observed Outcome (Y)": "Y",
+    "Predicted Prob (P)": "Predicted P(Y=1)",
+    "Likelihood" : "Likelihood",
+    "Log Likelihood": "LogLik"
+  },
+//  layout: "fixed",
+  required: false,                                 // Stripped out row selection checkboxes
+  width: "90%",
+  height: "50%",
+  select: false
+
+})
+```
+
+Log Likelihood: ${totalLogLikelihood.toFixed(4)}
+
+
+:::
+::: {.column width="50%"}
+```{ojs}
+//| echo: false
+// 3. Define mutable baseline hooks to support click-driven overrides
+
+//| echo: false
+// 3. Keep sliders clean and independent for perfect manual dragging
+viewof beta0 = Inputs.range([-5, 5], {value: 1.5, step: 0.01, label: html`<b>Intercept (β₀)</b>`})
+viewof beta1 = Inputs.range([0.1, 5], {value: 0.5, step: 0.01, label: html`<b>Slope (β₁)</b>`})
+
+// 4. Fixed Click Handler: Mutates element node values directly and fires native change inputs
+solveButton = {
+  const btn = html`<button style="font-size: 0.6rem; padding: 2px 6px; font-weight: bold; background: #2c7bb6; color: white; border: none; border-radius: 3px; cursor: pointer;">Solve MLE</button>`;
+  btn.onclick = () => {
+    // Look up the underlying html element instances directly
+    const input0 = viewof beta0.querySelector("input[type=range]");
+    const input1 = viewof beta1.querySelector("input[type=range]");
+    
+    if (input0 && input1) {
+      // Reassign values directly
+      viewof beta0.value = -0.4255;
+      viewof beta1.value = 2.4870;
+      
+      // Dispatch standard DOM events to tell OJS that slider inputs shifted
+      viewof beta0.dispatchEvent(new Event("input", {bubbles: true}));
+      viewof beta1.dispatchEvent(new Event("input", {bubbles: true}));
+    }
+  };
+  return btn;
+}
+
+
+
+```
+
+
+```{ojs}
+//| eval: false
+// 5. REACTIVE COLOR INDICATOR BOX
+llIndicator = {
+  const difference = Math.abs(totalLogLikelihood - (-2.504305));
+  
+  let bg, text, border, statusMsg;
+  if (difference < 0.005) {
+    bg = "#e6f4ea";      
+    text = "#137333";    
+    border = "#137333";  
+    statusMsg = "✨ MLE OPTIMUM ACHIEVED";
+  } else if (difference < 0.8) {
+    bg = "#fef7e0";      
+    text = "#b06000";    
+    border = "#b06000";  
+    statusMsg = "⚠️ Decent fit, tuning required";
+  } else {
+    bg = "#fce8e6";      
+    text = "#c5221f";    
+    border = "#c5221f";  
+    statusMsg = "❌ Poor Fit (High Penalty)";
+  }
+  
+  return html`<div style="background: ${bg}; color: ${text}; padding: 4px 8px; border: 1px solid ${border}; border-radius: 4px; font-family: monospace; font-weight: bold; font-size: 0.65rem; display: inline-block; margin-top: 4px; width: 100%; box-sizing: border-box; transition: all 0.2s ease;">
+    Total Log Likelihood (LL): <span>${totalLogLikelihood.toFixed(4)}</span> 
+    <span style="float: right; font-size: 0.95em;">${statusMsg}</span>
+  </div>`;
+}
+
+```
+
+```{ojs}
+//| echo: false
+// 6. Generate linear continuous background domain pathing grid for smooth drawing
+curveDomain = d3.range(-6, 6.01, 0.05)
+curveData = curveDomain.map(x => {
+  const lp = beta0 + beta1 * x;
+  return { x: x, probability: 1 / (1 + Math.exp(-lp)) };
+})
+
+// 7. Render isolated active Logit graph including structural margins and tick rules
+chartPlot = Plot.plot({
+  grid: true,
+  marginLeft: 55,
+  marginBottom: 45,
+  marginRight: 20,
+  x: { domain: [-4, 4], label: "Explanatory Variable (X)" },
+  y: { domain:[0,1], label: "Probability P(Y=1)" },
+  marks: [
+    // Axis line layouts with ticks
+    Plot.axisX({anchor: "bottom", tickSize: 6, stroke: "#333", ticks: d3.range(-4, 4.1, 1), tickFormat: d => d.toFixed(0)}),
+    Plot.axisY({anchor: "left", tickSize: 6, stroke: "#333", ticks: d3.range(0, 1.1, 0.1), tickFormat: d => d.toFixed(1)}),
+
+    Plot.ruleY([0.5], { stroke: "#aaa", strokeDasharray: "4,4" }),
+    Plot.ruleX([-beta0 / beta1], { stroke: "#d7191c", strokeDasharray: "5,5", strokeWidth: 1.5 }),
+
+    // Draw continuous model response function
+    Plot.line(curveData, { x: "x", y: "probability", stroke: "#2c7bb6", strokeWidth: 3 }),
+
+    // Overlay real sample observations to check model accuracy adjustments visually
+    Plot.dot(sampleData, {
+      x: "x",
+      y: "y",
+      fill: d => d.y === 1 ? "#2c7bb6" : "#666",
+      stroke: "#fff",
+      strokeWidth: 1,
+      r: 5
+    })
+  ]
+})
+```
+
+
+:::
+:::::
+
+:::
+
+
+
+## MLE with a model
+
+So how do we find the right parameters here without guesswork?
+
+$$
+\begin{align*}
+L(y|\theta, X) =  \prod^n_{i=1} p ^{y_i} (1-p)^{1-y_i} \\
+p = \frac{1}{1+e^{-(\theta'X)}}
+\end{align*}
+$$
+
+::: fragment
+Just like the previous case, we would find the (partial) derivative of the log likelihood function with respect to each parameter, set to zero, and solve:
+
+$$
+\frac{\partial\ell}{\partial\beta_1} = \sum{^n_{i=1}}\left( y_i-\frac{1}{1+e^{-(\beta_0 +\beta_1X_i)}} \right) X
+$$
+
+:::
+
+
+
+## MLE with a model
+
+
+::::: {.columns}
+::: {.column width="50%"}
+However, unlike the previous case, **we can't find solve this algebraically**, so the parameters here are approximated using a numeric algorithm (R's GLM function uses [iteratively reweighted least squares](https://en.wikipedia.org/wiki/Iteratively_reweighted_least_squares))
+:::
+::: {.column width="50%"}
+::: fragment
+
+![](../images/irwls_slow_fixed.gif)
+
+:::
+:::
+:::::
+
+
+## Back where we started
+
+
+
+
+```{r}
+#| echo: true
+#| eval: false
+lm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset)
+
+```
+
+
+::: fragment
+
+The formula syntax remains the same, but the use the `glm` function and we specify a logit link with `family=binomial(link='logit')`
+
+```{r}
+#| echo: true
+#| eval: false
+
+glm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset, 
+    family=binomial(link='logit'))
+
+
+
+```
+:::
+
+
+::: fragment
+Or the probit link with  `family=binomial(link='probit')`
+
+```{r}
+#| eval: false
+#| echo: true
+
+
+glm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset, 
+    family=binomial(link='probit'))
+```
+
+:::
+
+
+## Back where we started: logit model
+
+
+::::: {.columns}
+::: {.column width="50%"}
+- Unlike a linear model, GLM coefficients typically lack a straightforward interpretation.
+
+- In the case of the logit model, each coefficient represents the effect of a one unit increase in that variable on the logged odds ratio: $\log \left( \frac{p}{1-p}\right)$
+
+- On this scale, positive values correspond to an increasing probability, and negative values mean decreasing probability, but there's less that can be said beyond this.
+:::
+::: {.column width="50%"}
+::: {style="font-size: 85%;"}
+
+```{r}
+#| echo: false
+
+
+m1<-lm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset)
+m2<-glm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset, 
+    family=binomial(link='logit'))
+m3<-glm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset, 
+    family=binomial(link='probit'))
+
+
+mlist<-list("logit" = m2, "probit" = m3)
+mod<-modelsummary(list("Logit" = m2), 
+             
+             coef_rename = TRUE,
+             fmt = 3,  
+             statistic = "conf.int",  
+             gof_map = c("nobs"), # showing only selected fit stats
+             output = 'gt'
+)
+```
+
+
+```{r}
+
+gtsave(mod, '../images/votelogit.png')
+
+knitr::include_graphics("../images/votelogit.png")
+
+
+```
+
+
+:::
+
+:::
+:::::
+
+
+
+## Back where we started: logit model
+
+
+::::: {.columns}
+::: {.column width="50%"}
+- Exponentiating the coefficient values will turn $\log \left( \frac{p}{1-p}\right)$ into $\frac{p}{1-p})$
+
+- On this scale, each coefficient corresponds to *multiplying* the odds of y=1. So a one unit increase in the Financial Hardship index means cutting the odds of voting for the Republican candidate in the House by .9. (a $(0.933-1) \times 100 = -6.7\%$ decrease in the odds)
+
+- This is still not an especially intuitive interpretation.
+
+:::
+::: {.column width="50%"}
+::: {style="font-size: 85%;"}
+
+```{r}
+#| echo: false
+
+
+m1<-lm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset)
+m2<-glm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset, 
+    family=binomial(link='logit'))
+m3<-glm(repvote_numeric ~ HARDSHIP_INDEX + VOTE24_CHOICE,data= chep_subset, 
+    family=binomial(link='probit'))
+
+
+mlist<-list("logit" = m2, "probit" = m3)
+mod<-modelsummary(list("Logit (exponentiated)" = m2), 
+             exponentiate = TRUE,
+             coef_rename = TRUE,
+             fmt = 3,  
+             statistic = "conf.int",  
+             gof_map = c("nobs"), # showing only selected fit stats
+             output = 'gt'
+)
+```
+
+
+```{r}
+
+gtsave(mod, '../images/votelogit_exp.png')
+
+knitr::include_graphics("../images/votelogit_exp.png")
+
+
+```
+
+
+:::
+
+:::
+:::::
+
+
+
+## Logit probabilities
+
+- We can also transform logit regression values back into predicted probabilities.
+
+- To do this, we would first get a linear prediction for a particular scenario and then transform it back into a probability using the logistic function: $\frac{1}{1+e^{-(\beta_0 + \beta_1x_1 + \beta_2x_2...)}}$
+
+## Logit probabilities
+
+For instance: what is the probability of a Republican House vote for someone with 3 financial hardships who voted for Trump in 2024? 
+
+::::: {.columns}
+::: {.column width="50%"}
+::: {.fragment data-fragment-index="1"}
+
+Start by getting the linear prediction:
+
+:::
+
+:::: {.r-stack}
+
+::: {.fragment data-fragment-index="2" .fade-in-then-out}
+
+
+$$
+\begin{aligned}
+\eta &= -3.25\ - \\
+&\quad 0.07(\operatorname{HARDSHIP\_INDEX})\ + \\
+&\quad 5.42(\operatorname{VOTE24\_CHOICE}_{\operatorname{(2)\ Donald\ Trump}})\ + \\
+&\quad 2.53(\operatorname{VOTE24\_CHOICE}_{\operatorname{(3)\ Someone\ else}})\ + \\
+&\quad 2.86(\operatorname{VOTE24\_CHOICE}_{\operatorname{(4)\ Did\ not\ vote}})
+\end{aligned}
+$$
+
+:::
+
+::: {.fragment data-fragment-index="3"}
+
+
+$$
+\begin{aligned}
+\eta &= -3.25\ - \\
+&\quad 0.07(3)\ + \\
+&\quad 5.42(1)\ + \\
+&\quad 2.53(0)\ + \\
+&\quad 2.86(0) \\
+= 1.96
+\end{aligned}
+$$
+
+:::
+
+
+::::
+
+:::
+::: {.column width="50%"}
+
+
+
+::: {.fragment data-fragment-index="4"}
+
+Then transform it using the logistic function:
+
+:::
+
+
+::: {.fragment data-fragment-index="5"}
+
+
+
+$$
+\frac{1}{e^{-(1.96)}} = 0.88
+$$
+
+
+
+:::
+
+::: {.fragment data-fragment-index="6"}
+
+The model predicts an 88% chance of voting Republican.
+
+:::
+
+
+
+:::
+:::::
+
+
+## Logit probabilities
+
+Notice here that the effects of HARDSHIP_INDEX, on the probability scale, are not constant. They get slightly stronger as we move toward P=.5
+
+
+::: {style="font-size: 70%;"}
+
+
+```{r}
+
+df<-data.frame(VOTE24_CHOICE = "(2) Donald Trump", 
+               HARDSHIP_INDEX = 0:13)
+
+df$pred<-predict(m2, newdata=df, type='response')
+df|>
+  rename(Prediction = pred)|>
+  mutate(Prediction = round(Prediction, digits=3))|>
+  mutate(`Change from previous` = Prediction - lag(Prediction))|>
+  knitr::kable(align='c')
+  
+
+```
+
+:::
+
+
+## Back where we started: logit model
+
+Ideally, we would like to be able to interpret the effects in terms of probabilities, but the effect of each variable on the probability scale is not linear. In the next class, we'll talk about some ways to handle this, as well as how to assess models and use other types of GLMs.
+
+```{r}
+library(ggeffects)
+preds<-predict_response(m2, terms=c('HARDSHIP_INDEX', 'VOTE24_CHOICE'))
+preds|>
+ # filter(group == "(2) Donald Trump")|>
+  plot() +
+  labs(y="% chance of voting Republican in 2026",
+       title ='',
+       x = "Financial Hardship Index"
+       )+
+  facet_wrap(~group, scales='free') +
+  scale_color_manual(values=c("blue","#DC143C", "purple", "grey")) +
+  scale_fill_manual(values=c("blue","#DC143C", "purple", "grey")) +
+  heiss_theme+
+      theme(legend.position = "none") 
+
+
+
+
+
+
+```
+
+
 
