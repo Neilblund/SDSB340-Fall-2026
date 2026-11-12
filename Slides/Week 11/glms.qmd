@@ -32,6 +32,7 @@ revealjs-plugins:
 ---
 
 ```{r}
+
 library(tidyverse)
 set.seed(1000)
 chep<-readRDS(here::here("Data", "chep_subset.rds"))|>
@@ -50,6 +51,17 @@ model2<-glm(
 saveRDS(chep, file=here::here("Data", "chep1000.rds"))
 ```
 
+## Setup
+
+If you want to follow along with the code here, you can run this to import the example data:
+
+```{r}
+#| echo: true
+
+file<-url('https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/chep1000.rds')
+chep<-readRDS(file)
+
+```
 
 ## Effects on the response scale
 
@@ -305,6 +317,8 @@ mean(df2$preds - df1$preds, na.rm=T)
 ::: {.column width="50%"}
 ```{r}
 #| eval: false
+#| echo: true
+#| cache: true
 
 # the initial model
 model <- glm(REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
@@ -425,7 +439,7 @@ $$
 Higher values indicate a greater improvement over the null model:
 
 ```{r}
-
+#| echo: true
 (logLik(model0)- logLik(model1))/logLik(model0)
 
 ```
@@ -508,11 +522,12 @@ $${\text{AIC} =2k - 2\log{(L)}}$$
 
 Note that both the AIC and BIC include a penalty for `k`, which is the number of model parameters. So both will penalize models with garbage predictors.
 
-## BIC and AIC
+#### BIC and AIC
 
 Lower values of both AIC and BIC indicate better model fits, but they're only meaningful for comparing between models fitted to the same data.
 
 ```{r, echo=TRUE}
+
   model1 <- glm(REPVOTE  ~ VOTE24_CHOICE , 
                 family = binomial, 
                 data = train)

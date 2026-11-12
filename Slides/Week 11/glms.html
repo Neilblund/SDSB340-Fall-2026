@@ -1146,6 +1146,12 @@ margin-right: 0; }
 <div class="quarto-title-authors">
 </div>
 
+</section><section id="setup" class="title-slide slide level2 center"><h2>Setup</h2>
+<p>If you want to follow along with the code here, you can run this to import the example data:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href></a>file<span class="ot">&lt;-</span><span class="fu">url</span>(<span class="st">&#39;https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/chep1000.rds&#39;</span>)</span>
+<span id="cb1-2"><a href></a>chep<span class="ot">&lt;-</span><span class="fu">readRDS</span>(file)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section><section><section id="effects-on-the-response-scale" class="title-slide slide level2 center"><h2>Effects on the response scale</h2>
 <ul>
 <li class="fragment"><p>How should I interpret the effect of each covariate in a GLM?</p></li>
@@ -1177,21 +1183,21 @@ margin-right: 0; }
 </ul>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
-<span id="cb1-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
-<span id="cb1-3"><a href></a>  <span class="at">family =</span> binomial,</span>
-<span id="cb1-4"><a href></a>  <span class="at">data =</span> chep)</span>
-<span id="cb1-5"><a href></a></span>
-<span id="cb1-6"><a href></a></span>
-<span id="cb1-7"><a href></a></span>
-<span id="cb1-8"><a href></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb1-9"><a href></a>  <span class="at">HARDSHIP_INDEX =</span> <span class="fu">c</span>(<span class="st">&quot;HARDSHIP_INDEX&quot;</span> <span class="ot">=</span> <span class="dv">3</span>, <span class="st">&quot;HARDSHIP_INDEX&quot;</span> <span class="ot">=</span> <span class="dv">4</span>),</span>
-<span id="cb1-10"><a href></a>  <span class="at">VOTE24_CHOICE =</span> <span class="fu">c</span>(<span class="st">&quot;(2) Donald Trump&quot;</span>, <span class="st">&quot;(2) Donald Trump&quot;</span>)</span>
-<span id="cb1-11"><a href></a>)</span>
-<span id="cb1-12"><a href></a></span>
-<span id="cb1-13"><a href></a>df<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb1-14"><a href></a></span>
-<span id="cb1-15"><a href></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
+<span id="cb2-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
+<span id="cb2-3"><a href></a>  <span class="at">family =</span> binomial,</span>
+<span id="cb2-4"><a href></a>  <span class="at">data =</span> chep)</span>
+<span id="cb2-5"><a href></a></span>
+<span id="cb2-6"><a href></a></span>
+<span id="cb2-7"><a href></a></span>
+<span id="cb2-8"><a href></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-9"><a href></a>  <span class="at">HARDSHIP_INDEX =</span> <span class="fu">c</span>(<span class="st">&quot;HARDSHIP_INDEX&quot;</span> <span class="ot">=</span> <span class="dv">3</span>, <span class="st">&quot;HARDSHIP_INDEX&quot;</span> <span class="ot">=</span> <span class="dv">4</span>),</span>
+<span id="cb2-10"><a href></a>  <span class="at">VOTE24_CHOICE =</span> <span class="fu">c</span>(<span class="st">&quot;(2) Donald Trump&quot;</span>, <span class="st">&quot;(2) Donald Trump&quot;</span>)</span>
+<span id="cb2-11"><a href></a>)</span>
+<span id="cb2-12"><a href></a></span>
+<span id="cb2-13"><a href></a>df<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb2-14"><a href></a></span>
+<span id="cb2-15"><a href></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 3
   HARDSHIP_INDEX VOTE24_CHOICE    preds
@@ -1201,8 +1207,8 @@ margin-right: 0; }
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href></a><span class="co"># the difference in effects</span></span>
-<span id="cb3-2"><a href></a>df<span class="sc">$</span>preds[<span class="dv">2</span>]  <span class="sc">-</span> df<span class="sc">$</span>preds[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href></a><span class="co"># the difference in effects</span></span>
+<span id="cb4-2"><a href></a>df<span class="sc">$</span>preds[<span class="dv">2</span>]  <span class="sc">-</span> df<span class="sc">$</span>preds[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.00240926</code></pre>
 </div>
@@ -1218,21 +1224,21 @@ margin-right: 0; }
 </ul>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
-<span id="cb5-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
-<span id="cb5-3"><a href></a>  <span class="at">family =</span> binomial,</span>
-<span id="cb5-4"><a href></a>  <span class="at">data =</span> chep)</span>
-<span id="cb5-5"><a href></a></span>
-<span id="cb5-6"><a href></a></span>
-<span id="cb5-7"><a href></a></span>
-<span id="cb5-8"><a href></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb5-9"><a href></a>  <span class="at">HARDSHIP_INDEX =</span> <span class="fu">c</span>(<span class="fu">median</span>(chep<span class="sc">$</span>HARDSHIP_INDEX), <span class="fu">median</span>(chep<span class="sc">$</span>HARDSHIP_INDEX) <span class="sc">+</span><span class="dv">1</span>),</span>
-<span id="cb5-10"><a href></a>  <span class="at">VOTE24_CHOICE =</span> <span class="fu">c</span>(<span class="st">&quot;(1) Kamala Harris&quot;</span>, <span class="st">&quot;(1) Kamala Harris&quot;</span>)</span>
-<span id="cb5-11"><a href></a>)</span>
-<span id="cb5-12"><a href></a></span>
-<span id="cb5-13"><a href></a>df<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb5-14"><a href></a></span>
-<span id="cb5-15"><a href></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
+<span id="cb6-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
+<span id="cb6-3"><a href></a>  <span class="at">family =</span> binomial,</span>
+<span id="cb6-4"><a href></a>  <span class="at">data =</span> chep)</span>
+<span id="cb6-5"><a href></a></span>
+<span id="cb6-6"><a href></a></span>
+<span id="cb6-7"><a href></a></span>
+<span id="cb6-8"><a href></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-9"><a href></a>  <span class="at">HARDSHIP_INDEX =</span> <span class="fu">c</span>(<span class="fu">median</span>(chep<span class="sc">$</span>HARDSHIP_INDEX), <span class="fu">median</span>(chep<span class="sc">$</span>HARDSHIP_INDEX) <span class="sc">+</span><span class="dv">1</span>),</span>
+<span id="cb6-10"><a href></a>  <span class="at">VOTE24_CHOICE =</span> <span class="fu">c</span>(<span class="st">&quot;(1) Kamala Harris&quot;</span>, <span class="st">&quot;(1) Kamala Harris&quot;</span>)</span>
+<span id="cb6-11"><a href></a>)</span>
+<span id="cb6-12"><a href></a></span>
+<span id="cb6-13"><a href></a>df<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb6-14"><a href></a></span>
+<span id="cb6-15"><a href></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 3
   HARDSHIP_INDEX VOTE24_CHOICE      preds
@@ -1242,8 +1248,8 @@ margin-right: 0; }
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href></a><span class="co"># the difference in effects</span></span>
-<span id="cb7-2"><a href></a>df<span class="sc">$</span>preds[<span class="dv">2</span>]  <span class="sc">-</span> df<span class="sc">$</span>preds[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a><span class="co"># the difference in effects</span></span>
+<span id="cb8-2"><a href></a>df<span class="sc">$</span>preds[<span class="dv">2</span>]  <span class="sc">-</span> df<span class="sc">$</span>preds[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.0004393526</code></pre>
 </div>
@@ -1257,21 +1263,21 @@ margin-right: 0; }
 </ul>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
-<span id="cb9-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
-<span id="cb9-3"><a href></a>  <span class="at">family =</span> binomial,</span>
-<span id="cb9-4"><a href></a>  <span class="at">data =</span> chep)</span>
-<span id="cb9-5"><a href></a></span>
-<span id="cb9-6"><a href></a></span>
-<span id="cb9-7"><a href></a></span>
-<span id="cb9-8"><a href></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb9-9"><a href></a>  <span class="at">HARDSHIP_INDEX =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">6</span>),</span>
-<span id="cb9-10"><a href></a>  <span class="at">VOTE24_CHOICE =</span> <span class="fu">c</span>(<span class="st">&quot;(1) Kamala Harris&quot;</span>, <span class="st">&quot;(1) Kamala Harris&quot;</span>)</span>
-<span id="cb9-11"><a href></a>)</span>
-<span id="cb9-12"><a href></a></span>
-<span id="cb9-13"><a href></a>df<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb9-14"><a href></a></span>
-<span id="cb9-15"><a href></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
+<span id="cb10-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
+<span id="cb10-3"><a href></a>  <span class="at">family =</span> binomial,</span>
+<span id="cb10-4"><a href></a>  <span class="at">data =</span> chep)</span>
+<span id="cb10-5"><a href></a></span>
+<span id="cb10-6"><a href></a></span>
+<span id="cb10-7"><a href></a></span>
+<span id="cb10-8"><a href></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb10-9"><a href></a>  <span class="at">HARDSHIP_INDEX =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">6</span>),</span>
+<span id="cb10-10"><a href></a>  <span class="at">VOTE24_CHOICE =</span> <span class="fu">c</span>(<span class="st">&quot;(1) Kamala Harris&quot;</span>, <span class="st">&quot;(1) Kamala Harris&quot;</span>)</span>
+<span id="cb10-11"><a href></a>)</span>
+<span id="cb10-12"><a href></a></span>
+<span id="cb10-13"><a href></a>df<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb10-14"><a href></a></span>
+<span id="cb10-15"><a href></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 3
   HARDSHIP_INDEX VOTE24_CHOICE      preds
@@ -1281,8 +1287,8 @@ margin-right: 0; }
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href></a><span class="co"># the difference in effects</span></span>
-<span id="cb11-2"><a href></a>df<span class="sc">$</span>preds[<span class="dv">2</span>]  <span class="sc">-</span> df<span class="sc">$</span>preds[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href></a><span class="co"># the difference in effects</span></span>
+<span id="cb12-2"><a href></a>df<span class="sc">$</span>preds[<span class="dv">2</span>]  <span class="sc">-</span> df<span class="sc">$</span>preds[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.002197596</code></pre>
 </div>
@@ -1298,31 +1304,31 @@ margin-right: 0; }
 </ul>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
-<span id="cb13-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
-<span id="cb13-3"><a href></a>  <span class="at">family =</span> binomial,</span>
-<span id="cb13-4"><a href></a>  <span class="at">data =</span> chep)</span>
-<span id="cb13-5"><a href></a></span>
-<span id="cb13-6"><a href></a>df1<span class="ot">&lt;-</span>model<span class="sc">$</span>data <span class="co"># get the data from the model</span></span>
-<span id="cb13-7"><a href></a></span>
-<span id="cb13-8"><a href></a></span>
-<span id="cb13-9"><a href></a>df1<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df1, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb13-10"><a href></a></span>
-<span id="cb13-11"><a href></a></span>
-<span id="cb13-12"><a href></a>df2<span class="ot">&lt;-</span>model<span class="sc">$</span>data<span class="sc">|&gt;</span> <span class="co"># get the data from the model and change the focal predictor</span></span>
-<span id="cb13-13"><a href></a>  <span class="fu">mutate</span>(<span class="at">HARDSHIP_INDEX =</span> HARDSHIP_INDEX <span class="sc">+</span><span class="dv">1</span> )</span>
-<span id="cb13-14"><a href></a>df2<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df2, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb13-15"><a href></a></span>
-<span id="cb13-16"><a href></a></span>
-<span id="cb13-17"><a href></a><span class="co"># calculate the average differences across all cases</span></span>
-<span id="cb13-18"><a href></a><span class="fu">mean</span>(df2<span class="sc">$</span>preds <span class="sc">-</span> df1<span class="sc">$</span>preds, <span class="at">na.rm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
+<span id="cb14-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
+<span id="cb14-3"><a href></a>  <span class="at">family =</span> binomial,</span>
+<span id="cb14-4"><a href></a>  <span class="at">data =</span> chep)</span>
+<span id="cb14-5"><a href></a></span>
+<span id="cb14-6"><a href></a>df1<span class="ot">&lt;-</span>model<span class="sc">$</span>data <span class="co"># get the data from the model</span></span>
+<span id="cb14-7"><a href></a></span>
+<span id="cb14-8"><a href></a></span>
+<span id="cb14-9"><a href></a>df1<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df1, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb14-10"><a href></a></span>
+<span id="cb14-11"><a href></a></span>
+<span id="cb14-12"><a href></a>df2<span class="ot">&lt;-</span>model<span class="sc">$</span>data<span class="sc">|&gt;</span> <span class="co"># get the data from the model and change the focal predictor</span></span>
+<span id="cb14-13"><a href></a>  <span class="fu">mutate</span>(<span class="at">HARDSHIP_INDEX =</span> HARDSHIP_INDEX <span class="sc">+</span><span class="dv">1</span> )</span>
+<span id="cb14-14"><a href></a>df2<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df2, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb14-15"><a href></a></span>
+<span id="cb14-16"><a href></a></span>
+<span id="cb14-17"><a href></a><span class="co"># calculate the average differences across all cases</span></span>
+<span id="cb14-18"><a href></a><span class="fu">mean</span>(df2<span class="sc">$</span>preds <span class="sc">-</span> df1<span class="sc">$</span>preds, <span class="at">na.rm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.002092589</code></pre>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href></a><span class="co"># the difference in effects</span></span>
-<span id="cb15-2"><a href></a>df<span class="sc">$</span>preds[<span class="dv">2</span>]  <span class="sc">-</span> df<span class="sc">$</span>preds[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href></a><span class="co"># the difference in effects</span></span>
+<span id="cb16-2"><a href></a>df<span class="sc">$</span>preds[<span class="dv">2</span>]  <span class="sc">-</span> df<span class="sc">$</span>preds[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.002197596</code></pre>
 </div>
@@ -1336,26 +1342,26 @@ margin-right: 0; }
 </ul>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
-<span id="cb17-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
-<span id="cb17-3"><a href></a>  <span class="at">family =</span> binomial,</span>
-<span id="cb17-4"><a href></a>  <span class="at">data =</span> chep)</span>
-<span id="cb17-5"><a href></a></span>
-<span id="cb17-6"><a href></a>df1<span class="ot">&lt;-</span>model<span class="sc">$</span>data<span class="sc">|&gt;</span></span>
-<span id="cb17-7"><a href></a>  <span class="fu">mutate</span>(<span class="at">VOTE24_CHOICE =</span> <span class="st">&quot;(2) Donald Trump&quot;</span>)</span>
-<span id="cb17-8"><a href></a>  <span class="co"># get the data from the model</span></span>
-<span id="cb17-9"><a href></a></span>
-<span id="cb17-10"><a href></a></span>
-<span id="cb17-11"><a href></a>df1<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df1, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb17-12"><a href></a></span>
-<span id="cb17-13"><a href></a></span>
-<span id="cb17-14"><a href></a>df2<span class="ot">&lt;-</span>model<span class="sc">$</span>data<span class="sc">|&gt;</span> <span class="co"># get the data from the model and change the focal predictor</span></span>
-<span id="cb17-15"><a href></a>  <span class="fu">mutate</span>(<span class="at">VOTE24_CHOICE =</span> <span class="st">&quot;(1) Kamala Harris&quot;</span>)</span>
-<span id="cb17-16"><a href></a>df2<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df2, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb17-17"><a href></a></span>
-<span id="cb17-18"><a href></a></span>
-<span id="cb17-19"><a href></a><span class="co"># calculate the average differences across all cases</span></span>
-<span id="cb17-20"><a href></a><span class="fu">mean</span>(df2<span class="sc">$</span>preds <span class="sc">-</span> df1<span class="sc">$</span>preds, <span class="at">na.rm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href></a>model<span class="ot">&lt;-</span><span class="fu">glm</span>(</span>
+<span id="cb18-2"><a href></a>  REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
+<span id="cb18-3"><a href></a>  <span class="at">family =</span> binomial,</span>
+<span id="cb18-4"><a href></a>  <span class="at">data =</span> chep)</span>
+<span id="cb18-5"><a href></a></span>
+<span id="cb18-6"><a href></a>df1<span class="ot">&lt;-</span>model<span class="sc">$</span>data<span class="sc">|&gt;</span></span>
+<span id="cb18-7"><a href></a>  <span class="fu">mutate</span>(<span class="at">VOTE24_CHOICE =</span> <span class="st">&quot;(2) Donald Trump&quot;</span>)</span>
+<span id="cb18-8"><a href></a>  <span class="co"># get the data from the model</span></span>
+<span id="cb18-9"><a href></a></span>
+<span id="cb18-10"><a href></a></span>
+<span id="cb18-11"><a href></a>df1<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df1, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb18-12"><a href></a></span>
+<span id="cb18-13"><a href></a></span>
+<span id="cb18-14"><a href></a>df2<span class="ot">&lt;-</span>model<span class="sc">$</span>data<span class="sc">|&gt;</span> <span class="co"># get the data from the model and change the focal predictor</span></span>
+<span id="cb18-15"><a href></a>  <span class="fu">mutate</span>(<span class="at">VOTE24_CHOICE =</span> <span class="st">&quot;(1) Kamala Harris&quot;</span>)</span>
+<span id="cb18-16"><a href></a>df2<span class="sc">$</span>preds<span class="ot">&lt;-</span><span class="fu">predict</span>(model, <span class="at">newdata=</span>df2, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb18-17"><a href></a></span>
+<span id="cb18-18"><a href></a></span>
+<span id="cb18-19"><a href></a><span class="co"># calculate the average differences across all cases</span></span>
+<span id="cb18-20"><a href></a><span class="fu">mean</span>(df2<span class="sc">$</span>preds <span class="sc">-</span> df1<span class="sc">$</span>preds, <span class="at">na.rm=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.8445164</code></pre>
 </div>
@@ -1373,7 +1379,39 @@ margin-right: 0; }
 <li class="fragment"><p>One reliable (if slow) method is the bootstrap.</p></li>
 </ul>
 </div><div class="column" style="width:50%;">
-
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href></a><span class="co"># the initial model</span></span>
+<span id="cb20-2"><a href></a>model <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
+<span id="cb20-3"><a href></a>             <span class="at">family =</span> binomial,</span>
+<span id="cb20-4"><a href></a>             <span class="at">data =</span> chep)</span>
+<span id="cb20-5"><a href></a></span>
+<span id="cb20-6"><a href></a><span class="co"># the number of iterations</span></span>
+<span id="cb20-7"><a href></a>nboot<span class="ot">&lt;-</span><span class="dv">300</span></span>
+<span id="cb20-8"><a href></a><span class="co"># an empty vector to hold results</span></span>
+<span id="cb20-9"><a href></a>mfx<span class="ot">&lt;-</span><span class="fu">numeric</span>(nboot)</span>
+<span id="cb20-10"><a href></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nboot) {</span>
+<span id="cb20-11"><a href></a>  <span class="co"># resampling with replacement from the original data</span></span>
+<span id="cb20-12"><a href></a>  boot_data<span class="ot">&lt;-</span>model<span class="sc">$</span>data[<span class="fu">sample</span>(<span class="fu">nrow</span>(model<span class="sc">$</span>data), <span class="at">replace=</span>T),]</span>
+<span id="cb20-13"><a href></a>  </span>
+<span id="cb20-14"><a href></a>  <span class="co"># fitting the model to the bootstrap replicate</span></span>
+<span id="cb20-15"><a href></a>  model <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">formula</span>(model),</span>
+<span id="cb20-16"><a href></a>               <span class="at">family =</span> binomial,</span>
+<span id="cb20-17"><a href></a>               <span class="at">data =</span> boot_data)</span>
+<span id="cb20-18"><a href></a>  df1 <span class="ot">&lt;-</span> model<span class="sc">$</span>data <span class="sc">|&gt;</span></span>
+<span id="cb20-19"><a href></a>    <span class="fu">mutate</span>(<span class="at">VOTE24_CHOICE =</span> <span class="st">&quot;(2) Donald Trump&quot;</span>)</span>
+<span id="cb20-20"><a href></a>  <span class="co"># get the data from the model</span></span>
+<span id="cb20-21"><a href></a>  df1<span class="sc">$</span>preds <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, <span class="at">newdata =</span> df1, <span class="at">type =</span> <span class="st">&#39;response&#39;</span>)</span>
+<span id="cb20-22"><a href></a>  df2 <span class="ot">&lt;-</span> model<span class="sc">$</span>data <span class="sc">|&gt;</span> <span class="co"># get the data from the model and change the focal predictor</span></span>
+<span id="cb20-23"><a href></a>    <span class="fu">mutate</span>(<span class="at">VOTE24_CHOICE =</span> <span class="st">&quot;(1) Kamala Harris&quot;</span>)</span>
+<span id="cb20-24"><a href></a>  df2<span class="sc">$</span>preds <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, <span class="at">newdata =</span> df2, <span class="at">type =</span> <span class="st">&#39;response&#39;</span>)</span>
+<span id="cb20-25"><a href></a>  <span class="co"># calculate the average differences across all cases</span></span>
+<span id="cb20-26"><a href></a>  mfx[i]<span class="ot">&lt;-</span><span class="fu">mean</span>(df2<span class="sc">$</span>preds <span class="sc">-</span> df1<span class="sc">$</span>preds, <span class="at">na.rm =</span> T)</span>
+<span id="cb20-27"><a href></a>  </span>
+<span id="cb20-28"><a href></a>}</span>
+<span id="cb20-29"><a href></a></span>
+<span id="cb20-30"><a href></a><span class="fu">hist</span>(mfx)</span>
+<span id="cb20-31"><a href></a><span class="fu">quantile</span>(mfx, <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </div></div>
 </section><section><section id="model-fit" class="title-slide slide level2 center"><h2>Model fit</h2>
 <p>How well does our model fit the data?</p>
@@ -1411,20 +1449,20 @@ p_i = \text{the predicted outcome for an observation}\\
 </section><section id="model-fit-4" class="title-slide slide level3 center"><h3>Model fit</h3>
 <p>One method for assessing fit is to compare the likelihood under the fitted model to a “null” model with no predictors.</p>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href></a><span class="co"># the null model</span></span>
-<span id="cb19-2"><a href></a>model0<span class="ot">&lt;-</span>  <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> <span class="dv">1</span> ,</span>
-<span id="cb19-3"><a href></a>             <span class="at">family =</span> binomial,</span>
-<span id="cb19-4"><a href></a>             <span class="at">data =</span> chep)</span>
-<span id="cb19-5"><a href></a><span class="co"># the comparison</span></span>
-<span id="cb19-6"><a href></a>model <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
-<span id="cb19-7"><a href></a>             <span class="at">family =</span> binomial,</span>
-<span id="cb19-8"><a href></a>             <span class="at">data =</span> chep)</span>
-<span id="cb19-9"><a href></a></span>
-<span id="cb19-10"><a href></a><span class="fu">logLik</span>(model0)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href></a><span class="co"># the null model</span></span>
+<span id="cb21-2"><a href></a>model0<span class="ot">&lt;-</span>  <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> <span class="dv">1</span> ,</span>
+<span id="cb21-3"><a href></a>             <span class="at">family =</span> binomial,</span>
+<span id="cb21-4"><a href></a>             <span class="at">data =</span> chep)</span>
+<span id="cb21-5"><a href></a><span class="co"># the comparison</span></span>
+<span id="cb21-6"><a href></a>model <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE ,</span>
+<span id="cb21-7"><a href></a>             <span class="at">family =</span> binomial,</span>
+<span id="cb21-8"><a href></a>             <span class="at">data =</span> chep)</span>
+<span id="cb21-9"><a href></a></span>
+<span id="cb21-10"><a href></a><span class="fu">logLik</span>(model0)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&#39;log Lik.&#39; -667.8451 (df=1)</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href></a><span class="fu">logLik</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href></a><span class="fu">logLik</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&#39;log Lik.&#39; -661.2457 (df=2)</code></pre>
 </div>
@@ -1436,6 +1474,7 @@ p_i = \text{the predicted outcome for an observation}\\
 \]</span></p>
 <p>Higher values indicate a greater improvement over the null model:</p>
 <div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href></a>(<span class="fu">logLik</span>(model0)<span class="sc">-</span> <span class="fu">logLik</span>(model1))<span class="sc">/</span><span class="fu">logLik</span>(model0)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&#39;log Lik.&#39; 0.009881626 (df=1)</code></pre>
 </div>
@@ -1455,50 +1494,50 @@ p_i = \text{the predicted outcome for an observation}\\
 </ul>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href></a>predictions<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">nrow</span>(chep), </span>
-<span id="cb24-2"><a href></a>                    <span class="at">ncol=</span><span class="dv">3</span></span>
-<span id="cb24-3"><a href></a>                    )</span>
-<span id="cb24-4"><a href></a></span>
-<span id="cb24-5"><a href></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(chep)) {</span>
-<span id="cb24-6"><a href></a>  train<span class="ot">&lt;-</span>chep[<span class="sc">-</span>i,]</span>
-<span id="cb24-7"><a href></a>  test<span class="ot">&lt;-</span>chep[i,]</span>
-<span id="cb24-8"><a href></a>  model1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> VOTE24_CHOICE , </span>
-<span id="cb24-9"><a href></a>                <span class="at">family =</span> binomial, </span>
-<span id="cb24-10"><a href></a>                <span class="at">data =</span> train)</span>
-<span id="cb24-11"><a href></a>  </span>
-<span id="cb24-12"><a href></a>  model2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX , </span>
-<span id="cb24-13"><a href></a>                <span class="at">family =</span> binomial, </span>
-<span id="cb24-14"><a href></a>                <span class="at">data =</span> train)</span>
-<span id="cb24-15"><a href></a>  </span>
-<span id="cb24-16"><a href></a>  model3 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE , </span>
-<span id="cb24-17"><a href></a>                <span class="at">family =</span> binomial, </span>
-<span id="cb24-18"><a href></a>                <span class="at">data =</span> train)</span>
-<span id="cb24-19"><a href></a>  </span>
-<span id="cb24-20"><a href></a>  predictions[i,<span class="dv">1</span>]<span class="ot">&lt;-</span><span class="fu">predict</span>(model1, <span class="at">newdata=</span>test, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb24-21"><a href></a>  predictions[i,<span class="dv">2</span>]<span class="ot">&lt;-</span><span class="fu">predict</span>(model2, <span class="at">newdata=</span>test, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb24-22"><a href></a>  predictions[i,<span class="dv">3</span>]<span class="ot">&lt;-</span><span class="fu">predict</span>(model3, <span class="at">newdata=</span>test, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
-<span id="cb24-23"><a href></a>  </span>
-<span id="cb24-24"><a href></a>  </span>
-<span id="cb24-25"><a href></a>  </span>
-<span id="cb24-26"><a href></a>}</span>
-<span id="cb24-27"><a href></a></span>
-<span id="cb24-28"><a href></a><span class="fu">table</span>(predictions[,<span class="dv">1</span>]<span class="sc">&gt;</span>.<span class="dv">5</span>, </span>
-<span id="cb24-29"><a href></a>      chep<span class="sc">$</span>REPVOTE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href></a>predictions<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">nrow</span>(chep), </span>
+<span id="cb27-2"><a href></a>                    <span class="at">ncol=</span><span class="dv">3</span></span>
+<span id="cb27-3"><a href></a>                    )</span>
+<span id="cb27-4"><a href></a></span>
+<span id="cb27-5"><a href></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(chep)) {</span>
+<span id="cb27-6"><a href></a>  train<span class="ot">&lt;-</span>chep[<span class="sc">-</span>i,]</span>
+<span id="cb27-7"><a href></a>  test<span class="ot">&lt;-</span>chep[i,]</span>
+<span id="cb27-8"><a href></a>  model1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> VOTE24_CHOICE , </span>
+<span id="cb27-9"><a href></a>                <span class="at">family =</span> binomial, </span>
+<span id="cb27-10"><a href></a>                <span class="at">data =</span> train)</span>
+<span id="cb27-11"><a href></a>  </span>
+<span id="cb27-12"><a href></a>  model2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX , </span>
+<span id="cb27-13"><a href></a>                <span class="at">family =</span> binomial, </span>
+<span id="cb27-14"><a href></a>                <span class="at">data =</span> train)</span>
+<span id="cb27-15"><a href></a>  </span>
+<span id="cb27-16"><a href></a>  model3 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE , </span>
+<span id="cb27-17"><a href></a>                <span class="at">family =</span> binomial, </span>
+<span id="cb27-18"><a href></a>                <span class="at">data =</span> train)</span>
+<span id="cb27-19"><a href></a>  </span>
+<span id="cb27-20"><a href></a>  predictions[i,<span class="dv">1</span>]<span class="ot">&lt;-</span><span class="fu">predict</span>(model1, <span class="at">newdata=</span>test, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb27-21"><a href></a>  predictions[i,<span class="dv">2</span>]<span class="ot">&lt;-</span><span class="fu">predict</span>(model2, <span class="at">newdata=</span>test, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb27-22"><a href></a>  predictions[i,<span class="dv">3</span>]<span class="ot">&lt;-</span><span class="fu">predict</span>(model3, <span class="at">newdata=</span>test, <span class="at">type=</span><span class="st">&#39;response&#39;</span>)</span>
+<span id="cb27-23"><a href></a>  </span>
+<span id="cb27-24"><a href></a>  </span>
+<span id="cb27-25"><a href></a>  </span>
+<span id="cb27-26"><a href></a>}</span>
+<span id="cb27-27"><a href></a></span>
+<span id="cb27-28"><a href></a><span class="fu">table</span>(predictions[,<span class="dv">1</span>]<span class="sc">&gt;</span>.<span class="dv">5</span>, </span>
+<span id="cb27-29"><a href></a>      chep<span class="sc">$</span>REPVOTE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       
          No Yes
   FALSE 566  87
   TRUE   46 301</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href></a><span class="fu">table</span>(predictions[,<span class="dv">2</span>]<span class="sc">&gt;</span>.<span class="dv">5</span>, </span>
-<span id="cb26-2"><a href></a>      chep<span class="sc">$</span>REPVOTE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href></a><span class="fu">table</span>(predictions[,<span class="dv">2</span>]<span class="sc">&gt;</span>.<span class="dv">5</span>, </span>
+<span id="cb29-2"><a href></a>      chep<span class="sc">$</span>REPVOTE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       
          No Yes
   FALSE 612 388</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href></a><span class="fu">table</span>(predictions[,<span class="dv">3</span>]<span class="sc">&gt;</span>.<span class="dv">5</span>, </span>
-<span id="cb28-2"><a href></a>      chep<span class="sc">$</span>REPVOTE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href></a><span class="fu">table</span>(predictions[,<span class="dv">3</span>]<span class="sc">&gt;</span>.<span class="dv">5</span>, </span>
+<span id="cb31-2"><a href></a>      chep<span class="sc">$</span>REPVOTE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       
          No Yes
@@ -1518,41 +1557,41 @@ p_i = \text{the predicted outcome for an observation}\\
 <p><span class="math display">\[{\text{AIC} =2k - 2\log{(L)}}\]</span></p>
 <p>Note that both the AIC and BIC include a penalty for <code>k</code>, which is the number of model parameters. So both will penalize models with garbage predictors.</p>
 </div>
-</section></section><section id="bic-and-aic-1" class="title-slide slide level2 center"><h2>BIC and AIC</h2>
+</section><section id="bic-and-aic-1" class="slide level4"><h4>BIC and AIC</h4>
 <p>Lower values of both AIC and BIC indicate better model fits, but they’re only meaningful for comparing between models fitted to the same data.</p>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href></a>  model1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> VOTE24_CHOICE , </span>
-<span id="cb30-2"><a href></a>                <span class="at">family =</span> binomial, </span>
-<span id="cb30-3"><a href></a>                <span class="at">data =</span> train)</span>
-<span id="cb30-4"><a href></a>  </span>
-<span id="cb30-5"><a href></a>  model2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX , </span>
-<span id="cb30-6"><a href></a>                <span class="at">family =</span> binomial, </span>
-<span id="cb30-7"><a href></a>                <span class="at">data =</span> chep)</span>
-<span id="cb30-8"><a href></a>  </span>
-<span id="cb30-9"><a href></a>  model3 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE , </span>
-<span id="cb30-10"><a href></a>                <span class="at">family =</span> binomial, </span>
-<span id="cb30-11"><a href></a>                <span class="at">data =</span> chep)</span>
-<span id="cb30-12"><a href></a><span class="fu">BIC</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href></a>  model1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> VOTE24_CHOICE , </span>
+<span id="cb33-2"><a href></a>                <span class="at">family =</span> binomial, </span>
+<span id="cb33-3"><a href></a>                <span class="at">data =</span> train)</span>
+<span id="cb33-4"><a href></a>  </span>
+<span id="cb33-5"><a href></a>  model2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX , </span>
+<span id="cb33-6"><a href></a>                <span class="at">family =</span> binomial, </span>
+<span id="cb33-7"><a href></a>                <span class="at">data =</span> chep)</span>
+<span id="cb33-8"><a href></a>  </span>
+<span id="cb33-9"><a href></a>  model3 <span class="ot">&lt;-</span> <span class="fu">glm</span>(REPVOTE  <span class="sc">~</span> HARDSHIP_INDEX <span class="sc">+</span> VOTE24_CHOICE , </span>
+<span id="cb33-10"><a href></a>                <span class="at">family =</span> binomial, </span>
+<span id="cb33-11"><a href></a>                <span class="at">data =</span> chep)</span>
+<span id="cb33-12"><a href></a><span class="fu">BIC</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 682.3483</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href></a><span class="fu">BIC</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href></a><span class="fu">BIC</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1336.307</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href></a><span class="fu">BIC</span>(model3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href></a><span class="fu">BIC</span>(model3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 688.8834</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href></a><span class="fu">AIC</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href></a><span class="fu">AIC</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 662.7212</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href></a><span class="fu">AIC</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href></a><span class="fu">AIC</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1326.491</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href></a><span class="fu">AIC</span>(model3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href></a><span class="fu">AIC</span>(model3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 664.3446</code></pre>
 </div>
@@ -1569,7 +1608,7 @@ width: 1px!important;
 overflow: hidden!important;
 display:block!important;
 }</style></aside>
-</section>
+</section></section>
 </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
