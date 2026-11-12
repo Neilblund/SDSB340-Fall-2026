@@ -511,7 +511,7 @@ table(predictions[,3]>.5,
 #### BIC and AIC
 
 -   BIC stands for Bayesian Information Criteria.
--   AIC stands for Aikake Information Criteria.
+-   AIC stands for Akaike Information Criteria.
 -   Both values are based on the model likelihood, which, for linear models, is based on the sum of squared residuals:
 
 . . .
