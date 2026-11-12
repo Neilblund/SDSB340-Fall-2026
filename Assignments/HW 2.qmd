@@ -6,8 +6,6 @@ format:
    theme: 
      - united
    self-contained: true
-   filters: 
-     - honeypot
 editor: visual
 ---
 
@@ -16,7 +14,7 @@ editor: visual
 For this assignment, you'll be working with a series of questions from the [[2024]{.underline} round of the ANES](https://electionstudies.org/data-center/2024-time-series-study/) that attempt to measure "authoritarian" personalities. Authoritarianism is a personality type associated with a strong need for order, support for established authorities, and intolerance toward ambiguity and non-conformity. The ANES uses a measure of authoritarianism that asks respondents to say which of a pair of qualities they view are more important for a child to have:
 
 | Variable Name | Variable Description |
-|----|----|
+|------------------------------------|------------------------------------|
 | V242260 | (More important for a child to have:) 1. Independence or 2. **Respect for elders** |
 | V242261 | (More important for a child to have:) 1. Curiosity or 2. **Good manners** |
 | V242262 | (More important for a child to have:) 1. **Obedience** or 2. self reliance |
@@ -36,12 +34,10 @@ If you've set this up correctly, the code below should import a data set with 4,
 library(tidyverse)
 library(gtsummary)
 library(gt)
-fname<-here::here("data", "anes_timeseries_2024_csv_20250808.zip")
-anes  <- read_csv(unz(fname,"anes_timeseries_2024_csv_20250808.csv"))|>
+fname<-here::here("data", "anes_timeseries_2024_csv_20260519.zip")
+anes  <- read_csv(unz(fname,"anes_timeseries_2024_csv_20260519.csv"))|>
   # removing people who didn't complete the post interview survey
   filter(V240002c == 2)
-
-
 
 ```
 
