@@ -46,12 +46,21 @@ You'll use data from Pew's 2024 Religious Life Survey to answer the questions be
 
 You can find a description of the variables included in this data set [at the end of this document](#variable-description)
 
-```{r}
-#| echo: true
 
+::: {.callout-important}
+**For this assignment, do not use any packages other than the three loaded below:**
+```{r}
+library(tidyverse)
+library(see)
+library(performance)
+loc<-'https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/rls_subset.rds'
+rls<-readRDS(url(loc))
 
 
 ```
+:::
+
+
 
 ## Question 1
 
@@ -64,21 +73,40 @@ Estimate a logistic regression model that predicts belief that acceptance of tra
 
 ## Question 2
 
-Based on your results in model 1, which religious tradition is **most likely** to believe that acceptance of transgender people is positive for society? Which group is least likely?
+Based on your results in model 1, which religious tradition is **most likely** to believe that acceptance of transgender people is positive for society and what is that group's probability of support? Which group is least likely and what is that group's probability of support?
 
 ## Question 3
 
-Estimate a logistic regression model that predicts support for abortion rights (`support_abortion`) based on a person's religion (`trad`) and add a control for ideology (`ideo3`). Use this model to get the predicted support for abortion rights for the following cases:
+Estimate a logistic regression model that predicts `support_trans` based on a person's religion (`trad`) along with a control for ideology (`ideo3`). Use this model to get the predicted support for abortion rights for the following cases:
 
 -   Liberal Evangelical vs. Liberal Catholic
 -   Moderate Evangelical vs. Moderate Catholic
 -   Conservative Evangelical vs. Conservative Catholic
 
-Compare and contrast these results from your findings on question 2.
+Briefly discuss your results.
 
 ## Question 4
 
-Using the model use ran in quesiton 3, calculate the average marginal effect (average contrast) of moving from liberalism to conservatism on the probability of believing that acceptance of transgender people is positive for society.
+Using the model use ran in question 3, calculate the average marginal effect (average contrast) of moving from Liberal to Conservative on the probability of believing that acceptance of transgender people is positive for society.
+
+
+Use the bootstrap method to calculate a 95% confidence interval for this estimated marginal effect 
+
+::: {.callout-tip collapse="false"}
+## Hint
+To make things run quickly, you can reduce the number of bootstrap replicates to 50. 
+
+You might also use `cache=TRUE` in the options for your R-code chunk. This will make it so that, when knitting the file, the results of the code block are stored and are not executed again unless you change the code.
+
+````markdown
+`r ''````{r, cache=TRUE}
+# ... code for bootstrapping goes here
+
+```
+````
+
+:::
+
 
 ## Question 5
 
@@ -88,7 +116,7 @@ Use a logistic regression to estimate two models:
 
 -   Model B should predict `support_trans` using `trad + ideo3 + birthdecade`.
 
-Compare these models using one of the methods we discussed in class for comparing model fit and predictive power. Which model is better, in your judgement?
+Compare these models using one or more of the methods we discussed in class for comparing model fit and predictive power. Which model is better, in your judgement?
 
 ```{r}
 # code here
@@ -108,6 +136,7 @@ Select one of the models you estimated above. Assess the fit using a binned resi
 ## Question 7
 
 In Burge's analysis, he uses `income_numeric` as one of the predictors for support for greater acceptance of transgender people:
+
 ```{r}
 #| eval: false
 #| echo: true
@@ -120,7 +149,9 @@ burge_model <- glm(
 
 ```
 
-What assumptions does this make about the relationship between `income_numeric` and `support_trans`? What would change if we decided to use the categorical version of `income` instead in our regression model instead? Can you make a case either version of the model?
+What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of `income` instead in our regression model instead? Can you make a case either version of the model?
+
+
 
 
 # Variable description
