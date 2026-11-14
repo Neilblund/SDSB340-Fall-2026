@@ -36,11 +36,12 @@ revealjs-plugins:
 library(tidyverse)
 set.seed(1000)
 chep<-readRDS(here::here("Data", "chep_subset.rds"))|>
-  slice_sample(n=1000)
+  slice_sample(n=5000, weight_by=CHEP_WEIGHT)
 model1<-glm(
-  REPVOTE  ~ HARDSHIP_INDEX ,
+  REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
   family = binomial,
   data = chep)
+
 
 model2<-glm(
   REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
@@ -57,6 +58,7 @@ If you want to follow along with the code here, you can run this to import the e
 
 ```{r}
 #| echo: true
+#| eval: false
 
 file<-url('https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/chep1000.rds')
 chep<-readRDS(file)
@@ -65,49 +67,46 @@ chep<-readRDS(file)
 
 ## Effects on the response scale
 
-- How should I interpret the effect of each covariate in a GLM?
+-   How should I interpret the effect of each covariate in a GLM?
 
-- In a linear model, this is straightforward, but in a model like our logistic regression for vote choice, the effect of each predictor on the probability scale is non-linear. There's not "an effect"  there are multiple "effects" depending on where I decide to measure.
-
-
+-   In a linear model, this is straightforward, but in a model like our logistic regression for vote choice, the effect of each predictor on the probability scale is non-linear. There's not "an effect" there are multiple "effects" depending on where I decide to measure.
 
 ### Focal Variables
 
-- The [focal]{.yellow} variable is the effect I'm currently interested in measuring. 
+-   The [focal]{.yellow} variable is the effect I'm currently interested in measuring.
 
-- I might be interested in looking at the effect of a simple one unit increase in this variable.
+-   I might be interested in looking at the effect of a simple one unit increase in this variable.
 
-- or I might have something more specific in mind: like measure the effect of going from the minimum value to the maximum, or from -1SD to +1SD. Or I might ask "what would have happened if this specific case had a different value of this variable?"
-
+-   or I might have something more specific in mind: like measure the effect of going from the minimum value to the maximum, or from -1SD to +1SD. Or I might ask "what would have happened if this specific case had a different value of this variable?"
 
 ### Non-Focal Variables
 
-- The [non-focal]{.yellow} variables are any other model coefficients. 
+-   The [non-focal]{.yellow} variables are any other model coefficients.
 
-- I'll need to assign values to these to get predictions, but I want to hold them constant so I can isolate the effects of the focal predictors.
+-   I'll need to assign values to these to get predictions, but I want to hold them constant so I can isolate the effects of the focal predictors.
 
-- I might want to look at the effect of my focal variable at a specific set of values for the non-focal predictors, or the effect of my focal variable when everything else is at "typical" values.
+-   I might want to look at the effect of my focal variable at a specific set of values for the non-focal predictors, or the effect of my focal variable when everything else is at "typical" values.
 
 ## Three ways to ask the same question
 
 What is the effect of the Financial Hardship Index (FHI) on the probability of voting for a Republican candidate in the 2026 midterms?
- 
-- [Marginal Effects for a Specific Case]{.yellow} What is the effect of going from an FHI value of 3 to an FHI value of 4 for a respondent who voted for Trump in 2024?
 
-- [Marginal Effects at Representative Values]{.yellow} What is the effect of increasing FHI by 1 for a respondent with "typical" values of the predictors?
- 
-- [Average Marginal Effects]{.yellow} What would be the average change if every respondent increased FHI by 1?
+-   [Marginal Effects for a Specific Case]{.yellow} What is the effect of going from an FHI value of 3 to an FHI value of 4 for a respondent who voted for Trump in 2024?
 
+-   [Marginal Effects at Representative Values]{.yellow} What is the effect of increasing FHI by 1 for a respondent with "typical" values of the predictors?
+
+-   [Average Marginal Effects]{.yellow} What would be the average change if every respondent increased FHI by 1?
 
 ### Marginal Effects for a Specific Case
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- Run the model
-- Create a new data frame containing your hypothetical cases
-- Use `predict` with `type='response'` and the `newdata` argument to get predictions for those scenarios on the probability scale.
-- Calculate the change in probability when changing the focal predictor.
+-   Run the model
+-   Create a new data frame containing your hypothetical cases
+-   Use `predict` with `type='response'` and the `newdata` argument to get predictions for those scenarios on the probability scale.
+-   Calculate the change in probability when changing the focal predictor.
 :::
+
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -135,20 +134,18 @@ df
 df$preds[2]  - df$preds[1]
 
 ```
-
 :::
 :::::
 
-
-
 ### Marginal Effects at Representative Values
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- Run the model
-- Create a new data frame with typical values for each covariate (for instance, you could use the mode for categorical variables, and the mean or the median for continuous variables)
-- Compare
+-   Run the model
+-   Create a new data frame with typical values for each covariate (for instance, you could use the mode for categorical variables, and the mean or the median for continuous variables)
+-   Compare
 :::
+
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -176,16 +173,16 @@ df
 df$preds[2]  - df$preds[1]
 
 ```
-
 :::
 :::::
 
 ### Marginal Effects at Representative Values
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- You don't necessarily have to look at an increase of +1, you could do something like look at the change from the 25th percentile to the 75th
+-   You don't necessarily have to look at an increase of +1, you could do something like look at the change from the 25th percentile to the 75th
 :::
+
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -213,18 +210,18 @@ df
 df$preds[2]  - df$preds[1]
 
 ```
-
 :::
 :::::
 
 ### Average Marginal Effects
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- Get the predicted probability for everyone at their observed values.
-- Then, get the predicted probability for everyone after increasing the value of the focal predictor by 1.
-- Compare the average difference between the two cases.
+-   Get the predicted probability for everyone at their observed values.
+-   Then, get the predicted probability for everyone after increasing the value of the focal predictor by 1.
+-   Compare the average difference between the two cases.
 :::
+
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -262,11 +259,11 @@ df$preds[2]  - df$preds[1]
 
 ### Average Contrasts
 
-
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- If the focal variable is categorical we would set the focal variable to one category and then change it to another category, while leaving all other responses at their observed values.
+-   If the focal variable is categorical we would set the focal variable to one category and then change it to another category, while leaving all other responses at their observed values.
 :::
+
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -294,26 +291,24 @@ mean(df2$preds - df1$preds, na.rm=T)
 
 
 ```
-
-
 :::
 :::::
 
-
 ## Some pros and cons
 
-- Average marginal effects are a good default. The main difficulty just the computational burden of making a prediction for every observation in the data set.
+-   Average marginal effects are a good default. The main difficulty just the computational burden of making a prediction for every observation in the data set.
 
-- Marginal effects for specific cases can also be a good way to communicate the intuition behind a model, but just note that you should probably pick scenarios with some reason behind them.
+-   Marginal effects for specific cases can also be a good way to communicate the intuition behind a model, but just note that you should probably pick scenarios with some reason behind them.
 
 ## Confidence Intervals
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- Getting correct confidence intervals for a non-linear transformation require some extra work as well.
+-   Getting correct confidence intervals for a non-linear transformation require some extra work as well.
 
-- One reliable (if slow) method is the bootstrap.
+-   One reliable (if slow) method is the bootstrap.
 :::
+
 ::: {.column width="50%"}
 ```{r}
 #| eval: false
@@ -349,15 +344,12 @@ for(i in 1:nboot) {
   
 }
 
-hist(mfx)
 quantile(mfx, c(0.025, 0.975))
 
 
 ```
-
 :::
 :::::
-
 
 ## Model fit
 
@@ -372,7 +364,6 @@ How well does our model fit the data?
 :::
 
 ### Model fit
-
 
 . . .
 
@@ -428,9 +419,10 @@ logLik(model0)
 logLik(model1)
 
 ```
+
 ### Model fit
 
-There are several rough analogs for R^2 based on this comparison. For example, McFadden's $R^2$ value:
+There are several rough analogs for R\^2 based on this comparison. For example, McFadden's $R^2$ value:
 
 $$
 \text{McFadden } R^2 = \frac{\text{Null Model LL} - \text{Full Model LL}}{\text{Null Model LL}}
@@ -446,20 +438,20 @@ Higher values indicate a greater improvement over the null model:
 
 ### Model Fit and Model Comparison
 
-- How do we know whether one model is better than any other?
+-   How do we know whether one model is better than any other?
 
-- We could compare log likelihoods, but a more intuitive method might be to see how they each perform on "new" data
-
+-   We could compare log likelihoods, but a more intuitive method might be to see how they each perform on "new" data
 
 #### Leave one out cross-validation
 
-::::: {.columns}
+::::: columns
 ::: {.column width="50%"}
-- Drop observation i and fit the model on the remaining data
-- Predict the fitted model on observation i
-- Repeat for each row in the data
-- Compare the accuracy of each result
+-   Drop observation i and fit the model on the remaining data
+-   Predict the fitted model on observation i
+-   Repeat for each row in the data
+-   Compare the accuracy of each result
 :::
+
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -504,9 +496,6 @@ table(predictions[,3]>.5,
 ```
 :::
 :::::
-
-
-
 
 #### BIC and AIC
 
@@ -554,7 +543,290 @@ AIC(model3)
 in general: lower BIC and AIC scores are better, and an improvement of 10 or more suggests clear improvement. The second part of the expression is a sort of hypothetical maximum for the log likelihood of the entire dataset.
 :::
 
+#### BIC and AIC for model selection
 
+BIC/AIC are sometimes used to select the "best" model from a list of candidates
+
+-   (in larger samples) BIC penalizes complexity more than AIC, so it may be preferable if your goal is to find the simplest model out of several plausible options.
+
+-   AIC prioritizes predictive power, so it might be preferable if your primary goal is to find the model that will give the most accurate predictions.
+
+- AIC/BIC both tell you about model fit, not necessarily bias.
+
+#### BIC and AIC for model selection
+
+When comparing AIC/BIC values of two models:
+
+- a difference $\leq 2$ is suggests little-to-no difference between the models.
+
+- a difference of $\gt 2$ to $\leq 10$ is moderate support for the model with the lower AIC/BIC.
+
+- a difference of $\gt 10$ is strong support for the model with the lower AIC/BIC
+
+
+
+## (Some) Diagnostics for GLMs
+
+- Checking residuals
+
+- Checking for multicollinearity
+
+- Checking influential observations
+
+## (Some) Diagnostics for GLMs
+
+These examples will use the packages [performance](https://easystats.github.io/performance/index.html) and [see](https://easystats.github.io/see/)
+
+```{r}
+#| echo: true
+# install.packages("performance")
+# install.packages("see")
+library(performance)
+library(see)
+
+```
+
+### Checking residuals
+
+::::: {.columns}
+::: {.column width="50%"}
+
+- In linear models, we might examine a residuals vs. fitted plot to identify problems like non-linearity, outliers, or unequal variance.
+
+- This visualizes the prediction (fit) for a linear model on the x axis against the residuals on the y-axis. 
+
+- However, this isn't really an option for something like a GLM, because we don't have "residuals" to measure.
+
+:::
+::: {.column width="50%"}
+```{r}
+library(performance)
+library(see)
+set.seed(1000)
+n<-1000
+df<-tibble(x = rnorm(n),
+           y = 1+x*3 + rnorm(n)
+           )
+model<-lm(y~x, data=df)
+df$fitted<-fitted(model)
+df$residuals<-resid(model)
+
+ggplot(df, aes(x=fitted, y=residuals)) +  
+  geom_point(alpha=.5) +
+  ylim(c(-2, 2)) +
+  geom_hline(yintercept=0, lty=2) +
+  theme_bw() +
+  geom_smooth() +
+  labs(title ='Residuals vs Fitted plot for linear model')
+
+
+
+```
+:::
+:::::
+
+
+#### Binned Residuals
+
+One option we can use for logit and probit models is a binned residuals plot.
+
+- Calculate the difference between the outcome (y=1 or y=0) and the predicted probability of y=1 for each observation
+
+- Group the data into a smaller number of "bins" based on the predicted probability of y=1.
+
+- Calculate a residual by taking the proportion of y=1 within each bin vs. the average predicted probability of y=1.
+
+- Calculate 95% error bands for each residual based on $2\sqrt{p(1-p)/n}$ where $p$ is the average prediction, and n is the number of observations in each bin.
+
+
+#### Reading a binned residuals plot
+
+::::: {.columns}
+::: {.column width="50%"}
+- Ideally, about 95% of the binned residuals should fall within the calculated error bands (the shaded region). 
+
+- $>80\%$ of observations falling within the range is considered "acceptable"
+
+- $<80\%$ may indicate a problem with with model.
+:::
+::: {.column width="50%"}
+```{r}
+library(performance)
+set.seed(1)
+n <- 500
+x <- runif(n, 0, 10)
+logit_true <- -2 + 0.4 * x
+d <- data.frame(x = x, y = rbinom(n, 1, plogis(logit_true)))
+model <- glm(y ~ x, data = d, family = binomial)
+
+result <- binned_residuals(model)
+plot(result)
+
+
+```
+
+:::
+:::::
+
+
+
+
+
+#### Reading a binned residuals plot
+
+::::: {.columns}
+::: {.column width="50%"}
+- Systematic over/under-prediction in certain regions of the plot could indicate that important predictors are missing or that one of your variables has a non-linear effect on the probability of y=1.
+- Excessive predictions outside of the error bounds might just indicate a poor overall fit.
+:::
+::: {.column width="50%"}
+```{r}
+set.seed(123)
+n <- 1000
+
+x <- runif(n, min = -2, max = 2)
+
+true_log_odds <- -0.8 + 0.4 * (x^2)
+prob <- plogis(true_log_odds)
+
+y <- rbinom(n, size = 1, prob = prob)
+
+model <- glm(y ~ x, family = binomial())
+result <- binned_residuals(model, n_bins = 20)
+plot(result)
+
+
+```
+
+:::
+:::::
+
+
+#### Reading a binned residuals plot
+
+
+```{r}
+#| echo: true
+#| output-location: column
+
+
+model<-glm(
+  REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
+  family = binomial,
+  data = chep)
+
+# get the binned residuals
+resid<-binned_residuals(model)
+# plot the binned residuals
+plot(resid)
+
+```
+
+
+### Checking for multicollinearity
+
+- Multicollinearity refers to a scenario where two or more predictors in a model are correlated with each other.
+
+- We generally expect predictors to be at least partly correlated, but, when predictors are almost perfectly correlated it can have the effect of inflating standard errors on coefficients.
+
+#### Checking for multicollinearity
+
+- The Variance Inflation Factor is one metric that can be used to quantify how much of a multicollinearity problem might exist for a given model.
+
+- The VIF can be interpreted as indicating how much the variance of an estimated coefficient in inflated by its correlation with other variables in the model.
+
+#### Checking for multicollinearity
+
+::::: {.columns}
+::: {.column width="50%"}
+- High VIF scores (usually >10) might indicate that you've included some predictors that are effectively redundant.
+
+- For instance, using gender and sex in the model could potentially cause issues because, for most respondents, these two characteristics tend to align. In this case it probably makes sense to drop one of the variables.
+
+:::
+::: {.column width="50%"}
+```{r}
+#| echo: true
+
+
+model<-glm(
+  REPVOTE  ~ GENDER3 +SEX, 
+  family = binomial,
+  data = chep)
+
+
+
+check_collinearity(model)|>
+  plot()
+
+```
+
+:::
+:::::
+
+#### Checking for multicollinearity
+
+::::: {.columns}
+::: {.column width="50%"}
+- It's still okay to include predictors that are somewhat correlated with each other. Gender has some association with 2024 vote choice, but it doesn't give us much reason for concern here.
+
+- High VIF alone isn't necessarily a good reason to drop a predictor, but it might give you a reason to ask whether including a predictor is worthwhile.
+:::
+::: {.column width="50%"}
+```{r}
+#| echo: true
+
+
+model<-glm(
+  REPVOTE  ~ GENDER3  + HARDSHIP_INDEX + VOTE24_CHOICE, 
+  family = binomial,
+  data = chep)
+
+
+
+check_collinearity(model)|>
+  plot()
+
+```
+
+:::
+:::::
+
+
+### Checking for influential observations
+
+- Outliers are observations that have extreme values of the predictors or outcome in a model.
+
+- In regression analysis, we're particularly concerned about observations have both extreme values of a predictor (leverage) and are poorly predicted by the model (influence)
+
+- Problematic observations are sometimes identified using "Cook's Distance", which is essentially a measure of how much dropping a single observation changes the model parameters.
+
+#### Checking outliers
+
+::::: {.columns}
+::: {.column width="50%"}
+- The x-axis here shows leverage, the y-axis shows the standardized residual from the model.
+
+- The contour lines show an estimate of Cook's distance at that point. Points outside the contour line may be worth investigating.
+
+- In the present example, we really don't have much reason for concern.
+
+- In cases where an observation is outside the lines, we *might* consider dropping it, but the best practice would be to try to figure out why it has such extreme values and model it.
+:::
+::: {.column width="50%"}
+```{r}
+#| echo: true
+model<-glm(
+  REPVOTE  ~ HARDSHIP_INDEX, 
+  family = binomial,
+  data = chep)
+
+check_outliers(model)|>
+  plot()
+
+```
+:::
+:::::
 
 
 

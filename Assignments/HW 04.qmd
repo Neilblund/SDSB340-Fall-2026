@@ -1,0 +1,156 @@
+---
+title: "Homework 4: Running a GLM"
+format:
+  html:
+    toc: true
+    df-print: kable
+    code-tools: true
+    embed-resources: true
+    theme: 
+     - united
+    self-contained: true
+editor: visual
+---
+
+```{=html}
+<style>
+.qbox {
+  background-color: #cccccc; 
+  padding: 20px; 
+  border: 1px solid #999999; 
+  border-left: 10px solid teal; 
+  border-radius: 10px;
+  margin: 10px;
+}
+
+</style>
+```
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+loc<-here::here("Data", 'rls_subset.rds')
+rls<-readRDS(loc)
+
+
+```
+
+## Setup
+
+You'll use data from Pew's 2024 Religious Life Survey to answer the questions below. These data have been resampled, filtered, and recoded to match the values used in the article:
+
+-   Burge, Ryan. 2026. [The Political Takeover: Why Ideology, Not Faith, Drives the Culture War.Links to an external site.](https://www.graphsaboutreligion.com/p/the-political-takeover-why-ideology) Graphs about Religion. (non-paywalled version [available on the course website](https://umd.instructure.com/courses/1412240/assignments/7703159))
+
+You can find a description of the variables included in this data set [at the end of this document](#variable-description)
+
+```{r}
+#| echo: true
+
+
+
+```
+
+## Question 1
+
+Estimate a logistic regression model that predicts belief that acceptance of transgender people is positive for society (`support_trans`) based on a person's religion (`trad`). Show your summary output and discuss your results in terms of the direction of effects and statistical significance.
+
+```{r}
+
+
+```
+
+## Question 2
+
+Based on your results in model 1, which religious tradition is **most likely** to believe that acceptance of transgender people is positive for society? Which group is least likely?
+
+## Question 3
+
+Estimate a logistic regression model that predicts support for abortion rights (`support_abortion`) based on a person's religion (`trad`) and add a control for ideology (`ideo3`). Use this model to get the predicted support for abortion rights for the following cases:
+
+-   Liberal Evangelical vs. Liberal Catholic
+-   Moderate Evangelical vs. Moderate Catholic
+-   Conservative Evangelical vs. Conservative Catholic
+
+Compare and contrast these results from your findings on question 2.
+
+## Question 4
+
+Using the model use ran in quesiton 3, calculate the average marginal effect (average contrast) of moving from liberalism to conservatism on the probability of believing that acceptance of transgender people is positive for society.
+
+## Question 5
+
+Use a logistic regression to estimate two models:
+
+-   Model A should predict `support_trans` using `trad + ideo3`.
+
+-   Model B should predict `support_trans` using `trad + ideo3 + birthdecade`.
+
+Compare these models using one of the methods we discussed in class for comparing model fit and predictive power. Which model is better, in your judgement?
+
+```{r}
+# code here
+
+```
+
+## Question 6
+
+Select one of the models you estimated above. Assess the fit using a binned residuals plot and check for multicollinearity and influential observations using the methods we discussed in class. Briefly explain your results.
+
+
+```{r}
+# code here
+
+```
+
+## Question 7
+
+In Burge's analysis, he uses `income_numeric` as one of the predictors for support for greater acceptance of transgender people:
+```{r}
+#| eval: false
+#| echo: true
+
+burge_model <- glm(
+  support_trans ~ trad + ideo3 + gender + educ + white + income_numeric,
+  data = rls,
+  family = binomial(link = 'logit')
+)
+
+```
+
+What assumptions does this make about the relationship between `income_numeric` and `support_trans`? What would change if we decided to use the categorical version of `income` instead in our regression model instead? Can you make a case either version of the model?
+
+
+# Variable description
+
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| Variable Name       | Description                                                                                                                             | Values                                                               |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| support_abortion    | Whether respondent supports a right to an abortion in all or more cases                                                                 | Oppose, Support                                                      |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| support_ssm         | Whether respondent supports or opposes allowing gays and lesbians to marry legally                                                      | Oppose, Support                                                      |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| support_homo        | Whether respondet supports or opposes the statement that "Homosexuality should be accepted by society"                                  | Oppose, Support                                                      |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| support_trans       | Whether the respondent supports or opposes "greater acceptance of people who are transgender"                                           | Oppose, Support                                                      |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| gender              | Respondents gender self identification                                                                                                  | Men, Women                                                           |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| income              | Respondents family income in the last year                                                                                              | Categorical8 levels from "Less than \$30,000" to "\$150,000 or more" |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| ideo3               | Whether the respondent identifies as a liberal, moderate, or conservative                                                               | liberal, moderate, conservative                                      |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| educ                | Respondent's highest level of education attained                                                                                        | HS or less, Some College, College Grad, Postgrad                     |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| trad                | Respondent's religious tradition                                                                                                        | Non-Religious, Catholic, Black Protestant, Mainline, Evangelical     |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| birthdecade         | Decade of respondent's birth                                                                                                            | 7 levels from "1940s or earlier" to "2000s"                          |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| birthdecade_numeric | Numeric recode of birthdecade. 1= 1940s or earlier, 2 = 1950s, 3= 1960s ...                                                             | 1 - 7                                                                |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| income_numeric      | Numeric recode of income. 1= Less than \\\$30,000, 2 = \\\$30,000 to less than \\\$40,000 3= \\\$40,000 to less than \$50,000, etc.     | 1 - 8                                                                |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| white               | Race recoded as dichotomous (white or not white)                                                                                        | Not-white, White                                                     |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
