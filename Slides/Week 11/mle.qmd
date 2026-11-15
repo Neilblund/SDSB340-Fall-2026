@@ -531,11 +531,13 @@ preds|>
   plot() + 
   ylab("predicted %") + 
   labs(title = "Predicted % Voting for Republican",
+       color ='2024 vote'
        ) +
   scale_y_continuous(labels = scales::label_percent()) +
   scale_x_continuous(breaks = seq(0, 13, by = 1)) +
     scale_color_manual(values=c("blue","#DC143C", "purple", "grey"))+
-  heiss_theme 
+  heiss_theme +
+  geom_hline(yintercept = 0, lty=2, color='red')
 
 
   
@@ -1526,7 +1528,7 @@ $$
 
 ::::: {.columns}
 ::: {.column width="50%"}
-However, unlike the previous case, **we can't find solve this algebraically**, so the parameters here are approximated using a numeric algorithm (R's GLM function uses [iteratively reweighted least squares](https://en.wikipedia.org/wiki/Iteratively_reweighted_least_squares))
+However, unlike the previous case, **we can't solve this algebraically**, so the parameters here are approximated using a numeric algorithm (R's GLM function uses [iteratively reweighted least squares](https://en.wikipedia.org/wiki/Iteratively_reweighted_least_squares))
 :::
 ::: {.column width="50%"}
 ::: fragment
