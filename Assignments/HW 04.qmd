@@ -94,6 +94,8 @@ Use the bootstrap method to calculate a 95% confidence interval for this estimat
 
 ::: {.callout-tip collapse="false"}
 ## Hint
+
+You can see an example of this calculation [here](https://gist.githubusercontent.com/Neilblund/4da9b764947be0f7f91d4245dae37997/raw/a6a4be073f5d14abefa75706644e68fa85bd6387/gistfile1.txt).
 To make things run quickly, you can reduce the number of bootstrap replicates to 50. 
 
 You might also use `cache=TRUE` in the options for your R-code chunk. This will make it so that, when knitting the file, the results of the code block are stored and are not executed again unless you change the code.

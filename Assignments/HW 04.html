@@ -2312,7 +2312,7 @@ Important
 </div>
 <div id="callout-2" class="callout-2-contents callout-collapse collapse show">
 <div class="callout-body-container callout-body">
-<p>To make things run quickly, you can reduce the number of bootstrap replicates to 50.</p>
+<p>You can see an example of this calculation <a href="https://gist.githubusercontent.com/Neilblund/4da9b764947be0f7f91d4245dae37997/raw/a6a4be073f5d14abefa75706644e68fa85bd6387/gistfile1.txt">here</a>. To make things run quickly, you can reduce the number of bootstrap replicates to 50.</p>
 <p>You might also use <code>cache=TRUE</code> in the options for your R-code chunk. This will make it so that, when knitting the file, the results of the code block are stored and are not executed again unless you change the code.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, cache=TRUE}</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ... code for bootstrapping goes here</span></span>
@@ -2985,97 +2985,99 @@ Important
 <span id="cb7-98"><a href="#cb7-98" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-99"><a href="#cb7-99" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip collapse=&quot;false&quot;}</span>
 <span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a><span class="fu">## Hint</span></span>
-<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a>To make things run quickly, you can reduce the number of bootstrap replicates to 50. </span>
-<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a>You might also use <span class="in">`cache=TRUE`</span> in the options for your R-code chunk. This will make it so that, when knitting the file, the results of the code block are stored and are not executed again unless you change the code.</span>
+<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a>You can see an example of this calculation <span class="co">[</span><span class="ot">here</span><span class="co">](https://gist.githubusercontent.com/Neilblund/4da9b764947be0f7f91d4245dae37997/raw/a6a4be073f5d14abefa75706644e68fa85bd6387/gistfile1.txt)</span>.</span>
+<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a>To make things run quickly, you can reduce the number of bootstrap replicates to 50. </span>
 <span id="cb7-104"><a href="#cb7-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a><span class="in">````markdown</span></span>
-<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a>`r &#39;&#39;````{r, cache=TRUE}</span>
-<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a><span class="fu"># ... code for bootstrapping goes here</span></span>
-<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a><span class="in">````</span></span>
-<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a>You might also use <span class="in">`cache=TRUE`</span> in the options for your R-code chunk. This will make it so that, when knitting the file, the results of the code block are stored and are not executed again unless you change the code.</span>
+<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a><span class="in">````markdown</span></span>
+<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a>`r &#39;&#39;````{r, cache=TRUE}</span>
+<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a><span class="fu"># ... code for bootstrapping goes here</span></span>
+<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a><span class="in">````</span></span>
 <span id="cb7-113"><a href="#cb7-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 5</span></span>
+<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-117"><a href="#cb7-117" aria-hidden="true" tabindex="-1"></a>Use a logistic regression to estimate two models:</span>
+<span id="cb7-117"><a href="#cb7-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 5</span></span>
 <span id="cb7-118"><a href="#cb7-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Model A should predict <span class="in">`support_trans`</span> using <span class="in">`trad + ideo3`</span>.</span>
+<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a>Use a logistic regression to estimate two models:</span>
 <span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Model B should predict <span class="in">`support_trans`</span> using <span class="in">`trad + ideo3 + birthdecade`</span>.</span>
+<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Model A should predict <span class="in">`support_trans`</span> using <span class="in">`trad + ideo3`</span>.</span>
 <span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a>Compare these models using one or more of the methods we discussed in class for comparing model fit and predictive power. Which model is better, in your judgement?</span>
+<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Model B should predict <span class="in">`support_trans`</span> using <span class="in">`trad + ideo3 + birthdecade`</span>.</span>
 <span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a><span class="co"># code here</span></span>
-<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a>Compare these models using one or more of the methods we discussed in class for comparing model fit and predictive power. Which model is better, in your judgement?</span>
+<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a><span class="co"># code here</span></span>
 <span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 6</span></span>
+<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a>Select one of the models you estimated above. Assess the fit using a binned residuals plot and check for multicollinearity and influential observations using the methods we discussed in class. Briefly explain your results.</span>
+<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 6</span></span>
 <span id="cb7-135"><a href="#cb7-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-136"><a href="#cb7-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-139"><a href="#cb7-139" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb7-140"><a href="#cb7-140" aria-hidden="true" tabindex="-1"></a><span class="co"># code here</span></span>
-<span id="cb7-141"><a href="#cb7-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-142"><a href="#cb7-142" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-136"><a href="#cb7-136" aria-hidden="true" tabindex="-1"></a>Select one of the models you estimated above. Assess the fit using a binned residuals plot and check for multicollinearity and influential observations using the methods we discussed in class. Briefly explain your results.</span>
+<span id="cb7-137"><a href="#cb7-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-138"><a href="#cb7-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-141"><a href="#cb7-141" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-142"><a href="#cb7-142" aria-hidden="true" tabindex="-1"></a><span class="co"># code here</span></span>
 <span id="cb7-143"><a href="#cb7-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-144"><a href="#cb7-144" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 7</span></span>
+<span id="cb7-144"><a href="#cb7-144" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb7-145"><a href="#cb7-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-146"><a href="#cb7-146" aria-hidden="true" tabindex="-1"></a>In Burge&#39;s analysis, he uses <span class="in">`income_numeric`</span> as one of the predictors for support for greater acceptance of transgender people:</span>
+<span id="cb7-146"><a href="#cb7-146" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 7</span></span>
 <span id="cb7-147"><a href="#cb7-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-150"><a href="#cb7-150" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb7-151"><a href="#cb7-151" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb7-152"><a href="#cb7-152" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb7-153"><a href="#cb7-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-154"><a href="#cb7-154" aria-hidden="true" tabindex="-1"></a>burge_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb7-155"><a href="#cb7-155" aria-hidden="true" tabindex="-1"></a>  support_trans <span class="sc">~</span> trad <span class="sc">+</span> ideo3 <span class="sc">+</span> gender <span class="sc">+</span> educ <span class="sc">+</span> white <span class="sc">+</span> income_numeric,</span>
-<span id="cb7-156"><a href="#cb7-156" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> rls,</span>
-<span id="cb7-157"><a href="#cb7-157" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&#39;logit&#39;</span>)</span>
-<span id="cb7-158"><a href="#cb7-158" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-159"><a href="#cb7-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-160"><a href="#cb7-160" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-148"><a href="#cb7-148" aria-hidden="true" tabindex="-1"></a>In Burge&#39;s analysis, he uses <span class="in">`income_numeric`</span> as one of the predictors for support for greater acceptance of transgender people:</span>
+<span id="cb7-149"><a href="#cb7-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-152"><a href="#cb7-152" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-153"><a href="#cb7-153" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb7-154"><a href="#cb7-154" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb7-155"><a href="#cb7-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-156"><a href="#cb7-156" aria-hidden="true" tabindex="-1"></a>burge_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb7-157"><a href="#cb7-157" aria-hidden="true" tabindex="-1"></a>  support_trans <span class="sc">~</span> trad <span class="sc">+</span> ideo3 <span class="sc">+</span> gender <span class="sc">+</span> educ <span class="sc">+</span> white <span class="sc">+</span> income_numeric,</span>
+<span id="cb7-158"><a href="#cb7-158" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> rls,</span>
+<span id="cb7-159"><a href="#cb7-159" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&#39;logit&#39;</span>)</span>
+<span id="cb7-160"><a href="#cb7-160" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb7-161"><a href="#cb7-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-162"><a href="#cb7-162" aria-hidden="true" tabindex="-1"></a>What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of <span class="in">`income`</span> instead in our regression model instead? Can you make a case either version of the model?</span>
+<span id="cb7-162"><a href="#cb7-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb7-163"><a href="#cb7-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-164"><a href="#cb7-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-164"><a href="#cb7-164" aria-hidden="true" tabindex="-1"></a>What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of <span class="in">`income`</span> instead in our regression model instead? Can you make a case either version of the model?</span>
 <span id="cb7-165"><a href="#cb7-165" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-166"><a href="#cb7-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-167"><a href="#cb7-167" aria-hidden="true" tabindex="-1"></a><span class="fu"># Variable description</span></span>
+<span id="cb7-167"><a href="#cb7-167" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-168"><a href="#cb7-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-169"><a href="#cb7-169" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-170"><a href="#cb7-170" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Variable Name       <span class="pp">|</span> Description                                                                                                                             <span class="pp">|</span> Values                                                               <span class="pp">|</span></span>
+<span id="cb7-169"><a href="#cb7-169" aria-hidden="true" tabindex="-1"></a><span class="fu"># Variable description</span></span>
+<span id="cb7-170"><a href="#cb7-170" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-171"><a href="#cb7-171" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-172"><a href="#cb7-172" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_abortion    <span class="pp">|</span> Whether respondent supports a right to an abortion in all or more cases                                                                 <span class="pp">|</span> Oppose, Support                                                      <span class="pp">|</span></span>
+<span id="cb7-172"><a href="#cb7-172" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Variable Name       <span class="pp">|</span> Description                                                                                                                             <span class="pp">|</span> Values                                                               <span class="pp">|</span></span>
 <span id="cb7-173"><a href="#cb7-173" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-174"><a href="#cb7-174" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_ssm         <span class="pp">|</span> Whether respondent supports or opposes allowing gays and lesbians to marry legally                                                      <span class="pp">|</span> Oppose, Support                                                      <span class="pp">|</span></span>
+<span id="cb7-174"><a href="#cb7-174" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_abortion    <span class="pp">|</span> Whether respondent supports a right to an abortion in all or more cases                                                                 <span class="pp">|</span> Oppose, Support                                                      <span class="pp">|</span></span>
 <span id="cb7-175"><a href="#cb7-175" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-176"><a href="#cb7-176" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_homo        <span class="pp">|</span> Whether respondet supports or opposes the statement that &quot;Homosexuality should be accepted by society&quot;                                  <span class="pp">|</span> Oppose, Support                                                      <span class="pp">|</span></span>
+<span id="cb7-176"><a href="#cb7-176" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_ssm         <span class="pp">|</span> Whether respondent supports or opposes allowing gays and lesbians to marry legally                                                      <span class="pp">|</span> Oppose, Support                                                      <span class="pp">|</span></span>
 <span id="cb7-177"><a href="#cb7-177" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-178"><a href="#cb7-178" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_trans       <span class="pp">|</span> Whether the respondent supports or opposes &quot;greater acceptance of people who are transgender&quot;                                           <span class="pp">|</span> Oppose, Support                                                      <span class="pp">|</span></span>
+<span id="cb7-178"><a href="#cb7-178" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_homo        <span class="pp">|</span> Whether respondet supports or opposes the statement that &quot;Homosexuality should be accepted by society&quot;                                  <span class="pp">|</span> Oppose, Support                                                      <span class="pp">|</span></span>
 <span id="cb7-179"><a href="#cb7-179" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-180"><a href="#cb7-180" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> gender              <span class="pp">|</span> Respondents gender self identification                                                                                                  <span class="pp">|</span> Men, Women                                                           <span class="pp">|</span></span>
+<span id="cb7-180"><a href="#cb7-180" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_trans       <span class="pp">|</span> Whether the respondent supports or opposes &quot;greater acceptance of people who are transgender&quot;                                           <span class="pp">|</span> Oppose, Support                                                      <span class="pp">|</span></span>
 <span id="cb7-181"><a href="#cb7-181" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-182"><a href="#cb7-182" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> income              <span class="pp">|</span> Respondents family income in the last year                                                                                              <span class="pp">|</span> Categorical8 levels from &quot;Less than \$30,000&quot; to &quot;\$150,000 or more&quot; <span class="pp">|</span></span>
+<span id="cb7-182"><a href="#cb7-182" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> gender              <span class="pp">|</span> Respondents gender self identification                                                                                                  <span class="pp">|</span> Men, Women                                                           <span class="pp">|</span></span>
 <span id="cb7-183"><a href="#cb7-183" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-184"><a href="#cb7-184" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> ideo3               <span class="pp">|</span> Whether the respondent identifies as a liberal, moderate, or conservative                                                               <span class="pp">|</span> liberal, moderate, conservative                                      <span class="pp">|</span></span>
+<span id="cb7-184"><a href="#cb7-184" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> income              <span class="pp">|</span> Respondents family income in the last year                                                                                              <span class="pp">|</span> Categorical8 levels from &quot;Less than \$30,000&quot; to &quot;\$150,000 or more&quot; <span class="pp">|</span></span>
 <span id="cb7-185"><a href="#cb7-185" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-186"><a href="#cb7-186" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> educ                <span class="pp">|</span> Respondent&#39;s highest level of education attained                                                                                        <span class="pp">|</span> HS or less, Some College, College Grad, Postgrad                     <span class="pp">|</span></span>
+<span id="cb7-186"><a href="#cb7-186" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> ideo3               <span class="pp">|</span> Whether the respondent identifies as a liberal, moderate, or conservative                                                               <span class="pp">|</span> liberal, moderate, conservative                                      <span class="pp">|</span></span>
 <span id="cb7-187"><a href="#cb7-187" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-188"><a href="#cb7-188" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> trad                <span class="pp">|</span> Respondent&#39;s religious tradition                                                                                                        <span class="pp">|</span> Non-Religious, Catholic, Black Protestant, Mainline, Evangelical     <span class="pp">|</span></span>
+<span id="cb7-188"><a href="#cb7-188" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> educ                <span class="pp">|</span> Respondent&#39;s highest level of education attained                                                                                        <span class="pp">|</span> HS or less, Some College, College Grad, Postgrad                     <span class="pp">|</span></span>
 <span id="cb7-189"><a href="#cb7-189" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-190"><a href="#cb7-190" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> birthdecade         <span class="pp">|</span> Decade of respondent&#39;s birth                                                                                                            <span class="pp">|</span> 7 levels from &quot;1940s or earlier&quot; to &quot;2000s&quot;                          <span class="pp">|</span></span>
+<span id="cb7-190"><a href="#cb7-190" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> trad                <span class="pp">|</span> Respondent&#39;s religious tradition                                                                                                        <span class="pp">|</span> Non-Religious, Catholic, Black Protestant, Mainline, Evangelical     <span class="pp">|</span></span>
 <span id="cb7-191"><a href="#cb7-191" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-192"><a href="#cb7-192" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> birthdecade_numeric <span class="pp">|</span> Numeric recode of birthdecade. 1= 1940s or earlier, 2 = 1950s, 3= 1960s ...                                                             <span class="pp">|</span> 1 - 7                                                                <span class="pp">|</span></span>
+<span id="cb7-192"><a href="#cb7-192" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> birthdecade         <span class="pp">|</span> Decade of respondent&#39;s birth                                                                                                            <span class="pp">|</span> 7 levels from &quot;1940s or earlier&quot; to &quot;2000s&quot;                          <span class="pp">|</span></span>
 <span id="cb7-193"><a href="#cb7-193" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-194"><a href="#cb7-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> income_numeric      <span class="pp">|</span> Numeric recode of income. 1= Less than <span class="sc">\\</span>\$30,000, 2 = <span class="sc">\\</span>\$30,000 to less than <span class="sc">\\</span>\$40,000 3= <span class="sc">\\</span>\$40,000 to less than \$50,000, etc.     <span class="pp">|</span> 1 - 8                                                                <span class="pp">|</span></span>
+<span id="cb7-194"><a href="#cb7-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> birthdecade_numeric <span class="pp">|</span> Numeric recode of birthdecade. 1= 1940s or earlier, 2 = 1950s, 3= 1960s ...                                                             <span class="pp">|</span> 1 - 7                                                                <span class="pp">|</span></span>
 <span id="cb7-195"><a href="#cb7-195" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
-<span id="cb7-196"><a href="#cb7-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> white               <span class="pp">|</span> Race recoded as dichotomous (white or not white)                                                                                        <span class="pp">|</span> Not-white, White                                                     <span class="pp">|</span></span>
+<span id="cb7-196"><a href="#cb7-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> income_numeric      <span class="pp">|</span> Numeric recode of income. 1= Less than <span class="sc">\\</span>\$30,000, 2 = <span class="sc">\\</span>\$30,000 to less than <span class="sc">\\</span>\$40,000 3= <span class="sc">\\</span>\$40,000 to less than \$50,000, etc.     <span class="pp">|</span> 1 - 8                                                                <span class="pp">|</span></span>
 <span id="cb7-197"><a href="#cb7-197" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
+<span id="cb7-198"><a href="#cb7-198" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> white               <span class="pp">|</span> Race recoded as dichotomous (white or not white)                                                                                        <span class="pp">|</span> Not-white, White                                                     <span class="pp">|</span></span>
+<span id="cb7-199"><a href="#cb7-199" aria-hidden="true" tabindex="-1"></a>+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
