@@ -1875,8 +1875,10 @@ Running the logistic regression on example data:
 #| eval: false
 #| echo: true
 library(tidyverse)
-# pre-filtered and formatted subset of the data
-chep_subset<-readRDS(here::here("Data", "chep_subset.rds"))
+# downloading a pre-filtered a recoded subset of the CHEP data
+file<-url('https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/chep5000.rds')
+chep_subset<-readRDS(file)
+
 
 model<-glm(
   REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
@@ -1907,7 +1909,9 @@ ggplot(df, aes(x=HARDSHIP_INDEX, y=prediction,
        caption = "Source: NORC Civic Health & Elections Project 2026",
        color = '2024 Presidential Vote'
        ) +
-    scale_color_manual(values=c("blue","#DC143C", "purple", "grey"))
+    scale_color_manual(values=c("blue","#DC143C", "purple", "grey"))+
+  facet_wrap(~VOTE24_CHOICE, scales='free') +
+  guides(color='none')
 
   
 
