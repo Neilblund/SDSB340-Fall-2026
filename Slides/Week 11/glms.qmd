@@ -533,14 +533,9 @@ Lower values of both AIC and BIC indicate better model fits, but they're only me
   model3 <- glm(REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE , 
                 family = binomial, 
                 data = chep)
-BIC(model1)
-BIC(model2)
-BIC(model3)
 
-
-AIC(model1)
-AIC(model2)
-AIC(model3)
+BIC(model1, model2, model3)
+AIC(model1, model2, model3)
 
 ```
 
@@ -562,7 +557,7 @@ BIC/AIC are sometimes used to select the "best" model from a list of candidates
 
 When comparing AIC/BIC values of two models:
 
-- a difference $\leq 2$ is suggests little-to-no difference between the models.
+- a difference $\leq 2$ suggests little-to-no difference between the models.
 
 - a difference of $\gt 2$ to $\leq 10$ is moderate support for the model with the lower AIC/BIC.
 
@@ -836,6 +831,10 @@ check_outliers(model)|>
 
 ## Some Other Generalized Linear Models
 
+- Logistic regression is probably the most well-known example of a generalized linear model, but there's a whole lot of other types you might come across.
+
+- We'll briefly look at three others: Ordered Logistic Regression, Tobit, and Zero-Inflated count models.
+
 
 ### Ordered Logistic Regression
 
@@ -889,11 +888,11 @@ chep|>
 ::::: {.columns}
 ::: {.column width="50%"}
 ::: fragment
-One way to interpret an ordered logistic regression is as a latent variable model where a continuous latent outcome $Y*$ is a linear function of the predictors.
+One way to interpret an ordered logistic regression is as a latent variable model where a continuous latent outcome $Y^*$ is a linear function of the predictors.
 :::
 
 ::: fragment
-We don't observe $Y*$, but we do observe a categorical response based on $Y*$:  
+We don't observe $Y^*$, but we do observe a categorical response based on $Y^*$:  
 
 $$
 \begin{align*}
@@ -1026,8 +1025,7 @@ linear_model<-lm(as.numeric(AIFAV_LOCALDATA) ~ HARDSHIP_INDEX + SEX + PARTYFULL,
 ologit_model<-MASS::polr(AIFAV_LOCALDATA ~ HARDSHIP_INDEX + SEX + PARTYFULL ,
            data=chep)
 
-AIC(linear_model)
-AIC(ologit_model)
+AIC(linear_model, ologit_model)
 
 ```
 
@@ -1183,10 +1181,7 @@ The tobit model produces similar results, but with a slightly stronger coefficie
 ```{r}
 #| echo: true
 #install.packages("VGAM")
-
 library(VGAM)
-
-
 tobit_model<-vglm( 
   INDEX_AICONCERN ~ HARDSHIP_INDEX +  SEX + EDUC ,
   family = tobit(Lower = 0, Upper = 4), # censoring at 0 and 4
@@ -1202,7 +1197,6 @@ To get a sense of the effect of HARDSHIP_INDEX on the actual outcome scale, we c
 
 ```{r}
 #| echo: true
-
 data1<-chep
 preds1<-predict(
   tobit_model,
@@ -1210,16 +1204,13 @@ preds1<-predict(
   type = 'response',
   type.fitted = "censored" # this gives us the result with censoring
 )
-
 data2<-mutate(chep, HARDSHIP_INDEX = HARDSHIP_INDEX +1)
-
 preds2<-predict(
   tobit_model,
   newdata = data2,
   type = 'response',
   type.fitted = "censored"
 )
-
 mean(preds2 - preds1)
 
 
@@ -1241,10 +1232,109 @@ AIC(linear_model)
 ```
 
 
+
+
+
+
+### Zero-Inflated Count Models
+
+
+::::: {.columns}
+::: {.column width="50%"}
+- In a previous class, we looked at the American Time Use Survey, and noted that many outcomes, like "time spent on childcare" also aren't really continuously distributed.
+
+- Time use, as measured on the survey, is always a non-negative integer. 
+
+- But it also tends to have an inordinate number of zeros: some people will *never* spend time on childcare because they have no children.
+:::
+::: {.column width="50%"}
+
+
+```{r}
+
+
+filloc<-here::here("Data/atus25_subset.rds")
+atus<-readRDS(filloc)
+
+ggplot(atus, aes(x=childcare_combined)) + geom_histogram()
+
+```
+:::
+:::::
+
+
+### Zero-Inflated Count Models
+
+::::: {.columns}
+::: {.column width="50%"}
+- Zero-Inflated Count models handle this kind of outcome by assuming there are two separate data generating processes:
+
+- A logit model that predicts "structural zeros" (people who don't have kids)
+
+- A count model that measures the *amount* of time spent on childcare for a person who actually has children. (people who have kids but who may have spent varying amounts of time on childcare when the survey was conducted.)
+
+:::
+::: {.column width="50%"}
+```{r}
+
+
+filloc<-here::here("Data/atus25_subset.rds")
+atus<-readRDS(filloc)
+
+ggplot(atus, aes(x=childcare_combined)) + geom_histogram()
+
+```
+:::
+:::::
+
+
+
+
+### Zero-Inflated Count Models
+
+
+::::: {.columns}
+::: {.column width="50%"}
+
+- For instance, this model assumes that age, sex, and number of children will determine whether you spend any time on childcare, but - for those who have children - this will also be influenced by whether or not the survey was completed on a weekend.
+
+- Note that we have two sets of coefficient values. The first predicts the amount of time spent on childcare under the count model, the second predicts the probability of being a "structural zero".
+
+
+
+:::
+::: {.column width="50%"}
+```{r}
+#| echo: true
+# install.packages("glmmTMB")
+library(glmmTMB)
+loc<-here::here("Data/atus25_subset.rds")
+atus<-readRDS(loc)
+atus$weekend<-atus$day%in%c("Saturday", "Sunday")
+zip_mod <- glmmTMB(
+  childcare_combined ~ age + sex + num_children + weekend, # count model
+  ziformula = ~  age + sex + num_children,                 # logit model to predict 0
+  family = nbinom2,                         
+  data = atus
+)
+
+
+summary(zip_mod)
+
+
+
+
+```
+:::
+:::::
+
+
+
 ### GLMS vs. Linear Models
 
 - Notice that in each case we examined here, we had the *option* of using a linear model to fit the data. In some cases the linear model may be preferable for simplicity, ease of interpretation, and robustness.
 
 - When in doubt, you can always try running both and asking "is there a substantial difference in the results here?". If not, then it's probably okay to just report one model and put the other in an appendix or mention it in a footnote.
+
 
 

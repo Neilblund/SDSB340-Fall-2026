@@ -1,0 +1,1052 @@
+---
+title: "Exploratory Factor analysis"
+format:
+    revealjs:
+        theme: [blueyellow]
+        html-math-method: katex        
+        transition: fade
+        width: 1280
+        height: 720
+        df-print: tibble
+        smaller: true
+        scrollable: false
+        slide-number: true
+        self-contained: true
+        embed-resources: true
+        mermaid:
+            theme: forest
+        code-annotations: select
+        code-link: true
+        incremental: true
+bibliography: ../references.bib
+slide-level: 4
+execute:
+  echo: false
+lightbox: true
+---
+
+
+### Latent Traits
+
+::::: columns
+::: {.column width="50%"}
+-   A single latent trait, "depression", might be measured by a 4-item scale that asks questions about feelings of anhedonia, feeling down, feeling tired, or changes in appetite.
+:::
+
+::: {.column width="50%"}
+```{dot}
+//| fig-width: 6
+//| fig-height: 4
+//| fig-responsive: false
+digraph Depression {
+    rankdir=LR
+    
+    node [shape=rectangle, style=filled, fillcolor=white, 
+          color="#5B9BD5", penwidth=1.2, width=1.4, height=0.5,
+          fontname="Arial", fontsize=11]
+    
+    edge [color="#5B9BD5", arrowhead=vee, arrowsize=0.7, penwidth=1.0]
+    
+    // Item nodes
+    Item1 [label="Little interest or pleasure in doing things?"]
+    Item2 [label="Feeling down, depressed, or hopeless?"]
+    Item3 [label="Feeling tired or having little energy?"]
+    Item4 [label="Poor appetite or overeating?"]
+
+
+    // Latent factor node
+    Anxiety [label="Depression", shape=ellipse, width=1.4, height=1.0]
+    
+    // Arrows from Anxiety to each item, arriving at center-left of each item
+    Anxiety -> Item1 [headport=e]
+    Anxiety -> Item2 [headport=e]
+    Anxiety -> Item3 [headport=e]
+    Anxiety -> Item4 [headport=e]
+
+    // Small incoming arrows on each item (residuals/error terms)
+    e1 [shape=point, width=0.0, style=invis]
+    e2 [shape=point, width=0.0, style=invis]
+    e3 [shape=point, width=0.0, style=invis]
+    e4 [shape=point, width=0.0, style=invis]
+    
+    e1 -> Item1
+    e2 -> Item2
+    e3 -> Item3
+    e4 -> Item4
+
+// Force vertical ordering of items top to bottom
+     Item1 -> Item2 -> Item3 -> Item4   [style=invis]
+    { rank=source; e1; e2; e3; e4; }
+    { rank=same; Item1; Item2; Item3; Item4; }
+    { rank=sink; Anxiety }
+}
+
+```
+:::
+:::::
+
+### Sources of variation
+
+We can think about the [total variance]{.yellow} in the results as coming from these sources:
+
+::::::: fragment
+:::::: columns
+:::: {.column width="60%"}
+[Common variance]{.yellow} is the variance in our data that comes from the actual variance in the latent factor.
+
+::: fragment
+[Unique variance]{.yellow} is the variance that comes from individual items. It has two components:
+
+-   [Specific variance]{.yellow} is the unique variance that comes from stable characteristics.
+
+-   [Error variance]{.yellow} is unique variance that comes from random error.
+:::
+::::
+
+::: {.column width="40%"}
+```{=html}
+
+
+
+<div style="padding: 2rem 1rem;">
+
+  <div style="display: flex; align-items: center; margin-bottom: 4px;">
+  </div>
+  <div style="display: flex; align-items: center; margin-bottom: 2px;">
+    <div style="flex: 1; border-left: 2px solid var(--color-text-primary); border-top: 2px solid var(--color-text-primary); border-right: 2px solid var(--color-text-primary); height: 8px;"></div>
+  </div>
+
+  <div style="display: flex; width: 100%; height: 44px; margin-bottom: 2px;">
+    <div style="flex: 1; background: #56B4E9; display: flex; align-items: center; justify-content: center;">
+      <span style="font-size: 14px; font-weight: 500; color: #042C53;">Total Variance</span>
+    </div>
+  </div>
+
+  <div style="display: flex; width: 100%; height: 44px;">
+    <div style="flex: 0 0 45%; background: #009E73; display: flex; align-items: center; justify-content: center;">
+      <span style="font-size: 13px; font-weight: 500; color: #e6f5f0;">Common Variance</span>
+    </div>
+    <div style="flex: 1; display: flex;">
+      <div style="flex: 1; background: #E69F00; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 13px; font-weight: 500; color: #412402;">Unique Variance</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; width: 100%; height: 44px; margin-bottom: 2px;">
+    <div style="flex: 0 0 45%;"></div>
+    <div style="flex: 1; display: flex;">
+      <div style="flex: 1; background: #D55E00; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(255,255,255,0.3);">
+        <span style="font-size: 13px; font-weight: 500; color: #fff0eb;">Specific</span>
+      </div>
+      <div style="flex: 1; background: #CC79A7; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 13px; font-weight: 500; color: #4B1528;">Error</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: flex-start; margin-top: 8px;">
+    <div style="flex: 0 0 45%; padding-top: 4px;">
+    </div>
+    <div style="flex: 1;">
+      <div style="border-left: 2px solid var(--color-text-primary); border-bottom: 2px solid var(--color-text-primary); border-right: 2px solid var(--color-text-primary); height: 8px; margin-bottom: 4px;"></div>
+    </div>
+  </div>
+
+</div>
+```
+:::
+::::::
+:::::::
+
+### Sources of variation
+
+:::::: columns
+::: {.column width="50%"}
+-   One goal in factor analysis is to decompose these different sources of variance
+
+-   Distinguishing common from unique variance allows us to estimate the strength and direction of association between a single item and the latent factor.
+:::
+
+:::: {.column width="50%"}
+::: {style="height: 100%;width: 100%"}
+```{dot}
+//| fig-width: 6
+//| fig-height: 4
+//| fig-responsive: false
+digraph Depression {
+    rankdir=LR
+    
+    node [shape=rectangle, style=filled, fillcolor=white, 
+          color="#5B9BD5", penwidth=1.2, width=1.4, height=1,
+          fontname="Arial", fontsize=11]
+    
+    edge [color="#5B9BD5", arrowhead=vee, arrowsize=0.7, penwidth=1.0]
+    
+    // Item nodes
+    Item1 [label="Little interest or pleasure in doing things?"]
+    Item2 [label="Feeling down, depressed, or hopeless?"]
+    Item3 [label="Feeling tired or having little energy?"]
+    Item4 [label="Poor appetite or overeating?"]
+
+ //   v1 [shape ="record", label="Error variance|Specific variance"];
+ //   v2 [shape ="record", label="Error variance|Specific variance"];
+ //   v3 [shape ="record", label="Error variance|Specific variance"];
+ //   v4 [shape ="record", label="Error variance|Specific variance"];
+    v1 [label="e", shape="circle", height=0.2, width=0.2, fillcolor="#CC79A7", color=white];
+    v2 [label="e", shape="circle", height=0.2, width=0.2, fillcolor="#CC79A7", color=white];
+    v3 [label="e", shape="circle", height=0.2, width=0.2, fillcolor="#CC79A7", color=white];
+    v4 [label="e", shape="circle", height=0.2, width=0.2, fillcolor="#CC79A7", color=white];
+    v1 -> Item1  [headport=w]
+    v2 -> Item2  [headport=w]
+    v3 -> Item3  [headport=w]
+    v4 -> Item4  [headport=w]
+        
+    s1 [label="s", shape="circle", height=0.2, width=0.2, fillcolor="#D55E00", color=white];
+    s2 [label="s", shape="circle", height=0.2, width=0.2,fillcolor="#D55E00", color=white];
+    s3 [label="s", shape="circle", height=0.2, width=0.2, fillcolor="#D55E00", color=white];
+    s4 [label="s", shape="circle", height=0.2, width=0.2, fillcolor="#D55E00", color=white];
+    s1 -> Item1 [headport=w]
+    s2 -> Item2 [headport=w]
+    s3 -> Item3 [headport=w]
+    s4 -> Item4 [headport=w]
+    
+    lab1 [label="Common Variance", fillcolor="#009E73", color=white]
+    lab1 ->Anxiety [style=invis,minlen=5];
+    lab2 [label="Unique Variance", fillcolor="#E69F00", color=white]
+    lab2 ->lab1 [style=invis]
+    //lab2 ->v1 [style=invis,minlen=5];
+
+    // Latent factor node
+    Anxiety [label="Depression", shape=ellipse, width=1.4, height=1.0]
+    
+    // Arrows from Anxiety to each item, arriving at center-left of each item
+    Anxiety -> Item1 [headport=e]
+    Anxiety -> Item2 [headport=e]
+    Anxiety -> Item3 [headport=e]
+    Anxiety -> Item4 [headport=e]
+
+    // Small incoming arrows on each item (residuals/error terms)
+  //  e1 [shape=point, width=0.0, style=invis]
+//    e2 [shape=point, width=0.0, style=invis]
+ //   e3 [shape=point, width=0.0, style=invis]
+  //  e4 [shape=point, width=0.0, style=invis]
+    
+//    e1 -> Item1
+ //   e2 -> Item2
+  //  e3 -> Item3
+//    e4 -> Item4
+
+// Force vertical ordering of items top to bottom
+     Item1 -> Item2 -> Item3 -> Item4   [style=invis]
+    {rank = source; s1, s2, s3, s4}
+    {rank = source; v1, v2, v3, v4, lab2}
+    { rank=same; Item1; Item2; Item3; Item4;}
+    { rank=sink; Anxiety;lab1 }
+}
+```
+:::
+::::
+::::::
+
+### Sources of variation
+
+Ignoring specific variance, we can think of answers to question $i$ as a function of the "amount" of latent depression ($f_{\text{depression}}$) times the factor loading ($b_{1i}$) for that question plus the unique error for that question ($e_{i}$) plus a constant term ($\alpha_{i}$)
+
+$$\begin{align}
+X_{1} = \alpha_{1} + b_{1}f_{\text{depression}} + e_{1}\\
+X_{2} = \alpha_{2} + b_{2}f_{\text{depression}} + e_{2}\\
+X_{3} = \alpha_{3} + b_{3}f_{\text{depression}} + e_{3}\\
+X_{4} = \alpha_{4} + b_{4}f_{\text{depression}} + e_{4}\\
+\end{align}$$
+
+. . .
+
+This is a set of linear regressions! But the value of $\large{F_{\text{depression}}}$ is unknown, so we can't just estimate the parameters the normal way.
+
+
+
+### Implications of the model
+
+-   For simplicity, we can assume that depression has a mean of 0 and a standard deviation of 1.
+-   The variance for any item is $b_{i1}+\sigma^2_i$ (the factor loading plus the error)
+-   The covariance for any pair of items $Cov(i, j) = b_{1i}b_{1j}$ (the product of the factor loadings for items i and j)
+
+### Variance covariance matrix
+
+:::::::::: columns
+::::: {.column width="30%"}
+::: {.fragment data-fragment-index="1"}
+The theoretical model implies some important things about the covariance/correlation matrix we should expect to see.
+:::
+
+::: {.fragment data-fragment-index="2"}
+The actual observed values for the covariance matrix looks like this. The task, then, is to find values for $b_{1i}$ and $\sigma^2_i$ that would generate something *close* to the data we observe.
+:::
+:::::
+
+:::::: {.column width="70%"}
+::::: r-stack
+::: {.fragment .fade-in-then-out data-fragment-index="1"}
+| **Item** | Item 1 | Item 2 | Item 3 | Item 4 |
+|---------------|---------------|---------------|---------------|---------------|
+| **Item 1** | $$b_{1}^2+\sigma^2_1$$ | $$b_{1}b_{2}$$ | $$b_{3}b_{1}$$ | $b_{4}b_{1}$ |
+| **Item 2** | $$b_{1}b_{2}$$ | $$b_{2}^2+\sigma^2_2$$ | $$b_{3}b_{2}$$ | $$b_{14}b_{12}$$ |
+| **Item 3** | $$b_{1}b_{13}$$ | $$b_{2}b_{3}$$ | $$b_{3}^2+\sigma^2_3$$ | $$b_{14}b_{13}$$ |
+| **Item 4** | $$b_{1}b_{4}$$ | $$b_{2}b_{4}$$ | $$b_{3}b_{4}$$ | $$b_{4}^2+\sigma^2_4$$ |
+
+: Variance-covariance matrix implied by the model
+
+:::
+
+::: {.fragment .fade-in-then-out data-fragment-index="2"}
+|        | Item 1 | Item 2 | Item 3 | Item 4 |
+|--------|--------|--------|--------|--------|
+| Item 1 | 0.88   | 0.43   | 0.35   | 0.30   |
+| Item 2 | 0.43   | 0.69   | 0.38   | 0.31   |
+| Item 3 | 0.35   | 0.38   | 0.92   | 0.38   |
+| Item 4 | 0.30   | 0.31   | 0.38   | 0.74   |
+
+: Variance-covariance matrix observed in the data
+:::
+:::::
+::::::
+::::::::::
+
+### Finding the factor loadings
+
+::::::::: columns
+::: {.column width="30%"}
+
+
+We can assume some arbitrary values to see how this would work.
+
+$$\begin{align*}
+b_{1} = 0.5; \sigma^2_1 = 0.63\\
+b_{2} = 0.3; \sigma^2_2 = 0.60\\
+b_{3} = 0.7; \sigma^2_3 = 0.43\\
+b_{4} = 0.2; \sigma^2_4 = 0.70\\
+\end{align*}$$
+
+
+
+
+
+:::
+
+::::::: {.column width="70%"}
+:::::: r-stack
+::: {.fragment .fade-in-then-out data-fragment-index="1"}
+| **Item** | Item 1 | Item 2 | Item 3 | Item 4 |
+|---------------|---------------|---------------|---------------|---------------|
+| **Item 1** | $$b_{1}^2+\sigma^2_1$$ | $$b_{1}b_{2}$$ | $$b_{3}b_{1}$$ | $b_{4}b_{1}$ |
+| **Item 2** | $$b_{1}b_{2}$$ | $$b_{2}^2+\sigma^2_2$$ | $$b_{3}b_{2}$$ | $$b_{14}b_{12}$$ |
+| **Item 3** | $$b_{1}b_{13}$$ | $$b_{2}b_{3}$$ | $$b_{3}^2+\sigma^2_3$$ | $$b_{14}b_{13}$$ |
+| **Item 4** | $$b_{1}b_{4}$$ | $$b_{2}b_{4}$$ | $$b_{3}b_{4}$$ | $$b_{4}^2+\sigma^2_4$$ |
+
+: Variance-covariance matrix implied by the model
+
+:::
+
+::: {.fragment .fade-in-then-out data-fragment-index="2"}
+| **Item** | Item 1 | Item 2 | Item 3 | Item 4 |
+|---------------|---------------|---------------|---------------|---------------|
+| **Item 1** | $$0.5^2+0.63$$ | $$0.5\times0.3$$ | $$0.7\times0.5$$ | $$0.2\times0.5$$ |
+| **Item 2** | $$0.5\times0.3$$ | $$0.3^2+0.6$$ | $$0.7\times0.3$$ | $$0.2\times0.3$$ |
+| **Item 3** | $$0.5\times0.7$$ | $$0.3\times0.7$$ | $$0.7^2+0.43$$ | $$0.2\times0.7$$ |
+| **Item 4** | $$0.5\times0.2$$ | $$0.3\times0.2$$ | $$0.7\times0.2$$ | $$0.2^2+0.7$$ |
+
+: Estimated variance-covariance matrix with a wild guess
+
+:::
+
+::: {.fragment .fade-in-then-out data-fragment-index="3"}
+| **Item**   | Item 1 | Item 2 | Item 3 | Item 4 |
+|------------|--------|--------|--------|--------|
+| **Item 1** | $0.88$ | $0.15$ | $0.35$ | $0.10$ |
+| **Item 2** | $0.15$ | $0.69$ | $0.21$ | $0.06$ |
+| **Item 3** | $0.35$ | $0.21$ | $0.92$ | $0.14$  |
+| **Item 4** | $0.10$ | $0.06$ | $0.14$ | $0.74$ |
+
+: Estimated variance-covariance matrix with a wild guess
+
+:::
+
+
+::::::
+:::::::
+:::::::::
+
+
+
+### Comparing estimates
+
+We can compare the estimated covariance matrix to the observed one to get a sense of how well these "fit" the data using some metric for accuracy (such as the sum of squared differences), and then choose values for $b_{1i}$ that minimize this metric.
+
+::::: {.columns}
+::: {.column width="50%"}
+
+
+
+| **Item**       | Item 1 | Item 2 | Item 3 | Item 4 |
+|--------|--------|--------|--------|--------|
+| **Item 1** | $0.88$   | $0.43$   | $0.35$   | $0.30$   |
+| **Item 2** | $0.43$   | $0.69$   | $0.38$   | $0.31$   |
+| **Item 3** | $0.35$   | $0.38$   | $0.92$   | $0.38$   |
+| **Item 4** | $0.30$   | $0.31$   | $0.38$   | $0.74$   |
+
+: Observed
+
+:::
+::: {.column width="50%"}
+| **Item**   | Item 1 | Item 2 | Item 3 | Item 4 |
+|------------|--------|--------|--------|--------|
+| **Item 1** | $0.88$ | $0.15$ | $0.35$ | $0.10$ |
+| **Item 2** | $0.15$ | $0.69$ | $0.21$ | $0.06$ |
+| **Item 3** | $0.35$ | $0.21$ | $0.92$ | $0.14$ |
+| **Item 4** | $0.10$ | $0.06$ | $0.14$ | $0.74$ |
+
+: Estimated
+
+:::
+:::::
+
+. . .
+
+The sum of squared errors with these parameters is 0.53, but we could undoubtedly find a set of parameters that would decrease it.
+
+
+
+
+### Factor analysis: some ways to find solutions
+
+- Maximum likelihood (MLE)
+
+- Minimum residual (MinRes)
+
+- Principal Axis Factoring (PAF)
+
+- Principal Component Analysis (PCA)
+
+### Factor analysis: minimum residual method
+
+Start with an initial guess for the factor loadings and specific variances
+
+::::: {.columns}
+::: {.column width="50%"}
+
+1. Calculate the correlation matrix implied by these parameters
+
+2. Get the sum of squared differences (ignoring the diagonal elements) from the observed correlation matrix compared to the predicted correlation matrix.
+
+3. Pick a new set of values that reduces the sum of squared differences.
+
+5. Repeat 1-3 until things stop improving.
+:::
+::: {.column width="50%"}
+::: fragment
+![](../images/iterations.png)
+:::
+:::
+:::::
+
+### Factor analysis: minimum residual method
+
+```{r, eval=TRUE, echo=TRUE}
+
+# Example of using R's optimizaton functions to get some factors "from scratch"
+# in practice, you wouldn't need to do this! There are a lot of better functions
+# for factor analysis. The goal here is just to see something where the process
+# is a little less opaque.
+
+loc<-url('https://github.com/Neilblund/SDSB340-Spring-2026/raw/refs/heads/master/Data/depression_scores.rds')
+scores<-readRDS(loc)
+vars<-c("DPQ010", "DPQ020", "DPQ040", "DPQ050")
+scores_select<-scores[,vars]
+
+
+# The function to calculate a sum of squared residuals for a set of parameters
+# compared to an observed correlation matrix:
+
+minres_obj <- function(params, R, n_var, n_fact) {
+  # Reconstruct the Loading Matrix (A)
+  A <- matrix(params, nrow = n_var, ncol = n_fact)
+  # Calculate Reproduced Correlation Matrix (R_hat = A %*% A')
+  R_hat <- A %*% t(A)
+  # Calculate Residuals (Observed - Reproduced)
+  Resid <- R - R_hat
+  # Extract off-diagonal residuals only
+  # MinRes ignores the diagonal
+  diag(Resid) <- 0
+  # Return Sum of Squared Residuals
+  return(sum(Resid^2))
+}
+
+R <- cor(scores_select)    # the observed correlation matrix
+n_var <- nrow(R)    # the number of variables
+n_fact <- 1         # the number of assumed factors
+
+# random starting values for the loadings
+# Note, in practice, we would use some heuristics to ensure a plausible starting
+# point
+init_loadings <- runif(n_var * n_fact, 0, 0.1)
+
+fit <- optim(
+  par = init_loadings,
+  fn = minres_obj,
+  R = R,
+  n_var = n_var,
+  n_fact = n_fact,
+  method = "BFGS",
+  control = list(maxit = 5000)
+)
+
+# Formatting the results
+loadings_matrix <- matrix(fit$par, nrow = n_var, ncol = n_fact)
+rownames(loadings_matrix) <- rownames(R)
+colnames(loadings_matrix) <- paste0("MR", 1:n_fact)
+
+round(loadings_matrix, digits=2)
+
+```
+
+
+
+### Factor analysis: loadings
+
+::::: {.columns}
+::: {.column width="50%"}
+[Factor loadings]{.yellow} correspond to the $b_i$ values for each item. So they represent the correlation between item $i$ and the latent variable.
+
+- So, the correlation between item 1, "Having little interest in doing things", and the latent variable is about $0.74$.
+:::
+::: {.column width="50%"}
+$$
+\text{Factor loadings} = \left(\begin{array}{c}
+
+\text{item 1}&0.74\\\text{item 2}&0.80\\\text{item 3}&0.55\\\text{item 4}&0.53
+
+\end{array}\right)
+$$
+:::
+:::::
+
+
+### Factor analysis: communality
+
+
+::::: {.columns}
+::: {.column width="50%"}
+[Communality]{.yellow} is the proportion of the variation in item $i$ that is explained by the latent factor(s). It can be calculated from summing the squared factor loadings.
+
+- So variation in the latent factor accounts for about $0.73^2 = 0.54$ of the variation in answers to item 1
+:::
+::: {.column width="50%"}
+$$
+\text{Factor loadings} = \left(\begin{array}{c}
+
+\text{item 1}&0.74\\\text{item 2}&0.80\\\text{item 3}&0.55\\\text{item 4}&0.53
+
+\end{array}\right)
+$$
+:::
+:::::
+
+
+### Factor analysis: uniqueness
+
+
+::::: {.columns}
+::: {.column width="50%"}
+[Uniqueness]{.yellow} is the proportion of variation in item $i$ that is not explained by the latent factor(s). It can be calculated by taking 1 - the communality score.
+
+- So $1 - 0.54  = 0.46$ of the variation in item 1 is explained by something other than depression (random error or something else)
+
+:::
+::: {.column width="50%"}
+$$
+\text{Factor loadings} = \left(\begin{array}{c}
+
+\text{item 1}&0.74\\\text{item 2}&0.80\\\text{item 3}&0.55\\\text{item 4}&0.53
+
+\end{array}\right)
+$$
+:::
+:::::
+
+### Factor analysis: variance explained
+
+
+::::: {.columns}
+::: {.column width="50%"}
+[Proportion of total variance explained]{.yellow}  is the total variation across factors explained by the factor model. It can be calculated from sum of squared factor loadings divided by the number of items. 
+
+- So $\frac{074.^2 + 0.80^2 + 0.55^2 + 0.53^2}{4} = .45$ of the total variation in responses to these questions is explained by variance in depression.
+
+:::
+::: {.column width="50%"}
+$$
+\text{Factor loadings} = \left(\begin{array}{c}
+
+\text{item 1}&0.74\\\text{item 2}&0.80\\\text{item 3}&0.55\\\text{item 4}&0.53
+
+\end{array}\right)
+$$
+:::
+:::::
+
+
+### Factor analysis: latent variables
+
+- We've been *assuming* that the latent variable captured by this factor analysis represents "depression", but this is just a (reasonable) assumption, not something that the model really tells us.
+
+- Whatever this latent variable is, it is modestly positively associated with all 4 questions.
+
+### Adding dimensions
+
+::::: {.columns}
+::: {.column width="50%"}
+- What if we suspect there's more than one latent variable that explains our data?
+
+- In the worst case, we might have one latent dimension for every item in the index.
+
+- More plausibly, we might have a few additional items, and we might think some of these are correlated with "sleep deprivation" in addition to being correlated with depression.
+:::
+::: {.column width="50%"}
+
+::: fragment
+
+```{dot}
+//| fig-width: 6
+//| fig-height: 4
+//| fig-responsive: false
+digraph Depression {
+    rankdir=LR
+    
+    node [shape=rectangle, style=filled, fillcolor=white, 
+          color="#5B9BD5", penwidth=1.2, width=1.4, height=0.5,
+          fontname="Arial", fontsize=11]
+    
+    edge [color="#5B9BD5", arrowhead=vee, arrowsize=0.7, penwidth=1.0]
+    
+    // Item nodes
+    Item1 [label="Little interest or pleasure in doing things?"]
+    Item2 [label="Feeling down, depressed, or hopeless?"]
+    Item3 [label="Feeling tired or having little energy?"]
+    Item4 [label="Poor appetite or overeating?"]
+    Item5 [label="Trouble concentrating?"]
+    Item6 [label="Moving or speaking slowly?"]
+
+
+    // Latent factor node
+    Anxiety [label="Depression", shape=ellipse, width=1.4, height=1.0]
+    Sleep [label="Sleep deprivation", shape=ellipse, width=1.4, height=1.0]
+
+    Sleep -> Item1 [headport=e]
+    Sleep -> Item2 [headport=e]
+    Sleep  -> Item3 [headport=e]
+    Sleep  -> Item4 [headport=e]
+    Sleep  -> Item5 [headport=e]
+    Sleep  -> Item6 [headport=e]
+
+    // Arrows from Anxiety to each item, arriving at center-left of each item
+    Anxiety -> Item1 [headport=e]
+    Anxiety -> Item2 [headport=e]
+    Anxiety -> Item3 [headport=e]
+    Anxiety -> Item4 [headport=e]    
+    Anxiety -> Item5 [headport=e]
+    Anxiety -> Item6 [headport=e]
+    
+
+    // Small incoming arrows on each item (residuals/error terms)
+    e1 [shape=point, width=0.0, style=invis]
+    e2 [shape=point, width=0.0, style=invis]
+    e3 [shape=point, width=0.0, style=invis]
+    e4 [shape=point, width=0.0, style=invis]
+    e5 [shape=point, width=0.0, style=invis]
+    e6 [shape=point, width=0.0, style=invis]
+    
+    e1 -> Item1
+    e2 -> Item2
+    e3 -> Item3
+    e4 -> Item4
+    e5 -> Item5
+    e6 -> Item6
+
+// Force vertical ordering of items top to bottom
+     Item1 -> Item2 -> Item3 -> Item4   [style=invis]
+    { rank=source; e1; e2; e3; e4; e5;e6}
+    { rank=same; Item1; Item2; Item3; Item4;Item5;Item6 }
+    { rank=sink; Anxiety ;Sleep}
+}
+
+```
+
+:::
+:::
+:::::
+
+
+
+### Adding dimensions
+
+The equations for generating each item now have an additional parameter that reflects the effect of sleep deprivation:
+
+::: {style="font-size: 0.8em;"}
+
+
+$$\begin{align}
+X_{1} = \alpha_{1} + b_{11}f_{\text{depression}} +b_{21}f_{\text{sleep deprivation}} +  e_{1}\\
+X_{2} = \alpha_{2} + b_{12}f_{\text{depression}} +b_{22}f_{\text{sleep deprivation}}  + e_{2}\\
+X_{3} = \alpha_{3} + b_{13}f_{\text{depression}} +b_{23}f_{\text{sleep deprivation}}  + e_{3}\\
+X_{4} = \alpha_{4} + b_{14}f_{\text{depression}} +b_{24}f_{\text{sleep deprivation}}  + e_{4}\\
+X_{5} = \alpha_{5} + b_{15}f_{\text{depression}} +b_{25}f_{\text{sleep deprivation}}  + e_{5}\\
+X_{6} = \alpha_{6} + b_{16}f_{\text{depression}} +b_{26}f_{\text{sleep deprivation}}  + e_{6}\\
+\end{align}$$
+
+
+Now we're interested in estimating a matrix of factor loadings for each item on each dimension.
+
+$$
+\mathbf{\beta} = \left(\begin{array}{cccc}b_{11}& b_{12}& \dots & b_{1m}\\b_{21} & b_{22} & \dots & b_{2m}\\ \vdots & \vdots & & \vdots \\b_{p1} & b_{p2} & \dots & b_{pm}\end{array}\right) = \text{matrix of factor loadings}
+$$
+:::
+
+
+### Adding dimensions
+
+Fortunately, this doesn't change our basic assumptions or our goal. There's a theoretical correlation/covariance matrix implied by our model. Our goal is to find a set of factor loadings that would probably have generated the data we see in the sample.
+
+Adding dimensions does add a couple of additional complexities.
+
+
+
+### Adding dimensions: rotation
+
+- For problems with multiple factors, there are multiple sets of loadings that could give us equally good fits. 
+
+- This is referred to as [rotational indeterminacy]{.yellow}: factor loadings can be "rotated" without producing a different fit.
+
+- Initial factor solutions are typically rotated to find a solution that is easily interpretable. Importantly, this relies on making some assumptions about the underlying structure of the factors you're exploring.
+
+### Adding dimensions: rotation
+
+- Orthogonal rotations assume that the factors are not correlated with each other.
+
+- Oblique rotations allow the factors to be correlated with each other.
+
+- In most cases, an oblique rotation is more consistent with the data.
+
+
+### Rotations
+
+
+::: {.r-stack}
+
+::: fragment
+
+```{r}
+
+loc<-url('https://github.com/Neilblund/SDSB340-Spring-2026/raw/refs/heads/master/Data/depression_scores.rds')
+scores<-readRDS(loc)
+vars<-c("DPQ010", "DPQ020", "DPQ040", "DPQ050", "DPQ070",  "DPQ080" )
+scores_select<-scores[,vars]
+
+
+R <- cor(scores_select)    # the observed correlation matrix
+n_var <- nrow(R)    # the number of variables
+n_fact <- 2         # the number of assumed factors
+
+# random starting values for the loadings
+# Note, in practice, we would use some heuristics to ensure a plausible starting
+# point
+set.seed(3265)
+
+init_loadings<-runif(n_var*n_fact, min = -.1, max=.1)
+
+fit <- optim(
+  par = init_loadings,
+  fn = minres_obj,
+  R = R,
+  n_var = n_var,
+  n_fact = n_fact,
+  method = "BFGS",
+  control = list(maxit = 5000)
+)
+
+# Formatting the results
+loadings_matrix <- matrix(fit$par, nrow = n_var, ncol = n_fact)
+rownames(loadings_matrix) <- rownames(R)
+colnames(loadings_matrix) <- paste0("MR", 1:n_fact)
+
+
+library(ggplot2)
+library(tidyverse)
+data.frame(loadings_matrix)|>
+  rownames_to_column(var = 'item')|>
+  ggplot(aes(x=MR1, y=MR2, color=item)) +geom_point() +
+  geom_vline(xintercept=0, lty=2)+
+  geom_hline(yintercept=0, lty=2)+
+    ylim(-1.2, 1.2)+
+  xlim(-1.2, 1.2) +
+  theme_bw() +
+  labs(title='Original')
+
+
+```
+:::
+
+::: fragment
+
+```{r, eval=TRUE}
+
+library(GPArotation)
+
+
+rotated_solution <- varimax(loadings_matrix)$loadings|>matrix(ncol=2)
+
+
+colnames(rotated_solution)<-colnames(loadings_matrix)
+rownames(rotated_solution)<-rownames(loadings_matrix)
+
+rotated_solution|>
+  data.frame()|>
+  rownames_to_column(var = 'item')|>
+  ggplot(aes(x=MR1, y=MR2, color=item)) + geom_point() +
+  geom_vline(xintercept=0, lty=2)+
+  geom_hline(yintercept=0, lty=2)+
+    ylim(-1.2, 1.2)+
+  xlim(-1.2, 1.2) +
+  theme_bw()+
+  labs(title='Varimax Rotation')
+
+
+
+```
+:::
+
+::: fragment
+
+```{r, eval=TRUE}
+
+library(GPArotation)
+
+
+rotated_solution <- oblimin(loadings_matrix)$loadings|>matrix(ncol=2)
+
+
+colnames(rotated_solution)<-colnames(loadings_matrix)
+rownames(rotated_solution)<-rownames(loadings_matrix)
+
+rotated_solution|>
+  data.frame()|>
+  rownames_to_column(var = 'item')|>
+  ggplot(aes(x=MR1, y=MR2, color=item)) + geom_point() +
+  geom_vline(xintercept=0, lty=2) +
+  geom_hline(yintercept=0, lty=2) +
+    ylim(-1.2, 1.2)+
+  xlim(-1.2, 1.2) +
+  theme_bw()+
+  labs(title='Oblique rotation')
+
+
+
+```
+:::
+
+:::
+
+
+
+### Finding factor scores
+
+
+```{r, eval=TRUE, echo=TRUE}
+
+loc<-url('https://github.com/Neilblund/SDSB340-Spring-2026/raw/refs/heads/master/Data/depression_scores.rds')
+scores<-readRDS(loc)
+vars<-c("DPQ010", "DPQ020", "DPQ040", "DPQ050", "DPQ070",  "DPQ080" )
+scores_select<-scores[,vars]
+
+
+R <- cor(scores_select)    # the observed correlation matrix
+n_var <- nrow(R)    # the number of variables
+n_fact <- 2         # the number of assumed factors
+
+# random starting values for the loadings
+# Note, in practice, we would use some heuristics to ensure a plausible starting
+# point
+set.seed(3265)
+
+init_loadings<-runif(n_var*n_fact, min = -.1, max=.1)
+
+fit <- optim(
+  par = init_loadings,
+  fn = minres_obj,
+  R = R,
+  n_var = n_var,
+  n_fact = n_fact,
+  method = "BFGS",
+  control = list(maxit = 5000)
+)
+
+# Formatting the results
+loadings_matrix <- matrix(fit$par, nrow = n_var, ncol = n_fact)
+rownames(loadings_matrix) <- rownames(R)
+colnames(loadings_matrix) <- paste0("MR", 1:n_fact)
+
+
+
+```
+
+
+### Factor analysis: interpreting results
+
+
+::::: {.columns}
+::: {.column width="50%"}
+The loadings have the same interpretation, but each column represents a different factor.
+
+- So the correlation between item 1 and factor 1 is 0.70, and the correlation between this item and factor 2 is 0.22.
+
+
+
+:::
+::: {.column width="50%"}
+$$
+\text{Factor loadings} = \left(\begin{array}{c}
+0.70&0.22\\
+0.83&0.20\\
+0.41&0.40\\
+0.37&0.45 \\
+0.38&0.56 \\
+0.33&0.41 \\
+\end{array}\right)
+$$
+:::
+:::::
+
+### Factor analysis: communality
+
+
+::::: {.columns}
+::: {.column width="50%"}
+
+[Communality]{.yellow} is the proportion of the variation in item $i$ that is explained by the latent factor(s). It can be calculated from summing the squared factor loadings.
+
+- So the communality for item 1 is $0.70^2 + 0.22^2 = 0.54$. 54% of the variation in item 1 is explained by variation in factors 1 and 2.
+
+
+
+:::
+::: {.column width="50%"}
+$$
+\text{Factor loadings} = \left(\begin{array}{c}
+0.70&0.22\\
+0.83&0.20\\
+0.41&0.40\\
+0.37&0.45 \\
+0.38&0.56 \\
+0.33&0.41 \\
+\end{array}\right)
+$$
+:::
+:::::
+
+### Factor analysis: uniqueness
+
+
+::::: {.columns}
+::: {.column width="50%"}
+
+[Uniqueness]{.yellow} is the proportion of variation in item $i$ that is not explained by the latent factor(s). It can be calculated by taking 1 - the communality score.
+
+- So $1  - 0.54 = .46$ of the variation in item 1 is explained by something other than the two latent factors
+
+
+:::
+::: {.column width="50%"}
+$$
+\text{Factor loadings} = \left(\begin{array}{c}
+0.70&0.22\\
+0.83&0.20\\
+0.41&0.40\\
+0.37&0.45 \\
+0.38&0.56 \\
+0.33&0.41 \\
+\end{array}\right)
+$$
+:::
+:::::
+
+### Factor analysis: variance explained
+
+
+::::: {.columns}
+::: {.column width="50%"}
+[Proportion of total variance explained]{.yellow}  is the total variation across factors explained by the factor model. It can be calculated from sum of squared factor loadings divided by the number of items. 
+
+- So $2.67/6 = .46$ of the total variation in responses to these questions that is explained by variance in the two factors.
+
+:::
+::: {.column width="50%"}
+$$
+\text{Factor loadings} = \left(\begin{array}{c}
+0.70&0.22\\
+0.83&0.20\\
+0.41&0.40\\
+0.37&0.45 \\
+0.38&0.56 \\
+0.33&0.41 \\
+\end{array}\right)
+$$
+:::
+:::::
+
+
+
+
+### Factor analysis: variance explained
+
+- Rotating the factors will change the values for individual items, but it preserves their relative distances from each other.
+
+- Rotating the factors won't change the overall "fit", so the total explained variance should be the same.
+
+### Factor analysis: the number of factors
+
+So how many factors do we have in this data? Would fit improve even more if we used 3 factors?
+
+
+### Factor analysis: the number of factors
+
+
+::::: {.columns}
+::: {.column width="50%"}
+
+
+One way to get a sense of the optimal number of factors is to use a scree plot. 
+
+- The y-axis represents an eigenvalue, which represents the variance explained by each factor. Higher values mean more variance explained.
+
+- The x-axis shows the number of factors
+
+- The advice is typically to retain factors before the "elbow" where we see diminishing returns in explained variance.
+
+:::
+::: {.column width="50%"}
+```{r}
+library(psych)
+scree(scores_select, pc=FALSE)
+```
+:::
+:::::
+
+
+### Factor analysis: the number of factors
+
+In this case, we seem to see pretty significant diminishing returns after just one factor.
+
+```{r}
+library(psych)
+scree(scores_select, pc=FALSE)
+```
