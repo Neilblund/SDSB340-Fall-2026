@@ -32,7 +32,7 @@ revealjs-plugins:
 ---
 
 ```{r}
-
+#| eval: false
 library(tidyverse)
 set.seed(1000)
 chep<-readRDS(here::here("Data", "chep_subset.rds"))|>
@@ -49,7 +49,7 @@ model2<-glm(
   data = chep)
 
 
-saveRDS(chep, file=here::here("Data", "chep1000.rds"))
+saveRDS(chep, file=here::here("Data", "chep5000.rds"))
 ```
 
 ## Setup
@@ -58,9 +58,9 @@ If you want to follow along with the code here, you can run this to import the e
 
 ```{r}
 #| echo: true
-#| eval: false
-
-file<-url('https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/chep1000.rds')
+#| eval: true
+library(tidyverse)
+file<-url('https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/chep5000.rds')
 chep<-readRDS(file)
 
 ```
@@ -311,9 +311,9 @@ mean(df2$preds - df1$preds, na.rm=T)
 
 ::: {.column width="50%"}
 ```{r}
-#| eval: false
 #| echo: true
 #| cache: true
+#| eval: false
 
 # the initial model
 model <- glm(REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
@@ -411,7 +411,7 @@ model0<-  glm(REPVOTE  ~ 1 ,
              family = binomial,
              data = chep)
 # the comparison
-model <- glm(REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
+model1 <- glm(REPVOTE  ~ HARDSHIP_INDEX + VOTE24_CHOICE ,
              family = binomial,
              data = chep)
 
@@ -456,12 +456,16 @@ Higher values indicate a greater improvement over the null model:
 ```{r}
 #| echo: true
 #| cache: true
-predictions<-matrix(nrow=nrow(chep), 
-                    ncol=3
-                    )
+#| eval: false
 
+# making an empty matrix to store results
+predictions<-matrix(nrow=nrow(chep),  # one row for each observation
+                    ncol=3 # one column for each model
+                    )
 for (i in 1:nrow(chep)) {
+  # dropping observation i for training data
   train<-chep[-i,]
+  # using observation i for testing data
   test<-chep[i,]
   model1 <- glm(REPVOTE  ~ VOTE24_CHOICE , 
                 family = binomial, 
@@ -475,6 +479,7 @@ for (i in 1:nrow(chep)) {
                 family = binomial, 
                 data = train)
   
+  # placing the predictions inside the empty matrix
   predictions[i,1]<-predict(model1, newdata=test, type='response')
   predictions[i,2]<-predict(model2, newdata=test, type='response')
   predictions[i,3]<-predict(model3, newdata=test, type='response')
@@ -482,15 +487,15 @@ for (i in 1:nrow(chep)) {
   
   
 }
+# predictions vs. actual for model 1
+table("predicted" =factor(predictions[,1]>.5,  labels=c("No", "Yes")), 
+      "actual" = chep$REPVOTE)
 
-table(predictions[,1]>.5, 
-      chep$REPVOTE)
+table("predicted" =factor(predictions[,2]>.5,  labels=c("No", "Yes")), 
+      "actual" = chep$REPVOTE)
 
-table(predictions[,2]>.5, 
-      chep$REPVOTE)
-
-table(predictions[,3]>.5, 
-      chep$REPVOTE)
+table("predicted" =factor(predictions[,3]>.5,  labels=c("No", "Yes")), 
+      "actual" = chep$REPVOTE)
 
 
 ```
@@ -519,7 +524,7 @@ Lower values of both AIC and BIC indicate better model fits, but they're only me
 
   model1 <- glm(REPVOTE  ~ VOTE24_CHOICE , 
                 family = binomial, 
-                data = train)
+                data = chep)
   
   model2 <- glm(REPVOTE  ~ HARDSHIP_INDEX , 
                 family = binomial, 
@@ -828,5 +833,418 @@ check_outliers(model)|>
 :::
 :::::
 
+
+## Some Other Generalized Linear Models
+
+
+### Ordered Logistic Regression
+
+An ordered logit extends the logit model to a set of $K$ ordered outcomes (such as a likert response ranging from "Strongly Disagree" to "Strongly Agree")
+
+
+::: fragment
+
+Rather than estimating the log-odds of Y=1, an ordered logit model estimates the log-odds of being in a higher category vs. a lower category.
+
+$$
+\log \left( \frac{P(Y_i\leq k_j)}{1-P(Y_i\leq k_j)} \right)
+$$
+
+:::
+
+
+#### Ordered Logistic Regression
+
+
+::::: {.columns}
+::: {.column width="50%"}
+- For instance, what if I wanted to make predictions about support/opposition to AI data center construction?
+- I *could* collapse these responses into two categories (support vs. non-support) and run a logistic regression, but that might lose a lot of nuance. So a more complicated model might be preferable.
+- I could also treat the ordered outcome as if it were continuous, but this makes the (potentially unrealistic) assumption that the categories are "equally spaced".
+
+:::
+::: {.column width="50%"}
+
+```{r}
+chep|>
+  count(AIFAV_LOCALDATA, wt=CHEP_WEIGHT)|>
+  mutate(prop = n / sum(n))|>
+  ggplot(aes(x= AIFAV_LOCALDATA, y= prop)) + geom_col() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))+ 
+  scale_y_continuous(labels = scales::percent) +
+  labs(x="", y='Weighted %',
+       subtitle ='favor/oppose construction of an AI data center',
+       caption = "Source: NORC Civic Health & Elections Project"
+       
+       )
+
+
+```
+:::
+:::::
+
+#### Ordered Logistic Regression
+
+
+::::: {.columns}
+::: {.column width="50%"}
+::: fragment
+One way to interpret an ordered logistic regression is as a latent variable model where a continuous latent outcome $Y*$ is a linear function of the predictors.
+:::
+
+::: fragment
+We don't observe $Y*$, but we do observe a categorical response based on $Y*$:  
+
+$$
+\begin{align*}
+y= \left\{ 
+\begin{array}{r@{}l}
+\text{Strongly Favor} &= \text{if } y* \leq u_1, \\
+\text{Somewhat Favor} &= \text{if } u_1 \lt  y^* \leq u_2, \\
+\text{Neither Favor nor Oppose} &= \text{if } u_2 \lt y^* \leq u_3, \\
+\text{Somewhat Oppose} &= \text{if } u_3 \lt y^* \leq u_4, \\
+\text{Strongly Oppose} &= \text{if } u_4 \lt y^* \\
+\end{array} 
+\right.
+\end{align*}
+$$
+
+:::
+:::
+::: {.column width="50%"}
+
+::: fragment
+
+```{r}
+set.seed(42)
+
+# 1. Define sample size, true betas, and threshold cutpoints
+n <- 100
+beta1 <- 1.5
+beta2 <- -0.8
+cutpoints <- c(-2.5, 0.5, 2.0, 4)  # Creates 4 ordered categories
+
+# 2. Generate predictors
+x1 <- rnorm(n)
+x2 <- rnorm(n)
+
+# 3. Generate continuous latent variable with standard logistic noise
+# Note: No intercept is included here because it is absorbed by the cutpoints
+y_star <- beta1 * x1 + beta2 * x2 + rlogis(n, location = 0, scale = 1)
+
+labs<-c("Strongly Favor", "Somewhat Favor", "Neither Favor nor Oppose", "Somewhat Oppose", "Strongly Oppose")
+# 4. Slice the latent variable into an ordered factor
+y <- cut(
+  y_star,
+  breaks = c(-Inf, cutpoints, Inf),
+  labels = labs,
+  ordered_result = TRUE
+)
+
+cutframe<-data.frame('cuts'=c(-4.5, cutpoints), labs)
+
+df <- data.frame(y = y, x1 = x1, x2 = x2, ystar=y_star)
+
+ggplot(df, aes(x=x1, y=ystar))+ 
+  geom_point(shape=21, alpha=.7) +
+  labs(y="Y*", 
+       x="X"
+       ) +
+  geom_hline(yintercept=cutpoints, lty=2) + 
+  geom_text(data=cutframe, aes(x=-5.5, y=cuts, label=labs, nudge_y=.5),hjust = 0)  +
+  xlim(-5.5, 4)+
+  theme(
+  panel.grid.major.y = element_blank(),
+  panel.grid.minor.y = element_blank(),
+  panel.grid.major.x = element_blank(),
+  panel.grid.minor.x = element_blank()
+)
+
+
+```
+
+:::
+
+:::
+:::::
+
+
+
+#### Ordered Logistic Regression
+
+
+- Seen from this perspective, ordered logistic regression estimates both the effect of $X$ on $Y^*$ and the "cut points" that turn it into an ordered category.
+
+- As with logistic regression, these results can also be converted back to the probability scale.
+
+
+#### Ordered Logistic Regression
+
+```{r}
+#| echo: true
+
+
+# using the MASS package for ordered logit
+ologit_model<-MASS::polr(AIFAV_LOCALDATA ~ HARDSHIP_INDEX + SEX + PARTYFULL ,
+           data=chep)
+
+summary(ologit_model)
+
+
+```
+
+
+#### Ordered Logistic Regression
+
+
+```{r}
+#| echo: true
+# average marginal effect of going from 0 to 6 on the Hardship Index (all other
+# values as observed)
+m1<-mutate(ologit_model$model, HARDSHIP_INDEX=0)
+preds1<-predict(ologit_model, type='prob', newdata=m1)
+m2<-mutate(ologit_model$model, HARDSHIP_INDEX = 6)
+preds2<-predict(ologit_model, type='prob', newdata=m2)
+
+colMeans(preds2)-colMeans(preds1)
+
+
+
+```
+#### Ordered Logistic Regression
+
+Note that we *could* still use a linear model in this case, and we'll probably get roughly similar results, but the ordered logit will constrain predictions to the correct response scale.
+
+::: fragment
+
+It also gives us a better model fit overall:
+
+```{r}
+#| echo: true
+
+linear_model<-lm(as.numeric(AIFAV_LOCALDATA) ~ HARDSHIP_INDEX + SEX + PARTYFULL, data=chep)
+ologit_model<-MASS::polr(AIFAV_LOCALDATA ~ HARDSHIP_INDEX + SEX + PARTYFULL ,
+           data=chep)
+
+AIC(linear_model)
+AIC(ologit_model)
+
+```
+
+:::
+
+### Tobit
+
+::::: {.columns}
+::: {.column width="50%"}
+- Tobit models are used in cases where the dependent variable is "censored", meaning it has an upper or lower limit (or both) causing observations to "pile up" near the boundary. 
+
+- For instance: maybe a test is too easy, so lots of people have the maximum score even though some people may have scored far higher than a 100 if given the chance.
+
+- Or maybe an additive scale doesn't offer enough scale points, so some people may have had higher or lower values if the scale included more questions or each question had additional options.
+
+
+:::
+::: {.column width="50%"}
+
+```{r}
+set.seed(100)
+N<-10000
+X<-rnorm(N,mean=.5, sd=.3) # a continuous latent variable
+X[which(X>1)] <- 1
+X[which(X<0)] <-0
+f <- function(x, var, bw = 15) {
+  dnorm(x, mean = mean(var), sd(var)) * length(var)  * bw
+}
+
+df<-tibble(
+        x = X
+           )
+
+
+ggplot(df, aes(x=X)) +
+    geom_histogram(
+    aes(y = after_stat(density)), 
+    bins = 30, 
+    fill = "gray", 
+    color = "white"
+  ) +
+  stat_function(
+    fun = dnorm, 
+    args = list(mean = mean(df$x, na.rm = TRUE), 
+                sd = sd(df$x, na.rm = TRUE)), 
+    color = "blue", 
+    linewidth = 1
+  ) 
+
+
+
+
+
+
+```
+
+:::
+:::::
+
+
+
+
+#### Tobit
+
+
+::::: {.columns}
+::: {.column width="50%"}
+
+
+- We can think of the tobit model as another latent variable model, where there's a latent $Y^*$ that's a linear function of the predictors, and an observed $Y$ that's censored at a minimum or maximum point (or both)
+
+- The tobit model estimates both the effect of $X$ on $Y^*$ and the effect on the probability of censoring.
+
+
+:::
+::: {.column width="50%"}
+```{r}
+# Simulation example ------
+set.seed(100)
+N<-500
+X<-rnorm(N,mean=.5, sd=.1) # a continuous latent variable
+
+# the true outcome. Note that the true effect of a one unit change in "X" here
+# should be 2.
+Y_latent<-0 + X *2  + rnorm(N, sd=.5) 
+
+# The (censored) data we actually observe. The values of Y never go below 0 or
+# above 1:
+Y_observed<-Y_latent
+Y_observed[which(Y_latent>1)] <-1
+Y_observed[which(Y_latent<0)] <-0
+
+
+ynames<-c("y*" = "Latent Y",
+          "y" = "Observed Y"
+          )
+
+tibble(`y*`=Y_latent, 
+        x = X,
+        y=Y_observed 
+           )|>
+  pivot_longer(cols=c(`y*`, y))|>
+  
+  ggplot(aes(x=x, y=value, color=name)) + 
+  geom_point(alpha=.5, size=2) +
+  labs(x="x",
+       y =""
+       ) +
+  geom_smooth(method='lm', se=FALSE, color='black') +
+  facet_wrap(~name, labeller= labeller(name=ynames))  +
+  guides(col='none')
+
+
+
+```
+:::
+:::::
+
+
+#### Tobit
+
+::::: {.columns}
+::: {.column width="50%"}
+- For instance, an additive index of "concern about AI" from the CHEP study shows some signs of both right and left censoring: there are more zeros and ones than you would probably expect looking at the rest of the distribution.
+:::
+::: {.column width="50%"}
+```{r}
+
+
+ggplot(chep, aes(x=INDEX_AICONCERN, weight=CHEP_WEIGHT)) + geom_histogram(bins=17) +
+    labs(x="", y='Weighted Count',
+       subtitle ='Index of AI Concern Questions',
+       caption = "Source: NORC Civic Health & Elections Project")
+
+```
+:::
+:::::
+
+#### Tobit
+
+In a linear model, we see economic hardship has a positive effect on AI Concern:
+
+```{r}
+#| echo: true
+linear_model<- lm(INDEX_AICONCERN ~ HARDSHIP_INDEX + SEX + EDUC,data=chep)
+summary(linear_model)
+```
+
+#### Tobit
+
+The tobit model produces similar results, but with a slightly stronger coefficient value. However, this coefficient should be interpreted as the effect on the unobserved "latent" value of AI concern.
+
+```{r}
+#| echo: true
+#install.packages("VGAM")
+
+library(VGAM)
+
+
+tobit_model<-vglm( 
+  INDEX_AICONCERN ~ HARDSHIP_INDEX +  SEX + EDUC ,
+  family = tobit(Lower = 0, Upper = 4), # censoring at 0 and 4
+  data = chep
+  )
+summary(tobit_model)
+```
+
+
+#### Tobit
+
+To get a sense of the effect of HARDSHIP_INDEX on the actual outcome scale, we can calculate a marginal effect on the response scale.
+
+```{r}
+#| echo: true
+
+data1<-chep
+preds1<-predict(
+  tobit_model,
+  newdata = data1,
+  type = 'response',
+  type.fitted = "censored" # this gives us the result with censoring
+)
+
+data2<-mutate(chep, HARDSHIP_INDEX = HARDSHIP_INDEX +1)
+
+preds2<-predict(
+  tobit_model,
+  newdata = data2,
+  type = 'response',
+  type.fitted = "censored"
+)
+
+mean(preds2 - preds1)
+
+
+
+
+```
+
+#### Tobit
+
+In this instance the Tobit model has a substantially worse fit than the linear model, which suggests there might not be enough censoring to justify the more complicated model:
+
+```{r}
+#| echo: true
+
+
+AIC(tobit_model)
+AIC(linear_model)
+
+```
+
+
+### GLMS vs. Linear Models
+
+- Notice that in each case we examined here, we had the *option* of using a linear model to fit the data. In some cases the linear model may be preferable for simplicity, ease of interpretation, and robustness.
+
+- When in doubt, you can always try running both and asking "is there a substantial difference in the results here?". If not, then it's probably okay to just report one model and put the other in an appendix or mention it in a footnote.
 
 
