@@ -32,6 +32,8 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 ```{r}
+#| echo: false
+#| eval: false
 loc<-here::here("Data", 'rls_subset.rds')
 rls<-readRDS(loc)
 
@@ -46,9 +48,9 @@ You'll use data from Pew's 2024 Religious Life Survey to answer the questions be
 
 You can find a description of the variables included in this data set [at the end of this document](#variable-description)
 
-
-::: {.callout-important}
+::: callout-important
 **For this assignment, do not use any packages other than the three loaded below:**
+
 ```{r}
 library(tidyverse)
 library(see)
@@ -59,8 +61,6 @@ rls<-readRDS(url(loc))
 
 ```
 :::
-
-
 
 ## Question 1
 
@@ -89,26 +89,22 @@ Briefly discuss your results.
 
 Using the model use ran in question 3, calculate the average marginal effect (average contrast) of moving from Liberal to Conservative on the probability of believing that acceptance of transgender people is positive for society.
 
-
-Use the bootstrap method to calculate a 95% confidence interval for this estimated marginal effect 
+Use the bootstrap method to calculate a 95% confidence interval for this estimated marginal effect
 
 ::: {.callout-tip collapse="false"}
 ## Hint
 
-You can see an example of this calculation [here](https://gist.githubusercontent.com/Neilblund/4da9b764947be0f7f91d4245dae37997/raw/a6a4be073f5d14abefa75706644e68fa85bd6387/gistfile1.txt).
-To make things run quickly, you can reduce the number of bootstrap replicates to 50. 
+You can see an example of this calculation [here](https://gist.githubusercontent.com/Neilblund/4da9b764947be0f7f91d4245dae37997/raw/a6a4be073f5d14abefa75706644e68fa85bd6387/gistfile1.txt). To make things run quickly, you can reduce the number of bootstrap replicates to 50.
 
 You might also use `cache=TRUE` in the options for your R-code chunk. This will make it so that, when knitting the file, the results of the code block are stored and are not executed again unless you change the code.
 
-````markdown
+```` markdown
 `r ''````{r, cache=TRUE}
 # ... code for bootstrapping goes here
 
 ```
 ````
-
 :::
-
 
 ## Question 5
 
@@ -128,7 +124,6 @@ Compare these models using one or more of the methods we discussed in class for 
 ## Question 6
 
 Select one of the models you estimated above. Assess the fit using a binned residuals plot and check for multicollinearity and influential observations using the methods we discussed in class. Briefly explain your results.
-
 
 ```{r}
 # code here
@@ -153,37 +148,21 @@ burge_model <- glm(
 
 What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of `income` instead in our regression model instead? Can you make a case either version of the model?
 
+# Variable description {#variable-description}
 
-
-
-# Variable description
-
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| Variable Name       | Description                                                                                                                             | Values                                                               |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| support_abortion    | Whether respondent supports a right to an abortion in all or more cases                                                                 | Oppose, Support                                                      |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| support_ssm         | Whether respondent supports or opposes allowing gays and lesbians to marry legally                                                      | Oppose, Support                                                      |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| support_homo        | Whether respondet supports or opposes the statement that "Homosexuality should be accepted by society"                                  | Oppose, Support                                                      |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| support_trans       | Whether the respondent supports or opposes "greater acceptance of people who are transgender"                                           | Oppose, Support                                                      |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| gender              | Respondents gender self identification                                                                                                  | Men, Women                                                           |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| income              | Respondents family income in the last year                                                                                              | Categorical8 levels from "Less than \$30,000" to "\$150,000 or more" |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| ideo3               | Whether the respondent identifies as a liberal, moderate, or conservative                                                               | liberal, moderate, conservative                                      |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| educ                | Respondent's highest level of education attained                                                                                        | HS or less, Some College, College Grad, Postgrad                     |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| trad                | Respondent's religious tradition                                                                                                        | Non-Religious, Catholic, Black Protestant, Mainline, Evangelical     |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| birthdecade         | Decade of respondent's birth                                                                                                            | 7 levels from "1940s or earlier" to "2000s"                          |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| birthdecade_numeric | Numeric recode of birthdecade. 1= 1940s or earlier, 2 = 1950s, 3= 1960s ...                                                             | 1 - 7                                                                |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| income_numeric      | Numeric recode of income. 1= Less than \\\$30,000, 2 = \\\$30,000 to less than \\\$40,000 3= \\\$40,000 to less than \$50,000, etc.     | 1 - 8                                                                |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| white               | Race recoded as dichotomous (white or not white)                                                                                        | Not-white, White                                                     |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------+
+|  |  |  |
+|---------------|--------------------------------------|-------------------|
+| Variable Name | Description | Values |
+| support_abortion | Whether respondent supports a right to an abortion in all or more cases | Oppose, Support |
+| support_ssm | Whether respondent supports or opposes allowing gays and lesbians to marry legally | Oppose, Support |
+| support_homo | Whether respondet supports or opposes the statement that "Homosexuality should be accepted by society" | Oppose, Support |
+| support_trans | Whether the respondent supports or opposes "greater acceptance of people who are transgender" | Oppose, Support |
+| gender | Respondents gender self identification | Men, Women |
+| income | Respondents family income in the last year | Categorical8 levels from "Less than \$30,000" to "\$150,000 or more" |
+| ideo3 | Whether the respondent identifies as a liberal, moderate, or conservative | liberal, moderate, conservative |
+| educ | Respondent's highest level of education attained | HS or less, Some College, College Grad, Postgrad |
+| trad | Respondent's religious tradition | Non-Religious, Catholic, Black Protestant, Mainline, Evangelical |
+| birthdecade | Decade of respondent's birth | 7 levels from "1940s or earlier" to "2000s" |
+| birthdecade_numeric | Numeric recode of birthdecade. 1= 1940s or earlier, 2 = 1950s, 3= 1960s ... | 1 - 7 |
+| income_numeric | Numeric recode of income. 1= Less than \$30,000, 2 = \$30,000 to less than \$40,000 3= \$40,000 to less than \$50,000, etc. | 1 - 8 |
+| white | Race recoded as dichotomous (white or not white) | Not-white, White |
