@@ -1253,8 +1253,8 @@ AIC(linear_model)
 ```{r}
 
 
-filloc<-here::here("Data/atus25_subset.rds")
-atus<-readRDS(filloc)
+loc<-'https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/atus25_subset.rds'
+atus<-readRDS(url(loc))
 
 ggplot(atus, aes(x=childcare_combined)) + geom_histogram()
 
@@ -1263,7 +1263,7 @@ ggplot(atus, aes(x=childcare_combined)) + geom_histogram()
 :::::
 
 
-### Zero-Inflated Count Models
+#### Zero-Inflated Count Models
 
 ::::: {.columns}
 ::: {.column width="50%"}
@@ -1278,9 +1278,6 @@ ggplot(atus, aes(x=childcare_combined)) + geom_histogram()
 ```{r}
 
 
-filloc<-here::here("Data/atus25_subset.rds")
-atus<-readRDS(filloc)
-
 ggplot(atus, aes(x=childcare_combined)) + geom_histogram()
 
 ```
@@ -1290,7 +1287,7 @@ ggplot(atus, aes(x=childcare_combined)) + geom_histogram()
 
 
 
-### Zero-Inflated Count Models
+#### Zero-Inflated Count Models
 
 
 ::::: {.columns}
@@ -1308,8 +1305,8 @@ ggplot(atus, aes(x=childcare_combined)) + geom_histogram()
 #| echo: true
 # install.packages("glmmTMB")
 library(glmmTMB)
-loc<-here::here("Data/atus25_subset.rds")
-atus<-readRDS(loc)
+loc<-'https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/atus25_subset.rds'
+atus<-readRDS(url(loc))
 atus$weekend<-atus$day%in%c("Saturday", "Sunday")
 zip_mod <- glmmTMB(
   childcare_combined ~ age + sex + num_children + weekend, # count model

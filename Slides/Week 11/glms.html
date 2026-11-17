@@ -1624,7 +1624,7 @@ display:block!important;
 </ul></section><section id="bic-and-aic-for-model-selection-1" class="slide level4"><h4>BIC and AIC for model selection</h4>
 <p>When comparing AIC/BIC values of two models:</p>
 <ul>
-<li class="fragment"><p>a difference <span class="math inline">\(\leq 2\)</span> is suggests little-to-no difference between the models.</p></li>
+<li class="fragment"><p>a difference <span class="math inline">\(\leq 2\)</span> suggests little-to-no difference between the models.</p></li>
 <li class="fragment"><p>a difference of <span class="math inline">\(\gt 2\)</span> to <span class="math inline">\(\leq 10\)</span> is moderate support for the model with the lower AIC/BIC.</p></li>
 <li class="fragment"><p>a difference of <span class="math inline">\(\gt 10\)</span> is strong support for the model with the lower AIC/BIC</p></li>
 </ul></section></section><section id="some-diagnostics-for-glms" class="title-slide slide level2 center"><h2>(Some) Diagnostics for GLMs</h2>
@@ -1845,10 +1845,10 @@ display:block!important;
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="fragment">
-<p>One way to interpret an ordered logistic regression is as a latent variable model where a continuous latent outcome <span class="math inline">\(Y*\)</span> is a linear function of the predictors.</p>
+<p>One way to interpret an ordered logistic regression is as a latent variable model where a continuous latent outcome <span class="math inline">\(Y^*\)</span> is a linear function of the predictors.</p>
 </div>
 <div class="fragment">
-<p>We don’t observe <span class="math inline">\(Y*\)</span>, but we do observe a categorical response based on <span class="math inline">\(Y*\)</span>:</p>
+<p>We don’t observe <span class="math inline">\(Y^*\)</span>, but we do observe a categorical response based on <span class="math inline">\(Y^*\)</span>:</p>
 <p><span class="math display">\[
 \begin{align*}
 y= \left\{
@@ -2118,7 +2118,7 @@ No Hauck-Donner effect found in any of the estimates</code></pre>
 </div>
 </div>
 </div></div>
-</section><section id="zero-inflated-count-models-1" class="title-slide slide level3 center"><h3>Zero-Inflated Count Models</h3>
+</section><section id="zero-inflated-count-models-1" class="slide level4"><h4>Zero-Inflated Count Models</h4>
 <div class="columns">
 <div class="column" style="width:50%;">
 <ul>
@@ -2136,7 +2136,7 @@ No Hauck-Donner effect found in any of the estimates</code></pre>
 </div>
 </div>
 </div></div>
-</section><section id="zero-inflated-count-models-2" class="title-slide slide level3 center"><h3>Zero-Inflated Count Models</h3>
+</section><section id="zero-inflated-count-models-2" class="slide level4"><h4>Zero-Inflated Count Models</h4>
 <div class="columns">
 <div class="column" style="width:50%;">
 <ul>
@@ -2147,8 +2147,8 @@ No Hauck-Donner effect found in any of the estimates</code></pre>
 <div class="cell" data-layout-align="center">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href></a><span class="co"># install.packages(&quot;glmmTMB&quot;)</span></span>
 <span id="cb53-2"><a href></a><span class="fu">library</span>(glmmTMB)</span>
-<span id="cb53-3"><a href></a>loc<span class="ot">&lt;-</span>here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;Data/atus25_subset.rds&quot;</span>)</span>
-<span id="cb53-4"><a href></a>atus<span class="ot">&lt;-</span><span class="fu">readRDS</span>(loc)</span>
+<span id="cb53-3"><a href></a>loc<span class="ot">&lt;-</span><span class="st">&#39;https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/atus25_subset.rds&#39;</span></span>
+<span id="cb53-4"><a href></a>atus<span class="ot">&lt;-</span><span class="fu">readRDS</span>(<span class="fu">url</span>(loc))</span>
 <span id="cb53-5"><a href></a>atus<span class="sc">$</span>weekend<span class="ot">&lt;-</span>atus<span class="sc">$</span>day<span class="sc">%in%</span><span class="fu">c</span>(<span class="st">&quot;Saturday&quot;</span>, <span class="st">&quot;Sunday&quot;</span>)</span>
 <span id="cb53-6"><a href></a>zip_mod <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(</span>
 <span id="cb53-7"><a href></a>  childcare_combined <span class="sc">~</span> age <span class="sc">+</span> sex <span class="sc">+</span> num_children <span class="sc">+</span> weekend, <span class="co"># count model</span></span>
