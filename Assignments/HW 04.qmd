@@ -52,6 +52,7 @@ You can find a description of the variables included in this data set [at the en
 **For this assignment, do not use any packages other than the three loaded below:**
 
 ```{r}
+#| eval: false
 library(tidyverse)
 library(see)
 library(performance)
@@ -146,7 +147,7 @@ burge_model <- glm(
 
 ```
 
-What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of `income` instead in our regression model instead? Can you make a case either version of the model?
+What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of `income` instead in our regression model instead? Can you make a case for either version of the model?
 
 # Variable description {#variable-description}
 

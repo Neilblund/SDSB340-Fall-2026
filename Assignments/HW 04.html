@@ -2347,7 +2347,7 @@ Important
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&#39;logit&#39;</span>)</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of <code>income</code> instead in our regression model instead? Can you make a case either version of the model?</p>
+<p>What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of <code>income</code> instead in our regression model instead? Can you make a case for either version of the model?</p>
 </section>
 <section id="variable-description" class="level1">
 <h1>Variable description</h1>
@@ -2941,118 +2941,119 @@ Important
 <span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>**For this assignment, do not use any packages other than the three loaded below:**</span>
 <span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(see)</span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>loc<span class="ot">&lt;-</span><span class="st">&#39;https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/rls_subset.rds&#39;</span></span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>rls<span class="ot">&lt;-</span><span class="fu">readRDS</span>(<span class="fu">url</span>(loc))</span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(see)</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>loc<span class="ot">&lt;-</span><span class="st">&#39;https://github.com/Neilblund/SDSB340-Fall-2026/raw/refs/heads/master/Data/rls_subset.rds&#39;</span></span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>rls<span class="ot">&lt;-</span><span class="fu">readRDS</span>(<span class="fu">url</span>(loc))</span>
 <span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 1</span></span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>Estimate a logistic regression model that predicts belief that acceptance of transgender people is positive for society (<span class="in">`support_trans`</span>) based on a person&#39;s religion (<span class="in">`trad`</span>). Show your summary output and discuss your results in terms of the direction of effects and statistical significance.</span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 2</span></span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>Based on your results in model 1, which religious tradition is **most likely** to believe that acceptance of transgender people is positive for society and what is that group&#39;s probability of support? Which group is least likely and what is that group&#39;s probability of support?</span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 3</span></span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>Estimate a logistic regression model that predicts <span class="in">`support_trans`</span> based on a person&#39;s religion (<span class="in">`trad`</span>) along with a control for ideology (<span class="in">`ideo3`</span>). Use this model to get the predicted support for abortion rights for the following cases:</span>
-<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Liberal Evangelical vs. Liberal Catholic</span>
-<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Moderate Evangelical vs. Moderate Catholic</span>
-<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Conservative Evangelical vs. Conservative Catholic</span>
-<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>Briefly discuss your results.</span>
-<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 4</span></span>
-<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>Using the model use ran in question 3, calculate the average marginal effect (average contrast) of moving from Liberal to Conservative on the probability of believing that acceptance of transgender people is positive for society.</span>
-<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>Use the bootstrap method to calculate a 95% confidence interval for this estimated marginal effect</span>
-<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip collapse=&quot;false&quot;}</span>
-<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a><span class="fu">## Hint</span></span>
-<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>You can see an example of this calculation <span class="co">[</span><span class="ot">here</span><span class="co">](https://gist.githubusercontent.com/Neilblund/4da9b764947be0f7f91d4245dae37997/raw/a6a4be073f5d14abefa75706644e68fa85bd6387/gistfile1.txt)</span>. To make things run quickly, you can reduce the number of bootstrap replicates to 50.</span>
-<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>You might also use <span class="in">`cache=TRUE`</span> in the options for your R-code chunk. This will make it so that, when knitting the file, the results of the code block are stored and are not executed again unless you change the code.</span>
-<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a><span class="in">```` markdown</span></span>
-<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a>`r &#39;&#39;````{r, cache=TRUE}</span>
-<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a><span class="fu"># ... code for bootstrapping goes here</span></span>
-<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a><span class="in">````</span></span>
-<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 5</span></span>
-<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a>Use a logistic regression to estimate two models:</span>
-<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Model A should predict <span class="in">`support_trans`</span> using <span class="in">`trad + ideo3`</span>.</span>
-<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Model B should predict <span class="in">`support_trans`</span> using <span class="in">`trad + ideo3 + birthdecade`</span>.</span>
-<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a>Compare these models using one or more of the methods we discussed in class for comparing model fit and predictive power. Which model is better, in your judgement?</span>
-<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a><span class="co"># code here</span></span>
-<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 6</span></span>
-<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a>Select one of the models you estimated above. Assess the fit using a binned residuals plot and check for multicollinearity and influential observations using the methods we discussed in class. Briefly explain your results.</span>
-<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a><span class="co"># code here</span></span>
-<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 7</span></span>
-<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a>In Burge&#39;s analysis, he uses <span class="in">`income_numeric`</span> as one of the predictors for support for greater acceptance of transgender people:</span>
-<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a>burge_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb6-152"><a href="#cb6-152" aria-hidden="true" tabindex="-1"></a>  support_trans <span class="sc">~</span> trad <span class="sc">+</span> ideo3 <span class="sc">+</span> gender <span class="sc">+</span> educ <span class="sc">+</span> white <span class="sc">+</span> income_numeric,</span>
-<span id="cb6-153"><a href="#cb6-153" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> rls,</span>
-<span id="cb6-154"><a href="#cb6-154" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&#39;logit&#39;</span>)</span>
-<span id="cb6-155"><a href="#cb6-155" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-157"><a href="#cb6-157" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb6-158"><a href="#cb6-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-159"><a href="#cb6-159" aria-hidden="true" tabindex="-1"></a>What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of <span class="in">`income`</span> instead in our regression model instead? Can you make a case either version of the model?</span>
-<span id="cb6-160"><a href="#cb6-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-161"><a href="#cb6-161" aria-hidden="true" tabindex="-1"></a><span class="fu"># Variable description {#variable-description}</span></span>
-<span id="cb6-162"><a href="#cb6-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-163"><a href="#cb6-163" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span>  <span class="pp">|</span>  <span class="pp">|</span>  <span class="pp">|</span></span>
-<span id="cb6-164"><a href="#cb6-164" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------------|--------------------------------------|-------------------|</span></span>
-<span id="cb6-165"><a href="#cb6-165" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Variable Name <span class="pp">|</span> Description <span class="pp">|</span> Values <span class="pp">|</span></span>
-<span id="cb6-166"><a href="#cb6-166" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_abortion <span class="pp">|</span> Whether respondent supports a right to an abortion in all or more cases <span class="pp">|</span> Oppose, Support <span class="pp">|</span></span>
-<span id="cb6-167"><a href="#cb6-167" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_ssm <span class="pp">|</span> Whether respondent supports or opposes allowing gays and lesbians to marry legally <span class="pp">|</span> Oppose, Support <span class="pp">|</span></span>
-<span id="cb6-168"><a href="#cb6-168" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_homo <span class="pp">|</span> Whether respondet supports or opposes the statement that &quot;Homosexuality should be accepted by society&quot; <span class="pp">|</span> Oppose, Support <span class="pp">|</span></span>
-<span id="cb6-169"><a href="#cb6-169" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_trans <span class="pp">|</span> Whether the respondent supports or opposes &quot;greater acceptance of people who are transgender&quot; <span class="pp">|</span> Oppose, Support <span class="pp">|</span></span>
-<span id="cb6-170"><a href="#cb6-170" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> gender <span class="pp">|</span> Respondents gender self identification <span class="pp">|</span> Men, Women <span class="pp">|</span></span>
-<span id="cb6-171"><a href="#cb6-171" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> income <span class="pp">|</span> Respondents family income in the last year <span class="pp">|</span> Categorical8 levels from &quot;Less than \$30,000&quot; to &quot;\$150,000 or more&quot; <span class="pp">|</span></span>
-<span id="cb6-172"><a href="#cb6-172" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> ideo3 <span class="pp">|</span> Whether the respondent identifies as a liberal, moderate, or conservative <span class="pp">|</span> liberal, moderate, conservative <span class="pp">|</span></span>
-<span id="cb6-173"><a href="#cb6-173" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> educ <span class="pp">|</span> Respondent&#39;s highest level of education attained <span class="pp">|</span> HS or less, Some College, College Grad, Postgrad <span class="pp">|</span></span>
-<span id="cb6-174"><a href="#cb6-174" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> trad <span class="pp">|</span> Respondent&#39;s religious tradition <span class="pp">|</span> Non-Religious, Catholic, Black Protestant, Mainline, Evangelical <span class="pp">|</span></span>
-<span id="cb6-175"><a href="#cb6-175" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> birthdecade <span class="pp">|</span> Decade of respondent&#39;s birth <span class="pp">|</span> 7 levels from &quot;1940s or earlier&quot; to &quot;2000s&quot; <span class="pp">|</span></span>
-<span id="cb6-176"><a href="#cb6-176" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> birthdecade_numeric <span class="pp">|</span> Numeric recode of birthdecade. 1= 1940s or earlier, 2 = 1950s, 3= 1960s ... <span class="pp">|</span> 1 - 7 <span class="pp">|</span></span>
-<span id="cb6-177"><a href="#cb6-177" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> income_numeric <span class="pp">|</span> Numeric recode of income. 1= Less than \$30,000, 2 = \$30,000 to less than \$40,000 3= \$40,000 to less than \$50,000, etc. <span class="pp">|</span> 1 - 8 <span class="pp">|</span></span>
-<span id="cb6-178"><a href="#cb6-178" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> white <span class="pp">|</span> Race recoded as dichotomous (white or not white) <span class="pp">|</span> Not-white, White <span class="pp">|</span></span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 1</span></span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>Estimate a logistic regression model that predicts belief that acceptance of transgender people is positive for society (<span class="in">`support_trans`</span>) based on a person&#39;s religion (<span class="in">`trad`</span>). Show your summary output and discuss your results in terms of the direction of effects and statistical significance.</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 2</span></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>Based on your results in model 1, which religious tradition is **most likely** to believe that acceptance of transgender people is positive for society and what is that group&#39;s probability of support? Which group is least likely and what is that group&#39;s probability of support?</span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 3</span></span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>Estimate a logistic regression model that predicts <span class="in">`support_trans`</span> based on a person&#39;s religion (<span class="in">`trad`</span>) along with a control for ideology (<span class="in">`ideo3`</span>). Use this model to get the predicted support for abortion rights for the following cases:</span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Liberal Evangelical vs. Liberal Catholic</span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Moderate Evangelical vs. Moderate Catholic</span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Conservative Evangelical vs. Conservative Catholic</span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>Briefly discuss your results.</span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 4</span></span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>Using the model use ran in question 3, calculate the average marginal effect (average contrast) of moving from Liberal to Conservative on the probability of believing that acceptance of transgender people is positive for society.</span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>Use the bootstrap method to calculate a 95% confidence interval for this estimated marginal effect</span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip collapse=&quot;false&quot;}</span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a><span class="fu">## Hint</span></span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a>You can see an example of this calculation <span class="co">[</span><span class="ot">here</span><span class="co">](https://gist.githubusercontent.com/Neilblund/4da9b764947be0f7f91d4245dae37997/raw/a6a4be073f5d14abefa75706644e68fa85bd6387/gistfile1.txt)</span>. To make things run quickly, you can reduce the number of bootstrap replicates to 50.</span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a>You might also use <span class="in">`cache=TRUE`</span> in the options for your R-code chunk. This will make it so that, when knitting the file, the results of the code block are stored and are not executed again unless you change the code.</span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a><span class="in">```` markdown</span></span>
+<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a>`r &#39;&#39;````{r, cache=TRUE}</span>
+<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a><span class="fu"># ... code for bootstrapping goes here</span></span>
+<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a><span class="in">````</span></span>
+<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 5</span></span>
+<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a>Use a logistic regression to estimate two models:</span>
+<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Model A should predict <span class="in">`support_trans`</span> using <span class="in">`trad + ideo3`</span>.</span>
+<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Model B should predict <span class="in">`support_trans`</span> using <span class="in">`trad + ideo3 + birthdecade`</span>.</span>
+<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a>Compare these models using one or more of the methods we discussed in class for comparing model fit and predictive power. Which model is better, in your judgement?</span>
+<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a><span class="co"># code here</span></span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 6</span></span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a>Select one of the models you estimated above. Assess the fit using a binned residuals plot and check for multicollinearity and influential observations using the methods we discussed in class. Briefly explain your results.</span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a><span class="co"># code here</span></span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a><span class="fu">## Question 7</span></span>
+<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a>In Burge&#39;s analysis, he uses <span class="in">`income_numeric`</span> as one of the predictors for support for greater acceptance of transgender people:</span>
+<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-152"><a href="#cb6-152" aria-hidden="true" tabindex="-1"></a>burge_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb6-153"><a href="#cb6-153" aria-hidden="true" tabindex="-1"></a>  support_trans <span class="sc">~</span> trad <span class="sc">+</span> ideo3 <span class="sc">+</span> gender <span class="sc">+</span> educ <span class="sc">+</span> white <span class="sc">+</span> income_numeric,</span>
+<span id="cb6-154"><a href="#cb6-154" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> rls,</span>
+<span id="cb6-155"><a href="#cb6-155" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&#39;logit&#39;</span>)</span>
+<span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-157"><a href="#cb6-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-158"><a href="#cb6-158" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb6-159"><a href="#cb6-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-160"><a href="#cb6-160" aria-hidden="true" tabindex="-1"></a>What assumptions does this make about the relationship between income and beliefs about acceptance of transgender people? What would change if we decided to use the categorical version of <span class="in">`income`</span> instead in our regression model instead? Can you make a case for either version of the model?</span>
+<span id="cb6-161"><a href="#cb6-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-162"><a href="#cb6-162" aria-hidden="true" tabindex="-1"></a><span class="fu"># Variable description {#variable-description}</span></span>
+<span id="cb6-163"><a href="#cb6-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-164"><a href="#cb6-164" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span>  <span class="pp">|</span>  <span class="pp">|</span>  <span class="pp">|</span></span>
+<span id="cb6-165"><a href="#cb6-165" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------------|--------------------------------------|-------------------|</span></span>
+<span id="cb6-166"><a href="#cb6-166" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Variable Name <span class="pp">|</span> Description <span class="pp">|</span> Values <span class="pp">|</span></span>
+<span id="cb6-167"><a href="#cb6-167" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_abortion <span class="pp">|</span> Whether respondent supports a right to an abortion in all or more cases <span class="pp">|</span> Oppose, Support <span class="pp">|</span></span>
+<span id="cb6-168"><a href="#cb6-168" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_ssm <span class="pp">|</span> Whether respondent supports or opposes allowing gays and lesbians to marry legally <span class="pp">|</span> Oppose, Support <span class="pp">|</span></span>
+<span id="cb6-169"><a href="#cb6-169" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_homo <span class="pp">|</span> Whether respondet supports or opposes the statement that &quot;Homosexuality should be accepted by society&quot; <span class="pp">|</span> Oppose, Support <span class="pp">|</span></span>
+<span id="cb6-170"><a href="#cb6-170" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> support_trans <span class="pp">|</span> Whether the respondent supports or opposes &quot;greater acceptance of people who are transgender&quot; <span class="pp">|</span> Oppose, Support <span class="pp">|</span></span>
+<span id="cb6-171"><a href="#cb6-171" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> gender <span class="pp">|</span> Respondents gender self identification <span class="pp">|</span> Men, Women <span class="pp">|</span></span>
+<span id="cb6-172"><a href="#cb6-172" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> income <span class="pp">|</span> Respondents family income in the last year <span class="pp">|</span> Categorical8 levels from &quot;Less than \$30,000&quot; to &quot;\$150,000 or more&quot; <span class="pp">|</span></span>
+<span id="cb6-173"><a href="#cb6-173" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> ideo3 <span class="pp">|</span> Whether the respondent identifies as a liberal, moderate, or conservative <span class="pp">|</span> liberal, moderate, conservative <span class="pp">|</span></span>
+<span id="cb6-174"><a href="#cb6-174" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> educ <span class="pp">|</span> Respondent&#39;s highest level of education attained <span class="pp">|</span> HS or less, Some College, College Grad, Postgrad <span class="pp">|</span></span>
+<span id="cb6-175"><a href="#cb6-175" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> trad <span class="pp">|</span> Respondent&#39;s religious tradition <span class="pp">|</span> Non-Religious, Catholic, Black Protestant, Mainline, Evangelical <span class="pp">|</span></span>
+<span id="cb6-176"><a href="#cb6-176" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> birthdecade <span class="pp">|</span> Decade of respondent&#39;s birth <span class="pp">|</span> 7 levels from &quot;1940s or earlier&quot; to &quot;2000s&quot; <span class="pp">|</span></span>
+<span id="cb6-177"><a href="#cb6-177" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> birthdecade_numeric <span class="pp">|</span> Numeric recode of birthdecade. 1= 1940s or earlier, 2 = 1950s, 3= 1960s ... <span class="pp">|</span> 1 - 7 <span class="pp">|</span></span>
+<span id="cb6-178"><a href="#cb6-178" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> income_numeric <span class="pp">|</span> Numeric recode of income. 1= Less than \$30,000, 2 = \$30,000 to less than \$40,000 3= \$40,000 to less than \$50,000, etc. <span class="pp">|</span> 1 - 8 <span class="pp">|</span></span>
+<span id="cb6-179"><a href="#cb6-179" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> white <span class="pp">|</span> Race recoded as dichotomous (white or not white) <span class="pp">|</span> Not-white, White <span class="pp">|</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
