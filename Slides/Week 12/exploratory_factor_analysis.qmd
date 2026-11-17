@@ -1050,3 +1050,9 @@ In this case, we seem to see pretty significant diminishing returns after just o
 library(psych)
 scree(scores_select, pc=FALSE)
 ```
+
+
+
+### Rcode
+
+[Click here for EFA example](https://raw.githubusercontent.com/Neilblund/SDSB340-Fall-2026/refs/heads/master/Code/efa.R)
