@@ -523,13 +523,15 @@ round(loadings_matrix, digits=2)
 - So, the correlation between item 1, "Having little interest in doing things", and the latent variable is about $0.74$.
 :::
 ::: {.column width="50%"}
+
+
 $$
 \text{Factor loadings} = \left(\begin{array}{c}
-
 \text{item 1}&0.74\\\text{item 2}&0.80\\\text{item 3}&0.55\\\text{item 4}&0.53
-
 \end{array}\right)
 $$
+
+
 :::
 :::::
 
@@ -547,12 +549,10 @@ $$
 
 $$
 \text{Factor loadings} = \left(\begin{array}{c}
-
 \text{item 1}&0.74\\\text{item 2}&0.80\\\text{item 3}&0.55\\\text{item 4}&0.53
-
 \end{array}\right)
-
 $$
+
 :::
 :::::
 
@@ -568,13 +568,13 @@ $$
 
 :::
 ::: {.column width="50%"}
+
 $$
 \text{Factor loadings} = \left(\begin{array}{c}
-
 \text{item 1}&0.74\\\text{item 2}&0.80\\\text{item 3}&0.55\\\text{item 4}&0.53
-
 \end{array}\right)
 $$
+
 :::
 :::::
 
@@ -589,13 +589,13 @@ $$
 
 :::
 ::: {.column width="50%"}
+
 $$
 \text{Factor loadings} = \left(\begin{array}{c}
-
 \text{item 1}&0.74\\\text{item 2}&0.80\\\text{item 3}&0.55\\\text{item 4}&0.53
-
 \end{array}\right)
 $$
+
 :::
 :::::
 
