@@ -321,12 +321,14 @@ The actual observed values for the covariance matrix looks like this. The task, 
 
 We can assume some arbitrary values to see how this would work.
 
-$$\begin{align*}
+$$
+\begin{align*}
 b_{1} = 0.5; \sigma^2_1 = 0.63\\
 b_{2} = 0.3; \sigma^2_2 = 0.60\\
 b_{3} = 0.7; \sigma^2_3 = 0.43\\
 b_{4} = 0.2; \sigma^2_4 = 0.70\\
-\end{align*}$$
+\end{align*}
+$$
 
 
 
@@ -542,12 +544,14 @@ $$
 - So variation in the latent factor accounts for about $0.73^2 = 0.54$ of the variation in answers to item 1
 :::
 ::: {.column width="50%"}
+
 $$
 \text{Factor loadings} = \left(\begin{array}{c}
 
 \text{item 1}&0.74\\\text{item 2}&0.80\\\text{item 3}&0.55\\\text{item 4}&0.53
 
 \end{array}\right)
+
 $$
 :::
 :::::
