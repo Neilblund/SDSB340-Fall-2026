@@ -722,12 +722,14 @@ For nested models, we can use a likelihood ratio test.
 
 $$
 LR = -2(\text{ln } L_\text{simple} - \text{ln } L_\text{complex})
-$$ The ratio of the two models follows a $\chi^2$ distribution with degrees of freedom = to the difference in the number of parameters between the two models.
+$$ 
+
+The ratio of the two models follows a $\chi^2$ distribution with degrees of freedom = to the difference in the number of parameters between the two models.
 
 ### Model Comparison: Non-nested models
 
 If two models aren't nested, they can still be compared using their information criteria as long as they use the same data.
 
-### Model Comparison example
+### CFA Example
 
-[R-code (starting at line 100)](https://raw.githubusercontent.com/Neilblund/SDSB340-Spring-2026/refs/heads/master/Rcode/phq9_cfa.R)
+(R Code)[https://raw.githubusercontent.com/Neilblund/SDSB340-Fall-2026/refs/heads/master/Code/CFA.R]
