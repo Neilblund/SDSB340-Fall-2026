@@ -37,6 +37,8 @@ lightbox: true
 
 -   If you have a lot of data, you might also split up a single sample into an "EFA" subset and a "CFA" subset.
 
+- (For your own analyses, you probably will just want to pick one or the other)
+
 ## Confirmatory Factor Analysis
 
 PHQ-9 depression inventory:
@@ -732,4 +734,4 @@ If two models aren't nested, they can still be compared using their information 
 
 ### CFA Example
 
-(R Code)[https://raw.githubusercontent.com/Neilblund/SDSB340-Fall-2026/refs/heads/master/Code/CFA.R]
+[R Code](https://raw.githubusercontent.com/Neilblund/SDSB340-Fall-2026/refs/heads/master/Code/CFA.R)
